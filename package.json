@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
+    "install": "concurrently \"cd api && pnpm install\" \"cd web && pnpm install\" ",
     "dev": "concurrently \"cd api && pnpm run start\" \"cd web && pnpm run dev\" ",
     "build": "concurrently \"cd api && pnpm run build\" \"cd web && pnpm run build\"",
     "start:prod": "pnpm --filter api start:prod",
