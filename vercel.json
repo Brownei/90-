@@ -15,5 +15,5 @@
   "buildCommand": "pnpm build:web && pnpm --filter api build",
   "outputDirectory": "api/dist",
   "installCommand": "pnpm install",
-  "startCommand": "pnpm run start:prod"
+  "devCommand": "pnpm run start:prod"
 }
