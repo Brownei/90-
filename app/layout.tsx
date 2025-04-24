@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import { TRPCProvider } from "@/trpc/client";
+import Nav from "@/components/Nav";
+import { HydrateClient } from "@/trpc/server";
 
 export const metadata: Metadata = {
   title: "90+: The Future of Live Football Engagement",
@@ -19,7 +21,10 @@ export default function RootLayout({
     <html lang="en">
       <body>
         <TRPCProvider>
-          {children}
+          <HydrateClient>
+            <Nav />
+            {children}
+          </HydrateClient>
         </TRPCProvider>
       </body>
     </html>
