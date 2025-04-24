@@ -76,6 +76,7 @@ const Homepage = () => {
           <div className='relative flex flex-col justify-center text-center items-center w-full'>
             <h4 className='font-sofiaSans text-[1.5rem]'>Sidebets: Coming Soon – Bet on Your Banter</h4>
             <p className='font-dmsans italic w-full lg:w-[800px] text-center text-[1rem]'>Soon, you’ll be able to instantly bet your takes during live matches. Whether it's a bold prediction or a hot debate, Sidebets will let you put your insights on the line, enabling Peer to Peer bets</p>
+
             <Image
               className='absolute left-0 right-0 bottom-0 top-0 object-cover block lg:hidden'
               src={"/background.png"}
