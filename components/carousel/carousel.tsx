@@ -1,23 +1,74 @@
+"use client"
 import React from 'react'
 import useEmblaCarousel from 'embla-carousel-react'
 import { DotButton, useDotButton } from './carousel-buttons'
+import { Game } from '@/data'
+import Image from 'next/image'
+import CurvedArrow from '@/public/icons/CurvedArrow'
 
-const Carousel = ({ tabs }: { tabs: string[] }) => {
+const Carousel = ({ tabs, isLive = false }: { tabs: Game[], isLive: boolean }) => {
   const [emblaRef, emblaApi] = useEmblaCarousel({ loop: false })
   const { selectedIndex, scrollSnaps, onDotButtonClick } = useDotButton(emblaApi)
 
   React.useEffect(() => {
     if (emblaApi) {
-      console.log(emblaApi.slideNodes()) // Access API
+      //console.log(emblaApi.slideNodes()) // Access API
     }
   }, [emblaApi])
 
   return (
     <div className="overflow-hidden mt-[20px]" ref={emblaRef}>
-      <div className="flex">
-        {tabs.map((tab, i) => (
-          <div className='min-w-0 flex-[0_0_100%] border' key={i}>
-            {tab}
+      <div className="flex lg:gap-1 lg[touch-action:pan-y_pinch-zoom] lg:ml-[calc(1rem_*_ -1)]">
+        {tabs.map((game, i) => (
+          <div className='min-w-0 lg:lg:transform-gpu lg:pl-[1rem] lg:flex-[0_0_50%] flex-[0_0_100%] gap-3 border border-[#BEBEBE]/50 bg-white rounded-[12px]' key={i}>
+            <div className='p-3 text-black'>
+              <div className='flex justify-between items-center font-dmSans'>
+                <div className={`text-[0.65rem] text-[#FF0000] flex gap-1 items-center ${isLive ? 'visible' : 'invisible'}`}>
+                  <div className='bg-[#FF0000] size-1 rounded' />
+                  Live
+                </div>
+                <p className='font-semibold text-[1rem]'>Premier League</p>
+                <CurvedArrow />
+              </div>
+
+              <div className='flex justify-between items-center p-4'>
+                <div className='flex flex-col items-center'>
+                  <Image
+                    src={game.homeImage}
+                    alt={game.homeTeam}
+                    width={100}
+                    height={100}
+                    className='w-[50px] lg:w-[150px]'
+                  />
+                  <p className='text-center text-[0.9rem] lg:text-[1rem] font-dmSans'>{game.homeTeam}</p>
+                </div>
+
+                {isLive ? (
+                  <div className='flex items-center gap-1 font-dmSans font-bold'>
+                    <p className='text-[#FF0000] text-[1.5rem] lg:text-[2rem]'>{game.homeScore}</p>
+                    <span className='text-[1.5rem] lg:text-[2rem]'>:</span>
+                    <p className='text-[#FF0000] text-[1.5rem] lg:text-[2rem]'>{game.awayScore}</p>
+                  </div>
+                ) : (
+                  <div className='font-dmSans text-[1rem] lg:text-[1.1rem]'>20:00</div>
+                )}
+
+                <div className='flex flex-col items-center'>
+                  <Image
+                    src={game.awayImage}
+                    alt={game.awayTeam}
+                    width={100}
+                    height={100}
+                    className='w-[50px] lg:w-[150px]'
+                  />
+                  <p className='text-center text-[0.9rem] lg:text-[1rem] font-dmSans'>{game.awayTeam}</p>
+                </div>
+              </div>
+
+              <div className='flex justify-center items-center'>
+                <button className='w-fit bg-darkGreen py-1 px-6 text-white font-dmSans font-extrabold rounded-xl'>Join Hub</button>
+              </div>
+            </div>
           </div>
         ))}
       </div>
