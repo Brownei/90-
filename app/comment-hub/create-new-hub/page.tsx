@@ -3,7 +3,7 @@ import React from 'react'
 
 function CreateCommentHub() {
   return (
-    <main className='mt-[80px] mb-[30px]'>
+    <main className='my-[30px]'>
       <CreateNewCommentHubPage />
     </main>
   )

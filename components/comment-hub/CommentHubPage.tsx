@@ -42,7 +42,6 @@ const CommentHubPage = () => {
     return () => clearTimeout(timeoutId);
   }, [query, games]);
 
-  console.log(query)
 
   return (
     <main>

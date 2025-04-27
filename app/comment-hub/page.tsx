@@ -1,4 +1,5 @@
 import CommentHubPage from '@/components/comment-hub/CommentHubPage'
+import Nav from '@/components/Nav';
 import { trpc } from '@/trpc/server';
 import React from 'react'
 
@@ -8,6 +9,7 @@ export default async function CommentHub() {
 
   return (
     <main className='mt-[80px] mb-[500px]'>
+      <Nav />
       <CommentHubPage />
     </main>
   );

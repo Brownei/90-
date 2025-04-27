@@ -45,14 +45,10 @@ const CreateNewCommentHubPage = () => {
     }
   }, [])
 
-  console.log(pathname.get("new-game"))
-  console.log(homeTeam)
-  console.log(awayTeam)
-
   return (
     <main>
       <div className='container mx-auto px-3 py-1 h-screen'>
-        <button onClick={() => router.back()} className='px-3'>
+        <button onClick={() => router.back()} className='px-3 cursor-pointer'>
           <ArrowRightIcon isInBackground={true} />
         </button>
         <h1 className='font-specialGothic font-[1.1rem] text-center mb-[20px] uppercase'>Create live hub</h1>
@@ -70,7 +66,7 @@ const CreateNewCommentHubPage = () => {
                       const urlRoute = formatString(`${sg.homeTeam} vs ${sg.awayTeam}`)
 
                       return (
-                        <button key={i} onClick={() => router.push(`/comment-hub/create-new-hub/?new-game=${urlRoute}`)} className='font-dmSans text-start text-[1rem] leading-[140%] border-b border-black/24 px-3 py-3 lg:py-6 hover:bg-black/24'>{sg.homeTeam} vs {sg.awayTeam} - 20:00 (Premier League)</button>
+                        <button key={i} onClick={() => router.push(`/comment-hub/create-new-hub/?new-game=${urlRoute}`)} className='font-dmSans text-start text-[1rem] cursor-pointer leading-[140%] border-b border-black/24 px-3 py-3 lg:py-6 hover:bg-black/24'>{sg.homeTeam} vs {sg.awayTeam} - 20:00 (Premier League)</button>
                       )
                     })}
                   </div>
