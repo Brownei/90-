@@ -1,10 +1,12 @@
 import CreateNewCommentHubPage from '@/components/comment-hub/CreateNewCommentHubPage'
-import React from 'react'
+import React, { Suspense } from 'react'
 
 function CreateCommentHub() {
   return (
     <main className='my-[30px]'>
-      <CreateNewCommentHubPage />
+      <Suspense>
+        <CreateNewCommentHubPage />
+      </Suspense>
     </main>
   )
 }
