@@ -8,6 +8,7 @@ import { useParams } from 'next/navigation'
 import React from 'react'
 import MessagePopup from './ui/message-popup'
 import MessageInput from './ui/message-input'
+import gsap from 'gsap'
 
 type Params = {
   game: string
@@ -18,14 +19,63 @@ const ClientParticularGamePage = () => {
   const { game } = useParams<Params>()
   const [homeTeam, awayTeam] = reverseFormatString(game).split("Vs")
   const seletedGame = games.find((g) => g.awayTeam === awayTeam?.trim() && g.homeTeam === homeTeam?.trim()) as Game
+  const inputRef = React.useRef<HTMLDivElement>(null);
+  const boxRef = React.useRef<HTMLDivElement>(null);
+  const [isSlidOut, setIsSlidOut] = React.useState(false);
+
+  const handleToggle = () => {
+    if (!boxRef.current) return;
+
+    if (!isSlidOut) {
+      boxRef.current.style.position = "fixed";
+      boxRef.current.style.top = `${boxRef.current.offsetTop}px`;
+      boxRef.current.style.left = `${boxRef.current.offsetLeft}px`;
+
+      // Slide OUT (down off the screen)
+      gsap.to(boxRef.current, {
+        y: window.innerHeight,
+        duration: 1,
+        ease: "power4.in",
+      });
+
+      // Animate input down and fade
+      gsap.to(inputRef.current, {
+        y: 100,
+        opacity: 0,
+        duration: 1,
+        ease: "power4.in",
+      });
+    } else {
+      // Slide BACK IN (to original position)
+      gsap.to(boxRef.current, {
+        y: 0,
+        duration: 1,
+        ease: "power4.in",
+        onComplete: () => {
+          if (boxRef.current) {
+            boxRef.current.style.position = "static";
+          }
+        },
+      });
+
+      gsap.to(inputRef.current, {
+        y: 0,
+        opacity: 1,
+        duration: 1,
+        ease: "power4.out",
+      });
+    }
+
+    setIsSlidOut((prev) => !prev); // Toggle state
+  };
 
   console.log(game)
 
   return (
-    <main>
+    <main className='bg-gradient-to-b from-gradientDarkGreen  to-gradientLightGreen h-screen overflow-auto'>
 
-      <div className='sticky md:fixed top-0 left-0 right-0 bg-gradient-to-b from-gradientDarkGreen rounded-b-md text-white to-gradientLightGreen'>
-        <div className='container mx-auto px-6 pt-6 pb-2 h-fit'>
+      <div className='sticky md:fixed top-0 left-0 right-0 rounded-b-md text-white bg-inherit z-30'>
+        <div className='container mx-auto px-6 pt-6 pb-2 '>
           <div className='flex justify-between items-center'>
             <BackIcon />
             <CurvedArrow />
@@ -69,7 +119,7 @@ const ClientParticularGamePage = () => {
             </div>
 
             <p className='font-sofiaSans font-bold text-[0.75rem]'>Match overview</p>
-            <div className='bg-[#3E3D3D] w-[34px] border-2 border-[#3E3D3D] rounded-full' />
+            <button onClick={handleToggle} className='bg-[#3E3D3D] w-[34px] border-2 border-[#3E3D3D] rounded-full' />
           </div>
 
           <div className='flex flex-col gap-1 items-center justify-center'>
@@ -77,10 +127,10 @@ const ClientParticularGamePage = () => {
         </div>
       </div>
 
-      <div>
-        <div className='container mx-auto px-3 py-1 h-screen'>
+      <div className='border bg-[#ECF5F5]'>
+        <MessageInput ref={inputRef} />
+        <div className='container mx-auto px-3 py-1 h-screen bg-[#ECF5F5]' ref={boxRef}>
           <MessagePopup />
-          <MessageInput />
         </div>
       </div>
     </main>

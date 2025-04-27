@@ -1,3 +1,5 @@
+import { Message } from "./stores/use-messages-store";
+
 export type Game = {
   homeTeam: string,
   awayTeam: string,
@@ -8,6 +10,62 @@ export type Game = {
   awayImage: string
 }
 
+export const defaultMessages: Message[] = [
+  {
+    id: "1",
+    avatarUrl: "https://randomuser.me/api/portraits/men/1.jpg",
+    username: "John Doe",
+    time: "9:00 AM",
+    content: "Hey everyone! 👋",
+    reactions: ["👋", "🔥"],
+    actionNos: 7000,
+    isRef: false,
+    replies: [
+      {
+        id: "1-1",
+        avatarUrl: "https://randomuser.me/api/portraits/women/2.jpg",
+        username: "Jane Smith",
+        time: "9:02 AM",
+        content: "Hey John! 😄",
+      }
+    ]
+  },
+  {
+    id: "2",
+    avatarUrl: "https://randomuser.me/api/portraits/men/3.jpg",
+    username: "Chris Evans",
+    isRef: false,
+    time: "9:10 AM",
+    content: "Did you guys watch the game last night?",
+    reactions: ["⚽", "👏"],
+    actionNos: 700
+  },
+  {
+    id: "3",
+    avatarUrl: "https://randomuser.me/api/portraits/women/4.jpg",
+    isRef: false,
+    username: "Emily Carter",
+    time: "9:15 AM",
+    content: "Wow, I still can't believe that final goal! 🤯 It was absolutely insane, the way everything came together in the last few seconds! The tension, the excitement, the sheer unpredictability – that moment was unforgettable! What a game!",
+    reactions: ["🤯", "🔥", "❤️"],
+    actionNos: 700
+  },
+  {
+    id: "4",
+    avatarUrl: "https://media.tenor.com/XPbK0iLSsIgAAAAm/touchdown-referee.webp",
+    username: "REF",
+    isRef: true,
+    time: "75'",
+    content: "🟥 76’ RED CARD! – Sergio Ramos Second yellow. PSG down to 10 men. Classic Ramos moment.",
+    reactions: ["🤯", "🔥", "❤️"],
+    actionNos: 700,
+    reactionsToRef: {
+        "laughing": 20,
+        "clapping": 10,
+        "thumbs-down": 5,
+      }
+  }
+];
 
 
 export const games: Game[] = [
