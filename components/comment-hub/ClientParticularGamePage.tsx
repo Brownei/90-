@@ -9,6 +9,7 @@ import React from 'react'
 import MessagePopup from './ui/message-popup'
 import MessageInput from './ui/message-input'
 import gsap from 'gsap'
+import StatsIcon from '@/public/icons/StatsIcon'
 
 type Params = {
   game: string
@@ -72,9 +73,12 @@ const ClientParticularGamePage = () => {
   console.log(game)
 
   return (
-    <main className='bg-gradient-to-b from-gradientDarkGreen  to-gradientLightGreen h-screen overflow-auto'>
+    <main className='bg-gradient-to-b from-gradientDarkGreen  to-gradientLightGreen overflow-auto'>
+      <div className='absolute left-[50%] top-[50%] translate-x-[-50%] translate-y-[-50%] z-10'>
+        <StatsIcon />
+      </div>
 
-      <div className='sticky md:fixed top-0 left-0 right-0 rounded-b-md text-white bg-inherit z-30'>
+      <div className='sticky md:fixed top-0 left-0 right-0 rounded-b-md text-white bg-gradientDarkGreen z-30'>
         <div className='container mx-auto px-6 pt-6 pb-2 '>
           <div className='flex justify-between items-center'>
             <BackIcon />
@@ -127,9 +131,9 @@ const ClientParticularGamePage = () => {
         </div>
       </div>
 
-      <div className='border bg-[#ECF5F5]'>
+      <div className='border bg-[#ECF5F5] z-20'>
         <MessageInput ref={inputRef} />
-        <div className='container mx-auto px-3 py-1 h-screen bg-[#ECF5F5]' ref={boxRef}>
+        <div className='container mx-auto px-3 py-1 bg-[#ECF5F5]' ref={boxRef}>
           <MessagePopup />
         </div>
       </div>

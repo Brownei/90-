@@ -3,7 +3,7 @@ import React from 'react'
 
 function ParticularGamePage() {
   return (
-    <main className=' mb-[500px]'>
+    <main className=''>
       <ClientParticularGamePage />
     </main>
   )
