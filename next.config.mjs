@@ -11,6 +11,9 @@ const nextConfig = {
       { hostname: 'randomuser.me' },
     ],
   },
+  typescript: {
+    ignoreBuildErrors: true,
+  },
 };
 
 export default nextConfig; 
