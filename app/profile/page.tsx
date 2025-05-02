@@ -12,7 +12,7 @@ const ProfilePage = () => {
   const { isAuthenticated, isLoading } = useAuth();
   const [tweetText, setTweetText] = React.useState('');
   const [isSubmitting, setIsSubmitting] = React.useState(false);
-  const postTweet = trpc.twitter.tweet.useMutation();
+  // const postTweet = trpc.twitter.tweet.useMutation();
 
   React.useEffect(() => {
     // If not authenticated and not loading, redirect to home
@@ -27,7 +27,7 @@ const ProfilePage = () => {
     
     try {
       setIsSubmitting(true);
-      await postTweet.mutateAsync({ text: tweetText });
+      // await postTweet.mutateAsync({ text: tweetText });
       setTweetText('');
       alert('Tweet posted successfully!');
     } catch (error) {
