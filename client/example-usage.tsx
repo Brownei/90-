@@ -3,7 +3,10 @@
 import React, { useEffect, useState } from 'react';
 import { Connection, PublicKey, Keypair } from '@solana/web3.js';
 import { useWallet } from '@solana/wallet-adapter-react';
-import { BettingClient, TokenGrantingClient } from '90plus-betting-client';
+import { TokenGrantingClient } from './token-granting-client';
+import { BettingClient } from './betting-client';
+
+
 
 // Example React component
 function BettingApp() {
