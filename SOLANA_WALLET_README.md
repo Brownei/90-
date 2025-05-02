@@ -16,7 +16,7 @@ This project includes Solana wallet integration for authentication and wallet fu
 The Solana wallet integration consists of:
 
 1. **Backend Components**:
-   - Prisma database schema for storing wallet data
+   - Database schema for storing wallet data
    - Authentication API endpoint for verifying wallet signatures
    - Integration with NextAuth.js to link wallets to user accounts
 
