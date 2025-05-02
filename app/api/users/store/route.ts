@@ -1,5 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
-import prisma from "@/utils/prisma";
+import { db } from "@/lib/db";
+import { users, wallets } from "@/lib/db/schema";
+import { eq } from "drizzle-orm";
 import { getServerSession } from "next-auth";
 import { Connection, PublicKey } from '@solana/web3.js';
 
@@ -15,17 +17,22 @@ export async function POST(req: NextRequest) {
     // Check if there's an existing user with this email
     let user = null;
     if (userData.email) {
-      user = await prisma.user.findUnique({
-        where: { email: userData.email },
-      });
+      const [existingUser] = await db.select()
+        .from(users)
+        .where(eq(users.email, userData.email));
+      user = existingUser;
     }
 
     // If no user found, check by wallet public key
     if (!user && userData.publicKey) {
-      const wallet = await prisma.wallet.findUnique({
-        where: { publicKey: userData.publicKey },
-        include: { user: true },
-      });
+      const [wallet] = await db.select({
+          wallet: wallets,
+          user: users
+        })
+        .from(wallets)
+        .innerJoin(users, eq(users.id, wallets.userId))
+        .where(eq(wallets.publicKey, userData.publicKey));
+        
       if (wallet) {
         user = wallet.user;
       }
@@ -34,53 +41,63 @@ export async function POST(req: NextRequest) {
     // If user exists, update them
     if (user) {
       // Update user information
-      await prisma.user.update({
-        where: { id: user.id },
-        data: {
+      await db.update(users)
+        .set({
           name: userData.name || user.name,
           image: userData.profileImage || user.image,
-        },
-      });
+        })
+        .where(eq(users.id, user.id));
+        
       userId = user.id;
     } else {
       // Create new user
-      const newUser = await prisma.user.create({
-        data: {
-          name: userData.name || `User ${userData.verifierId?.slice(0, 6) || 'New'}`,
-          email: userData.email,
-          image: userData.profileImage,
-        },
-      });
+      const newUser = {
+        id: crypto.randomUUID(),
+        name: userData.name || `User ${userData.verifierId?.slice(0, 6) || 'New'}`,
+        email: userData.email,
+        image: userData.profileImage,
+      };
+      
+      await db.insert(users)
+        .values(newUser);
+        
       userId = newUser.id;
     }
     
     // If we have a public key, create or update the wallet
     let walletId = null;
     if (userData.publicKey) {
-      const existingWallet = await prisma.wallet.findUnique({
-        where: { publicKey: userData.publicKey },
-      });
+      const [existingWallet] = await db.select()
+        .from(wallets)
+        .where(eq(wallets.publicKey, userData.publicKey));
       
       if (existingWallet) {
         // Update existing wallet
-        const updatedWallet = await prisma.wallet.update({
-          where: { id: existingWallet.id },
-          data: { 
-            lastSignedIn: new Date(),
+        await db.update(wallets)
+          .set({ 
+            lastSignedIn: new Date().toISOString(),
             userId: userId, // Link wallet to the current user
-          }
-        });
-        walletId = updatedWallet.id;
+          })
+          .where(eq(wallets.id, existingWallet.id));
+          
+        walletId = existingWallet.id;
       } else {
         // Create new wallet
-        const newWallet = await prisma.wallet.create({
-          data: {
-            publicKey: userData.publicKey,
-            provider: 'web3auth',
-            userId: userId,
-            isMainWallet: true,
-          }
-        });
+        const newWallet = {
+          id: crypto.randomUUID(),
+          publicKey: userData.publicKey,
+          provider: 'web3auth',
+          userId: userId,
+          isMainWallet: true,
+          connectedAt: new Date().toISOString(),
+          lastSignedIn: new Date().toISOString(),
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString(),
+        };
+        
+        await db.insert(wallets)
+          .values(newWallet);
+          
         walletId = newWallet.id;
       }
       
@@ -117,12 +134,9 @@ async function updateWalletBalance(publicKey: string, walletId: string) {
     const solBalance = balance / 1e9; // Convert lamports to SOL
     
     // Update wallet in database
-    await prisma.wallet.update({
-      where: { id: walletId },
-      data: {
-        solanaBalance: solBalance
-      }
-    });
+    await db.update(wallets)
+      .set({ solanaBalance: solBalance })
+      .where(eq(wallets.id, walletId));
     
     return { success: true, balance: solBalance };
   } catch (error) {

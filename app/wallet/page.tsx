@@ -132,7 +132,7 @@ const WalletPage = () => {
           <div className="bg-white rounded-lg shadow-md p-6 mb-8">
             <h2 className="text-xl font-bold mb-4">Connect Your Wallet</h2>
             <p className="text-gray-600 mb-4">Connect your Solana wallet to view your balance and tokens.</p>
-            <SolanaWalletConnector />
+            {/* <SolanaWalletConnector /> */}
           </div>
         )}
         

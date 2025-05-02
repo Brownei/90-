@@ -1,7 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { airdropSol } from '@/utils/solanaHelpers';
 import { getServerSession } from 'next-auth';
-import prisma from '@/utils/prisma';
+import { db } from '@/lib/db';
+import { wallets, users, accounts } from '@/lib/db/schema';
+import { eq, or, and, inArray, exists } from 'drizzle-orm';
 
 /**
  * Handles airdrop request
@@ -29,27 +31,43 @@ export async function POST(req: NextRequest) {
         { status: 401 }
       );
     }
+
+    // Find the user first
+    const usersWithEmail = session.user.email 
+      ? await db.select().from(users).where(eq(users.email, session.user.email))
+      : [];
+      
+    // Find users with twitter account matching session
+    const usersWithTwitter = session.user.twitterId
+      ? await db.select({ id: users.id })
+        .from(users)
+        .innerJoin(accounts, eq(accounts.userId, users.id))
+        .where(eq(accounts.providerAccountId, session.user.twitterId))
+      : [];
+    
+    const userIds = [
+      ...usersWithEmail.map(u => u.id),
+      ...usersWithTwitter.map(u => u.id)
+    ];
+    
+    if (userIds.length === 0) {
+      return NextResponse.json(
+        { error: 'User not found' },
+        { status: 403 }
+      );
+    }
     
     // Verify that the wallet belongs to the user
-    const wallet = await prisma.wallet.findFirst({
-      where: {
-        publicKey: walletAddress,
-        user: {
-          OR: [
-            { email: session.user.email },
-            {
-              accounts: {
-                some: {
-                  providerAccountId: session.user.twitterId
-                }
-              }
-            }
-          ]
-        }
-      }
-    });
+    const userWallets = await db.select()
+      .from(wallets)
+      .where(
+        and(
+          eq(wallets.publicKey, walletAddress),
+          inArray(wallets.userId, userIds)
+        )
+      );
     
-    if (!wallet) {
+    if (userWallets.length === 0) {
       return NextResponse.json(
         { error: 'This wallet does not belong to the authenticated user' },
         { status: 403 }

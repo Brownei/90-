@@ -2,14 +2,14 @@
 
 This project includes Solana wallet integration for authentication and wallet functionality. Follow these steps to set up the Solana wallet integration in your local development environment.
 
-## Features Implemented
+## Features
 
-- Solana wallet connection and authentication
-- Ability to sign messages with your Solana wallet to authenticate
-- Database storage of wallet information
-- User account linking between X (Twitter) authentication and Solana wallets
-- Wallet balance and token display
-- Automatic wallet data updates when connecting
+- Solana wallet connection and management
+- Save wallet data to local database
+- Token balances and account information
+- Solana transaction functionality
+- Drizzle database schema for storing wallet data
+- Multiple wallet providers support
 
 ## Technical Implementation
 
@@ -36,25 +36,31 @@ The database includes the following wallet-related tables:
 
 ## Setup Instructions
 
-1. Make sure you have the environment variables set up:
-
-```
-# Database
-DATABASE_URL="file:./dev.db"
-
-# Solana RPC URL (optional - defaults to devnet)
-NEXT_PUBLIC_SOLANA_RPC_URL="https://api.devnet.solana.com"
-```
-
-2. Install a Solana wallet browser extension like [Phantom](https://phantom.app/) or [Solflare](https://solflare.com/)
-
-3. Run Prisma migrations to set up the database:
+1. Clone the repository and install dependencies:
 
 ```bash
-npx prisma migrate dev --name init
+npm install
+# or
+pnpm install
 ```
 
-4. Start the development server:
+2. Create a `.env` file with required environment variables:
+
+```
+DATABASE_URL=file:./dev.db
+NEXT_PUBLIC_SOLANA_RPC_URL=https://api.devnet.solana.com
+```
+
+3. Run Drizzle migrations to set up the database:
+
+```bash
+pnpm db:generate
+pnpm db:migrate
+```
+
+4. Install a Solana wallet browser extension like [Phantom](https://phantom.app/) or [Solflare](https://solflare.com/)
+
+5. Start the development server:
 
 ```bash
 pnpm dev

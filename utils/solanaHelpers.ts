@@ -1,6 +1,8 @@
 import { Connection, PublicKey, LAMPORTS_PER_SOL } from '@solana/web3.js';
 import { TOKEN_PROGRAM_ID } from '@solana/spl-token';
-import prisma from './prisma';
+import { db } from '../lib/db';
+import { eq, and } from 'drizzle-orm';
+import { wallets, tokens } from '../lib/db/schema';
 
 const DEFAULT_RPC_ENDPOINT = process.env.NEXT_PUBLIC_SOLANA_RPC_URL || 'https://api.devnet.solana.com';
 
@@ -61,56 +63,54 @@ export async function updateWalletData(walletAddress: string) {
     const solBalance = await getSolanaBalance(walletAddress);
     
     // Update in database
-    await prisma.wallet.update({
-      where: { publicKey: walletAddress },
-      data: { solanaBalance: solBalance }
-    });
+    await db.update(wallets)
+      .set({ solanaBalance: solBalance })
+      .where(eq(wallets.publicKey, walletAddress));
     
     // Get token accounts
-    const tokens = await getTokenAccounts(walletAddress);
+    const tokenAccounts = await getTokenAccounts(walletAddress);
     
     // Get wallet from DB
-    const wallet = await prisma.wallet.findUnique({
-      where: { publicKey: walletAddress },
-    });
+    const [wallet] = await db.select()
+      .from(wallets)
+      .where(eq(wallets.publicKey, walletAddress));
     
     if (!wallet) return;
     
     // Update tokens in database
-    for (const token of tokens) {
+    for (const token of tokenAccounts) {
       // Check if token exists
-      const existingToken = await prisma.token.findUnique({
-        where: {
-          walletId_mintAddress: {
-            walletId: wallet.id,
-            mintAddress: token.mint
-          }
-        }
-      });
+      const [existingToken] = await db.select()
+        .from(tokens)
+        .where(
+          and(
+            eq(tokens.walletId, wallet.id),
+            eq(tokens.mintAddress, token.mint)
+          )
+        );
       
       if (existingToken) {
         // Update existing token
-        await prisma.token.update({
-          where: { id: existingToken.id },
-          data: {
+        await db.update(tokens)
+          .set({
             balance: token.balance,
             decimals: token.decimals
-          }
-        });
+          })
+          .where(eq(tokens.id, existingToken.id));
       } else {
         // Create new token
-        await prisma.token.create({
-          data: {
+        await db.insert(tokens)
+          .values({
+            id: crypto.randomUUID(),
             mintAddress: token.mint,
             balance: token.balance,
             decimals: token.decimals,
             walletId: wallet.id
-          }
-        });
+          });
       }
     }
     
-    return { solBalance, tokens };
+    return { solBalance, tokens: tokenAccounts };
   } catch (error) {
     console.error('Error updating wallet data:', error);
     throw error;
