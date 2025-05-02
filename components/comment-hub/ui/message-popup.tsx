@@ -339,8 +339,14 @@ const MessagePopup = () => {
       toast.success("Reply added successfully!");
     }
     
+    // Clear the reply text but keep the reply input open
     setReplyText('');
-    setReplyingTo(null);
+    
+    // Make sure the replies section is expanded
+    setShowAllReplies(prev => ({
+      ...prev,
+      [messageId]: true
+    }));
   }
 
   // Enhanced messages for demo
@@ -349,7 +355,7 @@ const MessagePopup = () => {
   ];
 
   return (
-    <section className='overflow-scroll max-h-[calc(100vh_-_220px)] mt-0'>
+    <section className='overflow-y-auto max-h-[calc(100vh_-_220px)] pt-2'>
       {/* Add the custom comments to match the image */}
       <JosiahComment 
         id="josiah-1" 
@@ -382,6 +388,18 @@ const MessagePopup = () => {
               </div>
             </div>
           ))}
+          
+          {/* Add Reply button at the bottom of replies */}
+          {replyingTo !== "josiah-1" && (
+            <div className="mt-2 mb-3">
+              <button 
+                onClick={() => setReplyingTo("josiah-1")}
+                className="text-blue-600 text-sm hover:text-blue-800"
+              >
+                Add a reply...
+              </button>
+            </div>
+          )}
           
           {/* Reply input for Josiah comment */}
           {replyingTo === "josiah-1" && (
@@ -445,6 +463,18 @@ const MessagePopup = () => {
               </div>
             </div>
           ))}
+          
+          {/* Add Reply button at the bottom of replies */}
+          {replyingTo !== "josiah-2" && (
+            <div className="mt-2 mb-3">
+              <button 
+                onClick={() => setReplyingTo("josiah-2")}
+                className="text-blue-600 text-sm hover:text-blue-800"
+              >
+                Add a reply...
+              </button>
+            </div>
+          )}
           
           {/* Reply input for second Josiah comment */}
           {replyingTo === "josiah-2" && (
@@ -573,7 +603,21 @@ const MessagePopup = () => {
               
               {/* Show all replies when expanded */}
               {showAllReplies[message.id] && message.replies && (
-                <Replies replies={message.replies} messageUsername={message.username} />
+                <div className="ml-12 mt-3 border-l-2 border-gray-200 pl-4">
+                  <Replies replies={message.replies} messageUsername={message.username} />
+                  
+                  {/* Add Reply button at the bottom of replies */}
+                  {replyingTo !== message.id && (
+                    <div className="mt-2 mb-3">
+                      <button 
+                        onClick={() => setReplyingTo(message.id)}
+                        className="text-blue-600 text-sm hover:text-blue-800"
+                      >
+                        Add a reply...
+                      </button>
+                    </div>
+                  )}
+                </div>
               )}
               
               {/* Reply input when replying to this message */}

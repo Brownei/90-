@@ -268,73 +268,61 @@ const ClientParticularGamePage = () => {
           </div>
           
           {/* Teams and score section */}
-          <div className='flex flex-col justify-center items-center gap-2'>
+          <div className='flex flex-col justify-center items-center'>
             <div className='flex w-full md:w-[90%] max-w-2xl pt-1 justify-between items-center'>
               {/* Home team */}
-              <div className='flex flex-col items-center gap-1'>
+              <div className='flex flex-col items-center'>
                 <img
                   src={seletedGame.homeImage}
                   alt="FC Barcelona"
                   width={100}
                   height={100}
-                  className='w-[48px] md:w-[68px] lg:w-[84px] transition-transform hover:scale-105'
+                  className='w-[40px] md:w-[50px] lg:w-[60px] transition-transform hover:scale-105'
                 />
-                <p className='text-center text-[0.7rem] md:text-[0.8rem] lg:text-[0.9rem] font-sofiaSans font-medium'>FC Barcelona</p>
+                <p className='text-center text-[0.65rem] md:text-[0.7rem] lg:text-[0.8rem] font-sofiaSans font-medium mt-1'>FC Barcelona</p>
               </div>
 
               {/* Score or time */}
-              {isLive ? (
-                <div className='grid place-items-center'>
-                  <div className='flex items-center gap-2 leading-10 font-dmSans font-bold'>
-                    <p className='text-[2.5rem] md:text-[2.8rem] lg:text-[3.2rem]'>4</p>
-                    <span className='text-[2.5rem] md:text-[2.8rem] lg:text-[3.2rem]'> - </span>
-                    <p className='text-[2.5rem] md:text-[2.8rem] lg:text-[3.2rem]'>1</p>
-                  </div>
-                  <div className='font-dmSans text-[0.7rem] md:text-[0.8rem] bg-[#ffffff20] px-3 py-1 rounded-full'>45 : 04</div>
+              <div className='grid place-items-center'>
+                <div className='flex items-center gap-2 leading-8 font-dmSans font-bold'>
+                  <p className='text-[2rem] md:text-[2.2rem] lg:text-[2.5rem]'>4</p>
+                  <span className='text-[2rem] md:text-[2.2rem] lg:text-[2.5rem]'> - </span>
+                  <p className='text-[2rem] md:text-[2.2rem] lg:text-[2.5rem]'>1</p>
                 </div>
-              ) : (
-                <div className='font-dmSans text-[1.1rem] lg:text-[1.2rem] bg-[#ffffff20] px-4 py-2 rounded-full'>20:00</div>
-              )}
+                <div className='font-dmSans text-[0.65rem] md:text-[0.7rem] bg-[#ffffff20] px-3 py-0.5 rounded-full'>45 : 04</div>
+              </div>
 
               {/* Away team */}
-              <div className='flex flex-col items-center gap-1'>
+              <div className='flex flex-col items-center'>
                 <img
                   src={seletedGame.awayImage}
                   alt="Real Madrid FC"
                   width={100}
                   height={100}
-                  className='w-[48px] md:w-[68px] lg:w-[84px] transition-transform hover:scale-105'
+                  className='w-[40px] md:w-[50px] lg:w-[60px] transition-transform hover:scale-105'
                 />
-                <p className='text-center text-[0.7rem] md:text-[0.8rem] lg:text-[0.9rem] font-sofiaSans font-medium'>Real Madrid FC</p>
+                <p className='text-center text-[0.65rem] md:text-[0.7rem] lg:text-[0.8rem] font-sofiaSans font-medium mt-1'>Real Madrid FC</p>
               </div>
             </div>
 
-            {/* Match overview text */}
-            <p className='font-sofiaSans font-bold text-[0.8rem] md:text-[0.9rem] mt-1 mb-0'>Match overview</p>
-            
-            {/* Progress indicator - make it more visible */}
-            <div className="w-full flex justify-center items-center my-1">
-              <div className="bg-[#ffffff50] h-1 w-16 rounded-full">
-                <div className="bg-white h-1 w-6 rounded-full"></div>
-              </div>
+            {/* Match overview section - using a green underline to make it stand out */}
+            <div className="mt-3 mb-1">
+              <p className='font-sofiaSans font-medium text-[0.7rem] md:text-[0.8rem] inline-block relative'>
+                Match overview
+                <span className="absolute bottom-0 left-0 w-full h-1 bg-[#00FF00] opacity-60 rounded-full"></span>
+              </p>
             </div>
-            
-            {/* Toggle button - make it more visible */}
-            <button 
-              onClick={handleToggle} 
-              className='bg-[#ffffff40] w-[40px] h-[6px] border-2 border-[#ffffff40] rounded-full hover:bg-[#ffffff60] transition-colors mb-2'
-            />
           </div>
         </div>
       </div>
 
       {/* Chat Container - Adjusts based on screen size */}
-      <div className='flex-1 flex flex-col h-full'>
+      <div className=''>
         {/* Message area - takes remaining height */}
         <div 
           ref={messageAreaRef}
-          className='border bg-[#ECF5F5] flex-1 z-20 overflow-y-auto rounded-t-3xl message-area'
-          style={{ height: 'calc(100vh - 200px)', marginTop: '0' }}
+          className='border h-[calc(100vh-290px)] sm:h-[calc(100vh-340px)] bg-[#ECF5F5] flex-1 z-20 overflow-y-auto rounded-t-3xl message-area'
+          style={{  marginTop: '0', border: 'none' }}
         >
           <div className='  px-3 py-1 bg-[#ECF5F5] pb-20' ref={boxRef}>
             <MessagePopup />
