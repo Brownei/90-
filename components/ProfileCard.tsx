@@ -11,10 +11,10 @@ interface ProfileCardProps {
 
 const ProfileCard: React.FC<ProfileCardProps> = ({ className = '' }) => {
   const { user, isAuthenticated, isLoading, logout } = useAuth();
-  const { data: twitterUserInfo, isLoading: isLoadingTwitterInfo } = trpc.twitter.getUserInfo.useQuery(
-    { userId: user?.id },
-    { enabled: isAuthenticated && !!user?.id }
-  );
+  // const { data: twitterUserInfo, isLoading: isLoadingTwitterInfo } = trpc.twitter.getUserInfo.useQuery(
+  //   { userId: user?.id },
+  //   { enabled: isAuthenticated && !!user?.id }
+  // );
 
   if (isLoading) {
     return (
@@ -56,7 +56,7 @@ const ProfileCard: React.FC<ProfileCardProps> = ({ className = '' }) => {
         
         <h2 className="text-xl font-bold mb-1">{user.name || 'User'}</h2>
         
-        {isLoadingTwitterInfo ? (
+        {/* {isLoadingTwitterInfo ? (
           <p className="text-gray-500 text-sm mb-4">Loading Twitter info...</p>
         ) : twitterUserInfo ? (
           <>
@@ -73,7 +73,7 @@ const ProfileCard: React.FC<ProfileCardProps> = ({ className = '' }) => {
         ) : (
           <p className="text-gray-500 text-sm mb-4">@{user.username || user.name}</p>
         )}
-        
+         */}
         <button
           onClick={logout}
           className="bg-red-600 text-white px-4 py-2 rounded-md text-sm hover:bg-red-700 transition"

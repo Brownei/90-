@@ -30,7 +30,7 @@ const RefereeAction = () => {
             />
           </div>
           <div className="flex-1">
-            <div className="text-red-600 font-bold py-1">76' RED CARD! - Sergio Ramos</div>
+            <div className="text-red-600 font-bold py-1">{"76'"} RED CARD! - Sergio Ramos</div>
             <div className="text-sm">Second yellow. PSG down to 10 men. Classic Ramos moment.</div>
             <div className="flex gap-2 mt-2">
               <div className="rounded-full bg-gray-200 px-3 py-1 flex items-center gap-1">
