@@ -12,7 +12,6 @@ type TabsProps = {
 const Tabs: React.FC<TabsProps> = ({ tabs, selected, onSelected }) => {
   const router = useRouter()
   const pathname = useSearchParams()
-  console.log(pathname.get("tabs"))
 
   function routerPush(tab: string, url: string) {
     if (tab === 'All') {

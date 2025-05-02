@@ -4,6 +4,10 @@ import Tabs from './ui/tabs'
 import { useTabsStore } from '@/stores/use-tabs-store'
 import SearchComponent from './ui/search-component'
 import Carousel from '../carousel/carousel'
+import { Game, games } from '@/data'
+import PlusIcon from '@/public/icons/PlusIcon'
+import LoadingIcon from '@/public/icons/LoadingIcon'
+import Link from 'next/link'
 
 const tabs = [
   "All",
@@ -14,11 +18,35 @@ const tabs = [
 
 const CommentHubPage = () => {
   const { selected, setSelected } = useTabsStore()
+  const [isLoading, setIsLoading] = React.useState(false)
+  const [query, setQuery] = React.useState("")
+  const [filteredGames, setFilteredGames] = React.useState<Game[]>(games)
+
+  React.useEffect(() => {
+    setIsLoading(true);
+
+    const timeoutId = setTimeout(() => {
+      if (query !== "") {
+        const gamesFiltered = games.filter((g) =>
+          g.awayTeam.toLowerCase().includes(query.toLowerCase()) ||
+          g.homeTeam.toLowerCase().includes(query.toLowerCase())
+        );
+        setFilteredGames(gamesFiltered);
+      } else {
+        setFilteredGames(games);
+      }
+
+      setIsLoading(false);
+    }, 1000);
+
+    return () => clearTimeout(timeoutId);
+  }, [query, games]);
+
 
   return (
-    <main className='mt-[60px] mb-[100px]'>
+    <main>
       <div className='container mx-auto px-3 py-1 h-screen'>
-        <SearchComponent />
+        <SearchComponent setQuery={setQuery} />
         <Suspense>
           <Tabs tabs={tabs} onSelected={setSelected} selected={selected} />
         </Suspense>
@@ -30,9 +58,21 @@ const CommentHubPage = () => {
             <p>Most trending 🔥</p>
           </div>
 
-          <Carousel tabs={tabs} />
+          {isLoading ? <LoadingIcon /> : <Carousel tabs={filteredGames} isLive />}
         </div>
 
+        <div className='mt-[20px]'>
+          <h1 className='font-dmSans font-light text-[1.4rem]'>Upcoming Hubs</h1>
+          {isLoading ? (
+            <div className=''>
+              <LoadingIcon />
+            </div>
+          ) : <Carousel tabs={filteredGames} isLive={false} />}
+        </div>
+
+        <Link href={'/comment-hub/create-new-hub'} className='fixed bottom-6 right-6 z-40'>
+          <PlusIcon />
+        </Link>
       </div>
     </main>
   )

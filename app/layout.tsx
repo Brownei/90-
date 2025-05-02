@@ -22,7 +22,6 @@ export default function RootLayout({
       <body>
         <TRPCProvider>
           <HydrateClient>
-            <Nav />
             {children}
           </HydrateClient>
         </TRPCProvider>

@@ -19,8 +19,8 @@ const Homepage = () => {
             className='w-full object-cover h-[100dvh]'
             src={'/celeb.gif'}
             alt='Cheering'
-            width={1000}
-            height={1000}
+            width={500}
+            height={500}
             quality={100}
             unoptimized={true}
           />
@@ -70,8 +70,8 @@ const Homepage = () => {
             className='w-[70px] h-[94px]'
             src={"/ball.gif"}
             alt="Ball gif"
-            width={1000}
-            height={1000}
+            width={500}
+            height={500}
             quality={100}
             unoptimized={true}
           />
