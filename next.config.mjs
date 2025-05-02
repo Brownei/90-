@@ -7,6 +7,8 @@ const nextConfig = {
       { hostname: 'pbs.twimg.com' },
       { hostname: 'abs.twimg.com' },
       { hostname: 'cdn.discordapp.com' },
+      { hostname: 'images.unsplash.com' },
+      { hostname: 'randomuser.me' },
     ],
   },
 };
