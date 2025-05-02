@@ -12,7 +12,6 @@ import Link from 'next/link'
 const tabs = [
   "All",
   "Premier League",
-  "La Liga",
   "UCL"
 ]
 
@@ -44,33 +43,55 @@ const CommentHubPage = () => {
 
 
   return (
-    <main>
-      <div className='container mx-auto px-3 py-1 h-screen'>
+    <main className="bg-white min-h-screen">
+      <div className="container mx-auto px-4 pb-16">
+        <div className="flex items-center justify-between py-3">
+          <h2 className="text-gray-500">Community Huddle</h2>
+          <h2 className="font-medium">Live Hubs</h2>
+        </div>
+        
         <SearchComponent setQuery={setQuery} />
-        <Suspense>
-          <Tabs tabs={tabs} onSelected={setSelected} selected={selected} />
-        </Suspense>
-
-        <div className='mt-[20px]'>
-          <h1 className='font-dmSans font-light text-[1.4rem]'>Live Hubs</h1>
-          <div className='flex justify-between items-center font-dmSans font-light text-[0.75rem] text-lightAsh'>
-            <p>Join any of these conversations</p>
-            <p>Most trending 🔥</p>
-          </div>
-
-          {isLoading ? <LoadingIcon /> : <Carousel tabs={filteredGames} isLive />}
+        
+        <div className="mt-3 flex justify-center">
+          <Suspense>
+            <Tabs tabs={tabs} onSelected={setSelected} selected={selected} />
+          </Suspense>
         </div>
 
-        <div className='mt-[20px]'>
-          <h1 className='font-dmSans font-light text-[1.4rem]'>Upcoming Hubs</h1>
-          {isLoading ? (
-            <div className=''>
-              <LoadingIcon />
+        <div className="mt-5">
+          <div className="flex justify-between items-center mb-1">
+            <h3 className="font-dmSans text-base">Live Hubs</h3>
+            <div className="flex items-center text-xs text-gray-500">
+              <span>Most trending</span>
+              <span className="text-orange-500 ml-1">🔥</span>
             </div>
-          ) : <Carousel tabs={filteredGames} isLive={false} />}
+          </div>
+          
+          <div className="bg-gray-50 rounded-xl p-3 shadow-sm">
+            {isLoading ? (
+              <div className="flex justify-center py-4">
+                <LoadingIcon />
+              </div>
+            ) : (
+              <Carousel tabs={filteredGames} isLive />
+            )}
+          </div>
         </div>
 
-        <Link href={'/comment-hub/create-new-hub'} className='fixed bottom-6 right-6 z-40'>
+        <div className="mt-5">
+          <h3 className="font-dmSans text-base mb-1">Upcoming Hubs</h3>
+          <div className="bg-gray-50 rounded-xl p-3 shadow-sm">
+            {isLoading ? (
+              <div className="flex justify-center py-4">
+                <LoadingIcon />
+              </div>
+            ) : (
+              <Carousel tabs={filteredGames} isLive={false} />
+            )}
+          </div>
+        </div>
+
+        <Link href="/comment-hub/create-new-hub" className="fixed bottom-6 right-6 z-40 bg-green-700 hover:bg-green-800 rounded-full shadow-lg p-3 transition-colors">
           <PlusIcon />
         </Link>
       </div>

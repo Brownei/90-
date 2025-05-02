@@ -25,6 +25,159 @@ const privateKeyProvider = new SolanaPrivateKeyProvider({
   config: { chainConfig: chainConfig },
 });
 
+export const useAuthLogin = () => {
+  const pathname = usePathname()
+  const router = useRouter();
+  const [scrolled, setScrolled] = React.useState(false);
+  const { isAuthenticated, isLoading, user, logout } = useAuth();
+  const { connected, connect } = useWallet();
+  const [provider, setProvider] = useState<IProvider | null>(null);
+  const [loggedIn, setLoggedIn] = useState(false);
+  const [web3auth, setWeb3auth] = useState<Web3Auth | null>(null);
+  const [isWeb3AuthInitialized, setIsWeb3AuthInitialized] = useState(false);
+  
+  useEffect(() => {
+    const initWeb3Auth = async () => {
+      try {
+        const web3authInstance = new Web3Auth({
+          clientId: process.env.NEXT_PUBLIC_WEB3AUTH_CLIENT_ID!,
+          web3AuthNetwork: WEB3AUTH_NETWORK.SAPPHIRE_DEVNET,
+          privateKeyProvider: privateKeyProvider,
+        });
+        
+        await web3authInstance.initModal();
+        setWeb3auth(web3authInstance);
+        setIsWeb3AuthInitialized(true);
+        setProvider(web3authInstance.provider);
+
+        if (web3authInstance.connected) {
+          setLoggedIn(true);
+        }
+      } catch (error) {
+        console.error("Failed to initialize Web3Auth:", error);
+      }
+    };
+
+    initWeb3Auth();
+    
+    // Cleanup function
+    return () => {
+      // Add any cleanup if needed
+    };
+  }, []);
+
+  const login = async () => {
+    try {
+      if (!web3auth) {
+        console.error("Web3Auth not initialized yet");
+        return;
+      }
+      
+      if (!isWeb3AuthInitialized) {
+        console.error("Web3Auth modal not initialized yet");
+        return;
+      }
+      
+      const web3authProvider = await web3auth.connect();
+      setProvider(web3authProvider);
+      
+      if (web3auth.connected) {
+        setLoggedIn(true);
+        
+        // Get user info and save to database
+        try {
+          const userInfo = await web3auth.getUserInfo();
+          
+          // Store user data in database
+          const response = await fetch('/api/users/store', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              email: userInfo.email || '',
+              name: userInfo.name || '',
+              profileImage: userInfo.profileImage || '',
+              verifier: userInfo.verifier || '',
+              verifierId: userInfo.verifierId || '',
+              publicKey: web3auth.provider ? 
+                (await web3auth.provider.request({ method: 'eth_accounts' }) as string[])[0] : null,
+              // Add any other user information you need
+            }),
+          });
+          
+          if (!response.ok) {
+            console.error("Failed to store user data:", await response.text());
+          }
+        } catch (error) {
+          console.error("Failed to get or store user info:", error);
+        }
+      }
+    } catch (error) {
+      console.error("Login error:", error);
+    }
+  };
+  const webAuthLogout = async () => {
+    try {
+      if (web3auth) {
+        await web3auth.logout();
+        setLoggedIn(false);
+        setProvider(null);
+      }
+    } catch (error) {
+      console.error("Logout error:", error);
+    }
+  };
+
+  const handleAuthAction = async () => {
+    if (isAuthenticated) {
+      // Logout from both NextAuth and Web3Auth
+      await webAuthLogout();
+      logout();
+    } else if (isWeb3AuthInitialized) {
+      try {
+        await login();
+        
+        // Check if we successfully logged in
+        if (loggedIn) {
+          // Use authStore to update authentication state if not already handled
+          if (!isAuthenticated && web3auth && web3auth.connected) {
+            const userInfo = await web3auth.getUserInfo();
+            useAuthStore.getState().setIsAuthenticated(true);
+            useAuthStore.getState().setUser({
+              id: userInfo.verifierId || undefined,
+              name: userInfo.name || undefined,
+              image: userInfo.profileImage || undefined,
+              username: userInfo.name || undefined,
+            });
+          }
+          
+          // Navigate to profile page after successful login
+          router.push('/profile');
+        }
+      } catch (error) {
+        console.error("Authentication error:", error);
+      }
+    } else {
+      console.error("Web3Auth is not initialized yet");
+    }
+  };
+
+  return {
+    isAuthenticated,
+    isLoading,
+    user,
+    logout,
+    connected,
+    connect,
+    provider,
+    loggedIn,
+    web3auth,
+    isWeb3AuthInitialized,
+    login
+  }
+}
+
 const Nav = () => {
   const pathname = usePathname()
   const router = useRouter();
@@ -117,24 +270,6 @@ const Nav = () => {
       console.error("Login error:", error);
     }
   };
-  React.useEffect(() => {
-    const handleScroll = () => {
-      if (window.scrollY > 10) {
-        setScrolled(true);
-      } else {
-        setScrolled(false);
-      }
-    };
-
-    // Add event listener
-    window.addEventListener('scroll', handleScroll);
-
-    // Clean up event listener on component unmount
-    return () => {
-      window.removeEventListener('scroll', handleScroll);
-    };
-  }, []);
-
   const webAuthLogout = async () => {
     try {
       if (web3auth) {
@@ -180,6 +315,25 @@ const Nav = () => {
       console.error("Web3Auth is not initialized yet");
     }
   };
+  React.useEffect(() => {
+    const handleScroll = () => {
+      if (window.scrollY > 10) {
+        setScrolled(true);
+      } else {
+        setScrolled(false);
+      }
+    };
+
+    // Add event listener
+    window.addEventListener('scroll', handleScroll);
+
+    // Clean up event listener on component unmount
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+    };
+  }, []);
+
+
 
   const navigateToProfile = () => {
     if (isAuthenticated) {
@@ -222,7 +376,7 @@ const Nav = () => {
           <button 
             onClick={handleAuthAction}
             disabled={!isWeb3AuthInitialized}
-            className='bg-ctaButton flex items-center gap-3 py-2 px-3 rounded-2xl font-dmSans font-semibold text-white text-[0.8rem]'
+            className='bg-darkGreen flex items-center gap-3 py-2 px-3 rounded-2xl font-dmSans font-semibold text-white text-[0.8rem]'
           >
             {!isWeb3AuthInitialized ? (
               <span className="flex gap-3 items-center">Loading...</span>

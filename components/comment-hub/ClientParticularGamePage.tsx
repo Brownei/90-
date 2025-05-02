@@ -128,13 +128,12 @@ const ClientParticularGamePage = () => {
     }
   }
 
-  console.log(game)
 
   return (
     <main className='bg-gradient-to-b from-gradientDarkGreen to-gradientLightGreen h-screen'>
-      <div className='absolute left-[50%] top-[50%] translate-x-[-50%] translate-y-[-50%] z-10'>
+      {/* <div className='absolute left-[50%] top-[50%] translate-x-[-50%] translate-y-[-50%] z-10'>
         <StatsIcon />
-      </div>
+      </div> */}
 
       <div className='sticky md:fixed top-0 left-0 right-0 rounded-b-md text-white bg-gradientDarkGreen z-30'>
         <div className='container mx-auto px-6 pt-6 pb-2 '>

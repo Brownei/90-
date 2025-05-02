@@ -10,10 +10,10 @@
 }
 
 @theme inline {
-  --font-dmSans: "DM Sans", "sans-serif";
-  --font-cormorantGaramond:"Cormorant Garamond", "serif";
-  --font-specialGothic: "Special Gothic Expanded One", "sans-serif";
-  --font-sofiaSans: "Sofia Sans Semi Condensed", "sans-serif";
+  --font-dmSans: "sans-serif", "sans-serif";
+  --font-cormorantGaramond:"sans-serif";
+  --font-specialGothic: "sans-serif";
+  --font-sofiaSans: "sans-serif";
   --color-ctaButton: #0072CA;
   --color-darkGreen: #0A6B41;
   --color-gradientDarkGreen: #006644;

@@ -7,7 +7,7 @@ import ArrowRightIcon from '@/public/icons/ArrowRightIcon';
 import ChainIcon from '@/public/icons/ChainIcon';
 import FooterLogo from '@/public/icons/FooterLogo';
 import Link from 'next/link';
-
+import { ArrowRight } from 'lucide-react';
 const Homepage = () => {
   //const greeting = trpc.hello.useQuery({ text: "Brownson" });
 
@@ -36,32 +36,32 @@ const Homepage = () => {
 
 
         <div className='container mx-auto px-2 grid grid-cols-1 grid-flow-row lg:grid-cols-2 gap-4 mt-[25px] lg:mt-[50px]'>
-          <div className='bg-darkGreen text-white p-4 grid gap-5'>
-            <div className='flex justify-between items-center'>
-              <MessageIcon />
-              <Link href={'/comment-hub'} className='border p-2 rounded-full'>
-                <ArrowRightIcon />
-              </Link>
-            </div>
-            <div className='grid gap-2'>
-              <h4 className='font-sofiaSans font-bold text-[1.5rem]'>Comment Hubs</h4>
-              <p className='font-dmSans italic text-[1rem] lg:text-[0.8rem]'>Step into the Comment Hub, where fans from all over the world connect to debate, celebrate, and Interact in real-time.</p>
-            </div>
-          </div>
+       
 
-          <div className='bg-darkGreen text-white p-4 grid gap-5'>
+          <div className='bg-darkGreen rounded-md text-white p-4 grid gap-5'>
             <div className='flex justify-between items-center'>
               <ChainIcon />
               <Link href={'/comment-hub'} className='border p-2 rounded-full'>
-                <ArrowRightIcon />
+                <ArrowRight />
               </Link>
             </div>
             <div className='grid gap-2'>
-              <h4 className='font-sofiaSans font-bold text-[1.5rem]'>Jump In, No Hassle</h4>
-              <p className='font-dmSans italic text-[1rem] lg:text-[0.8rem]'>Connect your X account, share your profile with your followers and banter!</p>
+              <h4 className='font-sofiaSans font-bold text-base'>Jump In, No Hassle</h4>
+              <p className='font-dmSans italic text-sm lg:text-[0.8rem]'>Connect your X account, share your profile with your followers and banter!</p>
             </div>
           </div>
-
+          <div className='bg-darkGreen rounded-md text-white p-4 grid gap-5'>
+            <div className='flex justify-between items-center'>
+              <MessageIcon />
+              <Link href={'/comment-hub'} className='border p-2 rounded-full'>
+                <ArrowRight />
+              </Link>
+            </div>
+            <div className='grid gap-2'>
+              <h4 className='font-sofiaSans font-bold text-base'>Comment Hubs</h4>
+              <p className='font-dmSans italic text-[1rem] lg:text-[0.8rem]'>Step into the Comment Hub, where fans from all over the world connect to debate, celebrate, and Interact in real-time.</p>
+            </div>
+          </div>
         </div>
 
 

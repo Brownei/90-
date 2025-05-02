@@ -1,82 +1,121 @@
-"use client"
-import React from 'react'
-import useEmblaCarousel from 'embla-carousel-react'
-import { DotButton, useDotButton } from './carousel-buttons'
-import { Game } from '@/data'
-import Image from 'next/image'
-import CurvedArrow from '@/public/icons/CurvedArrow'
-import { formatString } from '@/utils/utils'
-import { useRouter } from 'next/navigation'
-
-const Carousel = ({ tabs, isLive = false }: { tabs: Game[], isLive: boolean }) => {
-  const router = useRouter()
-  const [emblaRef, emblaApi] = useEmblaCarousel({ loop: false })
-  const { selectedIndex, scrollSnaps, onDotButtonClick } = useDotButton(emblaApi)
+"use client";
+import React from "react";
+import useEmblaCarousel from "embla-carousel-react";
+import { DotButton, useDotButton } from "./carousel-buttons";
+import { Game } from "@/data";
+import Image from "next/image";
+import CurvedArrow from "@/public/icons/CurvedArrow";
+import { formatString } from "@/utils/utils";
+import { useRouter } from "next/navigation";
+import { useAuthLogin } from "../Nav";
+import { toast } from "react-hot-toast";
+const Carousel = ({
+  tabs,
+  isLive = false,
+}: {
+  tabs: Game[];
+  isLive: boolean;
+}) => {
+  const router = useRouter();
+  const [emblaRef, emblaApi] = useEmblaCarousel({ loop: false });
+  const { selectedIndex, scrollSnaps, onDotButtonClick } =
+    useDotButton(emblaApi);
 
   React.useEffect(() => {
     if (emblaApi) {
       //console.log(emblaApi.slideNodes()) // Access API
     }
-  }, [emblaApi])
+  }, [emblaApi]);
+
+  const { connected, isAuthenticated, login, loggedIn } = useAuthLogin();
 
   return (
     <div className="overflow-hidden mt-[20px]" ref={emblaRef}>
       <div className="flex lg:gap-1 lg[touch-action:pan-y_pinch-zoom] lg:ml-[calc(1rem_*_ -1)]">
         {tabs.map((game, i) => {
-          const urlRoute = formatString(`${game.homeTeam} vs ${game.awayTeam}`)
+          const urlRoute = formatString(`${game.homeTeam} vs ${game.awayTeam}`);
 
           return (
-            <div className='min-w-0 lg:lg:transform-gpu lg:pl-[1rem] lg:flex-[0_0_50%] flex-[0_0_100%] gap-3 border border-[#BEBEBE]/50 bg-white rounded-[12px]' key={i}>
-              <div className='p-3 text-black'>
-                <div className='flex justify-between items-center font-dmSans'>
-                  <div className={`text-[0.65rem] text-[#FF0000] flex gap-1 items-center ${isLive ? 'visible' : 'invisible'}`}>
-                    <div className='bg-[#FF0000] size-1 rounded' />
+            <div
+              className="min-w-0 lg:lg:transform-gpu lg:pl-[1rem] lg:flex-[0_0_50%] flex-[0_0_100%] gap-3 border border-[#BEBEBE]/50 bg-white rounded-[12px]"
+              key={i}
+            >
+              <div className="p-3 text-black">
+                <div className="flex justify-between items-center font-dmSans">
+                  <div
+                    className={`text-[0.65rem] text-[#FF0000] flex gap-1 items-center ${
+                      isLive ? "visible" : "invisible"
+                    }`}
+                  >
+                    <div className="bg-[#FF0000] size-1 rounded" />
                     Live
                   </div>
-                  <p className='font-semibold text-[1rem]'>Premier League</p>
+                  <p className="font-semibold text-[1rem]">Premier League</p>
                   <CurvedArrow />
                 </div>
 
-                <div className='flex justify-between items-center p-4'>
-                  <div className='flex flex-col items-center'>
+                <div className="flex justify-between items-center p-4">
+                  <div className="flex flex-col items-center">
                     <Image
                       src={game.homeImage}
                       alt={game.homeTeam}
                       width={100}
                       height={100}
-                      className='w-[50px] lg:w-[150px]'
+                      className="w-[50px] lg:w-[150px]"
                     />
-                    <p className='text-center text-[0.9rem] lg:text-[1rem] font-dmSans'>{game.homeTeam}</p>
+                    <p className="text-center text-[0.9rem] lg:text-[1rem] font-dmSans">
+                      {game.homeTeam}
+                    </p>
                   </div>
 
                   {isLive ? (
-                    <div className='flex items-center gap-1 font-dmSans font-bold'>
-                      <p className='text-[#FF0000] text-[1.5rem] lg:text-[2rem]'>{game.homeScore}</p>
-                      <span className='text-[1.5rem] lg:text-[2rem]'>:</span>
-                      <p className='text-[#FF0000] text-[1.5rem] lg:text-[2rem]'>{game.awayScore}</p>
+                    <div className="flex items-center gap-1 font-dmSans font-bold">
+                      <p className="text-[#FF0000] text-[1.5rem] lg:text-[2rem]">
+                        {game.homeScore}
+                      </p>
+                      <span className="text-[1.5rem] lg:text-[2rem]">:</span>
+                      <p className="text-[#FF0000] text-[1.5rem] lg:text-[2rem]">
+                        {game.awayScore}
+                      </p>
                     </div>
                   ) : (
-                    <div className='font-dmSans text-[1rem] lg:text-[1.1rem]'>20:00</div>
+                    <div className="font-dmSans text-[1rem] lg:text-[1.1rem]">
+                      20:00
+                    </div>
                   )}
 
-                  <div className='flex flex-col items-center'>
+                  <div className="flex flex-col items-center">
                     <Image
                       src={game.awayImage}
                       alt={game.awayTeam}
                       width={100}
                       height={100}
-                      className='w-[50px] lg:w-[150px]'
+                      className="w-[50px] lg:w-[150px]"
                     />
-                    <p className='text-center text-[0.9rem] lg:text-[1rem] font-dmSans'>{game.awayTeam}</p>
+                    <p className="text-center text-[0.9rem] lg:text-[1rem] font-dmSans">
+                      {game.awayTeam}
+                    </p>
                   </div>
                 </div>
 
-                <div className='flex justify-center items-center'>
-                  <button onClick={() => router.push(`/comment-hub/${urlRoute}`)} className='w-fit bg-darkGreen py-1 cursor-pointer px-6 text-white font-dmSans font-extrabold rounded-xl'>{!isLive ? 'Launch Hub' : 'Join Hub'}</button>
+                <div className="flex justify-center items-center">
+                  <button
+                    onClick={() => {
+                      if (loggedIn) {
+                        toast.success("Joining the hub");
+                        return router.push(`/comment-hub/${urlRoute}`);
+                      }
+                      toast.error("Please login to join the hub");
+                      login();
+                    }}
+                    className="w-fit bg-darkGreen py-1 cursor-pointer px-6 text-white font-dmSans font-extrabold rounded-xl"
+                  >
+                    {!isLive ? "Launch Hub" : "Join Hub"}
+                  </button>
                 </div>
               </div>
             </div>
-          )
+          );
         })}
       </div>
 
@@ -85,12 +124,16 @@ const Carousel = ({ tabs, isLive = false }: { tabs: Game[], isLive: boolean }) =
           <DotButton
             key={index}
             onClick={() => onDotButtonClick(index)}
-            className={`appearance-none bg-transparent touch-manipulation inline-flex items-center justify-center cursor-pointer border-0 p-0 m-0 w-[10px] h-[10px] rounded-full ${index === selectedIndex ? 'shadow-[inset_0_0_0_0.2rem_#0A6B41]' : 'shadow-[inset_0_0_0_0.2rem_#7BAF9A]'}`}
+            className={`appearance-none bg-transparent touch-manipulation inline-flex items-center justify-center cursor-pointer border-0 p-0 m-0 w-[10px] h-[10px] rounded-full ${
+              index === selectedIndex
+                ? "shadow-[inset_0_0_0_0.2rem_#0A6B41]"
+                : "shadow-[inset_0_0_0_0.2rem_#7BAF9A]"
+            }`}
           />
         ))}
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default Carousel
+export default Carousel;
