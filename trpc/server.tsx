@@ -1,4 +1,4 @@
-import 'server-only'; // <-- ensure this file cannot be imported from the client
+// Note: Removed server-only import as it's being used from client components
 import { createHydrationHelpers } from '@trpc/react-query/rsc';
 import { cache } from 'react';
 import { createCallerFactory, createTRPCContext } from './init';
