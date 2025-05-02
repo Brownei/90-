@@ -57,32 +57,32 @@ const SolanaWalletConnector: React.FC<SolanaWalletConnectorProps> = ({ className
       const signature = bs58.encode(signedMessage);
       
       // Send the signed message to our API
-      const response = await fetch('/api/auth/solana-auth', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          publicKey: publicKey.toBase58(),
-          message,
-          signature,
-        }),
-      });
+      // const response = await fetch('/api/auth/solana-auth', {
+      //   method: 'POST',
+      //   headers: {
+      //     'Content-Type': 'application/json',
+      //   },
+      //   body: JSON.stringify({
+      //     publicKey: publicKey.toBase58(),
+      //     message,
+      //     signature,
+      //   }),
+      // });
       
-      const data = await response.json();
+      // const data = await response.json();
       
-      if (!response.ok) {
-        throw new Error(data.error || 'Authentication failed');
-      }
+      // if (!response.ok) {
+      //   throw new Error(data.error || 'Authentication failed');
+      // }
       
       // Authentication successful
       setIsAuthenticated(true);
       await fetchBalance();
       
-      // Redirect to wallet page or refresh
-      if (data.success) {
-        router.refresh();
-      }
+      // // Redirect to wallet page or refresh
+      // if (data.success) {
+      //   router.refresh();
+      // }
     } catch (err) {
       console.error('Authentication error:', err);
       setError(err instanceof Error ? err.message : 'Authentication failed');

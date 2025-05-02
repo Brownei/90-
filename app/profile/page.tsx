@@ -64,7 +64,7 @@ const ProfilePage = () => {
           <p className="text-sm text-gray-600 mb-4">
             Connect your Solana wallet to access additional features and participate in the ecosystem.
           </p>
-          <SolanaWalletConnector />
+          {/* <SolanaWalletConnector /> */}
         </div>
         
         <div className="bg-white rounded-lg shadow-md p-6">
