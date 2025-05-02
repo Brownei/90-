@@ -25,7 +25,7 @@ const RefereeAction = () => {
           </div>
           <div className="flex-1">
             <div className="text-gray-800 font-medium py-1">
-              <span className="mr-2">28'</span>
+              <span className="mr-2">{"28'"}</span>
               <span className="font-bold">GOAL!</span> - Pedri
             </div>
             <div className="text-sm">Bullet Shot from Outside the box to give Barcelona the Lead in the CDR Final. Assisted by Lamal</div>
@@ -79,7 +79,7 @@ const JosiahComment = ({ id = "josiah-1", onShowReplies, replies = [] }: {
           </p>
           <p className="flex gap-2 justify-between items-start">
             <span className="text-[1rem] tracking-[0.2px] w-full">
-              Real Madrid playing with 13 men again — 11 on the pitch, 2 in VAR. Nothing's changed
+              Real Madrid playing with 13 men again — 11 on the pitch, 2 in VAR. {"Nothing's"} changed
             </span>
             <span className="text-[#000]/50 text-[0.6rem]">1%</span>
           </p>
@@ -117,7 +117,7 @@ const StrikeComment = () => {
           </p>
           <p className="flex gap-2 justify-between items-start">
             <span className="text-[1rem] tracking-[0.2px] w-full font-bold">
-              WHAT A STRIKEEE! That's world-class 🔥🔥
+              WHAT A STRIKEEE! {"That's"} world-class 🔥🔥
             </span>
           </p>
         </div>
