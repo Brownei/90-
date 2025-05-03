@@ -1,7 +1,5 @@
 import type { Metadata } from "next";
-import { getServerSession } from "next-auth";
-import { OPTIONS } from '@/app/api/auth/[...nextauth]/route'
-import { redirect } from "next/navigation";
+import AuthProvider from "@/components/providers/auth-provider";
 
 export const metadata: Metadata = {
   title: "90+: Comment Hub",
@@ -14,15 +12,12 @@ export default async function CommentHubLayout({
   children: React.ReactNode;
 }>) {
 
-  const session = await getServerSession(OPTIONS);
-  if (!session) {
-    redirect("/")
-  }
-
   return (
     <html lang="en">
       <body>
-        {children}
+        <AuthProvider>
+          {children}
+        </AuthProvider>
       </body>
     </html>
   );
