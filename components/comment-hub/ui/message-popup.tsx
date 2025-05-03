@@ -61,8 +61,8 @@ interface CustomMessage {
 }
 
 // Add custom soccer comment component to match the image
-const JosiahComment = ({ id = "josiah-1", onShowReplies, replies = [] }: { 
-  id?: string, 
+const JosiahComment = ({ id = "josiah-1", onShowReplies, replies = [] }: {
+  id?: string,
   onShowReplies?: (id: string) => void,
   replies?: Reply[]
 }) => {
@@ -84,7 +84,7 @@ const JosiahComment = ({ id = "josiah-1", onShowReplies, replies = [] }: {
             <span className="text-[#000]/50 text-[0.6rem]">1%</span>
           </p>
           <div className="text-[1rem] tracking-[0.2px] w-full flex justify-between items-center">
-            <button 
+            <button
               className="text-[#000000] underline text-[0.7rem] hover:text-blue-600"
               onClick={() => onShowReplies && onShowReplies(id)}
             >
@@ -129,7 +129,7 @@ const StrikeComment = () => {
 // Component to display replies to a message
 const Replies = ({ replies, messageUsername }: { replies: Reply[], messageUsername: string }) => {
   if (!replies || replies.length === 0) return null;
-  
+
   return (
     <div className="ml-12 mt-3 border-l-2 border-gray-200 pl-4">
       {replies.map((reply) => (
@@ -161,7 +161,7 @@ const Replies = ({ replies, messageUsername }: { replies: Reply[], messageUserna
 const MessagePopup = () => {
   const { messages, addReaction, addActionNos, addReply } = useMessageStore()
   const { user, isAuthenticated } = useAuth()
-  
+
   const [selectedMessage, setSelectedMessage] = useState<any>(null)
   const [isWagerModalOpen, setIsWagerModalOpen] = useState(false)
   const [isFundModalOpen, setIsFundModalOpen] = useState(false)
@@ -172,7 +172,7 @@ const MessagePopup = () => {
   const [replyText, setReplyText] = useState('')
   const [replyingTo, setReplyingTo] = useState<string | null>(null)
   const [showAllReplies, setShowAllReplies] = useState<Record<string, boolean>>({})
-  
+
   // Custom message state for Josiah comments with proper typing
   const [customMessages, setCustomMessages] = useState<Record<string, CustomMessage>>({
     "josiah-1": {
@@ -209,7 +209,7 @@ const MessagePopup = () => {
       replies: []
     }
   });
-  
+
   // Add some initial replies for demonstration purposes only on first render
   useEffect(() => {
     // Add a sample reply to josiah-1 if none exists yet
@@ -238,7 +238,7 @@ const MessagePopup = () => {
       ...prev,
       [id]: !prev[id]
     }));
-    
+
     // If there's no replying state for this message yet, also set it to replying
     if (replyingTo !== id) {
       setReplyingTo(id);
@@ -253,7 +253,7 @@ const MessagePopup = () => {
   const handleWagerProceed = (condition: string, stake: number) => {
     setWagerCondition(condition)
     setStakeAmount(stake)
-    
+
     // For demo purposes, we're showing insufficient balance if stake > 5
     if (stake > 5) {
       setInsufficientBalance(true)
@@ -276,11 +276,11 @@ const MessagePopup = () => {
       //   new PublicKey('your-bettor-token-account'),
       //   new PublicKey('your-escrow-token-account')
       // );
-      
+
       // For demo, we just show confirmation
       setIsFundModalOpen(false)
       setIsConfirmationModalOpen(true)
-      
+
       // Close confirmation after 3 seconds
       setTimeout(() => {
         setIsConfirmationModalOpen(false)
@@ -289,31 +289,31 @@ const MessagePopup = () => {
       console.error('Error placing bet:', error)
     }
   }
-  
+
   const handleShowReplies = (messageId: string) => {
     setShowAllReplies(prev => ({
       ...prev,
       [messageId]: !prev[messageId]
     }));
   }
-  
+
   const handleReplyClick = (messageId: string) => {
     setReplyingTo(messageId);
   }
-  
+
   const handleSubmitReply = (messageId: string) => {
     if (!replyText.trim()) return;
-    
+
     // Check if it's a standard message or custom Josiah message
     if (messageId.startsWith("josiah-")) {
       const reply: Reply = {
         id: `reply-${Date.now()}`,
         avatarUrl: user?.image || "https://via.placeholder.com/50?text=U",
         username: user?.username || "You",
-        time: new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}),
+        time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
         content: replyText
       };
-      
+
       // Update the custom messages state
       setCustomMessages(prev => ({
         ...prev,
@@ -322,7 +322,7 @@ const MessagePopup = () => {
           replies: [...prev[messageId].replies, reply]
         }
       }));
-      
+
       // Show success notification
       toast.success("Reply added successfully!");
     } else {
@@ -331,17 +331,17 @@ const MessagePopup = () => {
         id: `reply-${Date.now()}`,
         avatarUrl: user?.image || "https://via.placeholder.com/50?text=U",
         username: user?.username || "You",
-        time: new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}),
+        time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
         content: replyText
       };
-      
+
       addReply(messageId, reply);
       toast.success("Reply added successfully!");
     }
-    
+
     // Clear the reply text but keep the reply input open
     setReplyText('');
-    
+
     // Make sure the replies section is expanded
     setShowAllReplies(prev => ({
       ...prev,
@@ -355,14 +355,14 @@ const MessagePopup = () => {
   ];
 
   return (
-    <section className='overflow-y-auto max-h-[calc(100vh_-_220px)] pt-2'>
+    <section className='overflow-auto h-full pt-2'>
       {/* Add the custom comments to match the image */}
-      <JosiahComment 
-        id="josiah-1" 
-        onShowReplies={handleJosiahReplyToggle} 
+      <JosiahComment
+        id="josiah-1"
+        onShowReplies={handleJosiahReplyToggle}
         replies={customMessages["josiah-1"].replies}
       />
-      
+
       {/* Show replies for Josiah comment if expanded */}
       {showAllReplies["josiah-1"] && (
         <div className="ml-12 mt-3 border-l-2 border-gray-200 pl-4">
@@ -388,11 +388,11 @@ const MessagePopup = () => {
               </div>
             </div>
           ))}
-          
+
           {/* Add Reply button at the bottom of replies */}
           {replyingTo !== "josiah-1" && (
             <div className="mt-2 mb-3">
-              <button 
+              <button
                 onClick={() => setReplyingTo("josiah-1")}
                 className="text-blue-600 text-sm hover:text-blue-800"
               >
@@ -400,7 +400,7 @@ const MessagePopup = () => {
               </button>
             </div>
           )}
-          
+
           {/* Reply input for Josiah comment */}
           {replyingTo === "josiah-1" && (
             <div className="flex gap-2 items-center">
@@ -413,13 +413,13 @@ const MessagePopup = () => {
                 autoFocus
               />
               <div className="flex gap-2">
-                <button 
-                  onClick={() => setReplyingTo(null)} 
+                <button
+                  onClick={() => setReplyingTo(null)}
                   className="text-gray-500 text-sm hover:text-gray-700"
                 >
                   Cancel
                 </button>
-                <button 
+                <button
                   onClick={() => handleSubmitReply("josiah-1")}
                   className="bg-blue-500 text-white px-3 py-1 rounded-lg text-sm hover:bg-blue-600"
                   disabled={!replyText.trim()}
@@ -431,13 +431,13 @@ const MessagePopup = () => {
           )}
         </div>
       )}
-      
-      <JosiahComment 
-        id="josiah-2" 
-        onShowReplies={handleJosiahReplyToggle} 
+
+      <JosiahComment
+        id="josiah-2"
+        onShowReplies={handleJosiahReplyToggle}
         replies={customMessages["josiah-2"].replies}
       />
-      
+
       {/* Show replies for second Josiah comment if expanded */}
       {showAllReplies["josiah-2"] && (
         <div className="ml-12 mt-3 border-l-2 border-gray-200 pl-4">
@@ -463,11 +463,11 @@ const MessagePopup = () => {
               </div>
             </div>
           ))}
-          
+
           {/* Add Reply button at the bottom of replies */}
           {replyingTo !== "josiah-2" && (
             <div className="mt-2 mb-3">
-              <button 
+              <button
                 onClick={() => setReplyingTo("josiah-2")}
                 className="text-blue-600 text-sm hover:text-blue-800"
               >
@@ -475,7 +475,7 @@ const MessagePopup = () => {
               </button>
             </div>
           )}
-          
+
           {/* Reply input for second Josiah comment */}
           {replyingTo === "josiah-2" && (
             <div className="flex gap-2 items-center">
@@ -488,13 +488,13 @@ const MessagePopup = () => {
                 autoFocus
               />
               <div className="flex gap-2">
-                <button 
-                  onClick={() => setReplyingTo(null)} 
+                <button
+                  onClick={() => setReplyingTo(null)}
                   className="text-gray-500 text-sm hover:text-gray-700"
                 >
                   Cancel
                 </button>
-                <button 
+                <button
                   onClick={() => handleSubmitReply("josiah-2")}
                   className="bg-blue-500 text-white px-3 py-1 rounded-lg text-sm hover:bg-blue-600"
                   disabled={!replyText.trim()}
@@ -506,10 +506,10 @@ const MessagePopup = () => {
           )}
         </div>
       )}
-      
+
       <RefereeAction />
       <StrikeComment />
-      
+
       {/* Original messages */}
       {enhancedMessages.map((message, i) => (
         <div key={message.id} className={`${i !== enhancedMessages.length - 1 && 'border-b border-[#B7B7B7] '} py-4`}>
@@ -530,7 +530,7 @@ const MessagePopup = () => {
               <p className='flex gap-2 justify-between items-start'>
                 <span className='lg:w-[700px] text-[1rem] tracking-[0.2px] w-full'>{message.content}</span>
                 {!message.isRef && (
-                  <button 
+                  <button
                     className='flex items-center gap-[2px]'
                     onClick={() => handleWagerClick(message)}
                   >
@@ -542,14 +542,14 @@ const MessagePopup = () => {
 
               <div className='lg:w-[700px] text-[1rem] tracking-[0.2px] w-[calc(100%_-_10%)] flex justify-between items-center'>
                 {message.replies && message.replies.length > 0 && !message.isRef ? (
-                  <button 
+                  <button
                     onClick={() => handleShowReplies(message.id)}
                     className='text-[#000000] underline text-[0.7rem] lg:text-[0.75rem] hover:text-blue-600'
                   >
                     {showAllReplies[message.id] ? 'Hide replies' : `View ${message.replies.length} ${message.replies.length === 1 ? 'reply' : 'replies'}`}
                   </button>
                 ) : (
-                  <button 
+                  <button
                     onClick={() => handleReplyClick(message.id)}
                     className='text-[#000000]/60 text-[0.7rem] lg:text-[0.75rem] hover:text-black'
                   >
@@ -559,7 +559,7 @@ const MessagePopup = () => {
 
                 <div className='flex gap-2 items-center'>
                   {!message.isRef && (
-                    <button 
+                    <button
                       className='bg-yellow-100 text-yellow-800 px-2 py-1 rounded-full text-xs font-medium hover:bg-yellow-200'
                       onClick={() => handleWagerClick(message)}
                     >
@@ -600,16 +600,16 @@ const MessagePopup = () => {
                   </div>
                 )}
               </div>
-              
+
               {/* Show all replies when expanded */}
               {showAllReplies[message.id] && message.replies && (
                 <div className="ml-12 mt-3 border-l-2 border-gray-200 pl-4">
                   <Replies replies={message.replies} messageUsername={message.username} />
-                  
+
                   {/* Add Reply button at the bottom of replies */}
                   {replyingTo !== message.id && (
                     <div className="mt-2 mb-3">
-                      <button 
+                      <button
                         onClick={() => setReplyingTo(message.id)}
                         className="text-blue-600 text-sm hover:text-blue-800"
                       >
@@ -619,7 +619,7 @@ const MessagePopup = () => {
                   )}
                 </div>
               )}
-              
+
               {/* Reply input when replying to this message */}
               {replyingTo === message.id && (
                 <div className="mt-2 ml-6 flex gap-2 items-center">
@@ -632,13 +632,13 @@ const MessagePopup = () => {
                     autoFocus
                   />
                   <div className="flex gap-2">
-                    <button 
-                      onClick={() => setReplyingTo(null)} 
+                    <button
+                      onClick={() => setReplyingTo(null)}
                       className="text-gray-500 text-sm hover:text-gray-700"
                     >
                       Cancel
                     </button>
-                    <button 
+                    <button
                       onClick={() => handleSubmitReply(message.id)}
                       className="bg-blue-500 text-white px-3 py-1 rounded-lg text-sm hover:bg-blue-600"
                       disabled={!replyText.trim()}
@@ -654,27 +654,27 @@ const MessagePopup = () => {
       ))}
 
       {/* Wager Modals */}
-      <WagerModal 
-        isOpen={isWagerModalOpen} 
+      <WagerModal
+        isOpen={isWagerModalOpen}
         onClose={() => {
           setIsWagerModalOpen(false)
           setInsufficientBalance(false)
-        }} 
+        }}
         onProceed={handleWagerProceed}
         username={selectedMessage?.username || "User"}
         insufficientBalance={insufficientBalance}
       />
 
-      <FundWagerModal 
-        isOpen={isFundModalOpen} 
-        onClose={() => setIsFundModalOpen(false)} 
+      <FundWagerModal
+        isOpen={isFundModalOpen}
+        onClose={() => setIsFundModalOpen(false)}
         onConfirm={handleFundConfirm}
         amount={stakeAmount}
       />
 
-      <TransactionConfirmedModal 
-        isOpen={isConfirmationModalOpen} 
-        onClose={() => setIsConfirmationModalOpen(false)} 
+      <TransactionConfirmedModal
+        isOpen={isConfirmationModalOpen}
+        onClose={() => setIsConfirmationModalOpen(false)}
       />
     </section>
   )

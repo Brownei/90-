@@ -43,9 +43,8 @@ const Carousel = ({
               <div className="p-3 text-black">
                 <div className="flex justify-between items-center font-dmSans">
                   <div
-                    className={`text-[0.65rem] text-[#FF0000] flex gap-1 items-center ${
-                      isLive ? "visible" : "invisible"
-                    }`}
+                    className={`text-[0.65rem] text-[#FF0000] flex gap-1 items-center ${isLive ? "visible" : "invisible"
+                      }`}
                   >
                     <div className="bg-[#FF0000] size-1 rounded" />
                     Live
@@ -101,10 +100,11 @@ const Carousel = ({
                 <div className="flex justify-center items-center">
                   <button
                     onClick={() => {
-                      if (loggedIn) {
+                      if (isAuthenticated) {
                         toast.success("Joining the hub");
-                        return router.push(`/comment-hub/${urlRoute}`);
+                        router.push(`/comment-hub/${urlRoute}`);
                       }
+
                       toast.error("Please login to join the hub");
                       login();
                     }}
@@ -124,11 +124,10 @@ const Carousel = ({
           <DotButton
             key={index}
             onClick={() => onDotButtonClick(index)}
-            className={`appearance-none bg-transparent touch-manipulation inline-flex items-center justify-center cursor-pointer border-0 p-0 m-0 w-[10px] h-[10px] rounded-full ${
-              index === selectedIndex
-                ? "shadow-[inset_0_0_0_0.2rem_#0A6B41]"
-                : "shadow-[inset_0_0_0_0.2rem_#7BAF9A]"
-            }`}
+            className={`appearance-none bg-transparent touch-manipulation inline-flex items-center justify-center cursor-pointer border-0 p-0 m-0 w-[10px] h-[10px] rounded-full ${index === selectedIndex
+              ? "shadow-[inset_0_0_0_0.2rem_#0A6B41]"
+              : "shadow-[inset_0_0_0_0.2rem_#7BAF9A]"
+              }`}
           />
         ))}
       </div>

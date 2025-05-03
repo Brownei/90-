@@ -1,8 +1,8 @@
-import NextAuth from "next-auth";
+import NextAuth, { AuthOptions } from "next-auth";
 import TwitterProvider from "next-auth/providers/twitter";
 
 // Configure one or more authentication providers
-const handler = NextAuth({
+export const OPTIONS: AuthOptions = {
   providers: [
     TwitterProvider({
       clientId: process.env.TWITTER_CLIENT_ID as string,
@@ -31,6 +31,7 @@ const handler = NextAuth({
     signOut: "/", // Use the home page as the sign-out page
     error: "/", // Error code passed in query string as ?error=
   },
-});
+}
+const handler = NextAuth(OPTIONS);
 
 export { handler as GET, handler as POST }; 

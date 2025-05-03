@@ -98,11 +98,11 @@ const ClientParticularGamePage = () => {
         addMessage(msg);
       });
     }
-    
+
     // Set initial message count to track new messages
     setMessageCount(messages.length);
   }, [addMessage]);
-  
+
   // Track message changes and scroll to bottom when new messages are added
   useEffect(() => {
     if (messages.length > messageCount) {
@@ -110,7 +110,7 @@ const ClientParticularGamePage = () => {
       setMessageCount(messages.length);
     }
   }, [messages.length, messageCount]);
-  
+
   const scrollToBottom = () => {
     if (messageAreaRef.current) {
       setTimeout(() => {
@@ -190,7 +190,7 @@ const ClientParticularGamePage = () => {
   const handleWagerProceed = (condition: string, stake: number) => {
     setWagerCondition(condition);
     setStakeAmount(stake);
-    
+
     // For demo purposes, we're showing insufficient balance if stake > 5
     if (stake > 5) {
       setInsufficientBalance(true);
@@ -214,11 +214,11 @@ const ClientParticularGamePage = () => {
       //   bettorTokenAccount,
       //   escrowTokenAccount
       // );
-      
+
       // For demo, we just show confirmation
       setIsFundModalOpen(false);
       setIsConfirmationModalOpen(true);
-      
+
       // Close confirmation after 3 seconds
       setTimeout(() => {
         setIsConfirmationModalOpen(false);
@@ -230,35 +230,15 @@ const ClientParticularGamePage = () => {
 
 
   return (
-    <main className='bg-gradient-to-b overflow-scroll from-gradientDarkGreen to-gradientLightGreen min-h-screen flex flex-col'>
+    <main className=' overflow-hidden min-h-screen flex flex-col'>
       {/* Mobile status bar */}
-      <div className='flex justify-between items-center px-4 py-2 bg-green-600 text-white'>
-        <div className='text-sm font-medium'>9:41</div>
-        <div className='flex items-center space-x-2'>
-          <div className='flex space-x-1'>
-            <div className='w-1 h-2 bg-white rounded-sm'></div>
-            <div className='w-1 h-3 bg-white rounded-sm'></div>
-            <div className='w-1 h-4 bg-white rounded-sm'></div>
-            <div className='w-1 h-5 bg-white rounded-sm'></div>
-          </div>
-          <div className='flex space-x-0.5'>
-            <div className='w-0.5 h-2 bg-white rounded-full'></div>
-            <div className='w-0.5 h-3 bg-white rounded-full'></div>
-            <div className='w-0.5 h-4 bg-white rounded-full'></div>
-          </div>
-          <div className='w-4 h-3 border border-white rounded-sm relative'>
-            <div className='absolute inset-0.5 bg-white'></div>
-            <div className='absolute -right-1 top-1/2 transform -translate-y-1/2 w-0.5 h-1.5 bg-white rounded-full'></div>
-          </div>
-        </div>
-      </div>
-      
+
       {/* Header section - fixed on desktop, normal flow on mobile */}
-      <div className='overflow-visible text-white bg-green-600 z-30 shadow-md pb-3'>
+      <div className='overflow-visible text-white z-30 shadow-md pb-3 bg-gradient-to-b from-gradientDarkGreen to-gradientLightGreen'>
         <div className='container mx-auto px-4 md:px-6 pt-2 pb-2'>
           {/* Navigation bar */}
           <div className='flex justify-between items-center mb-2'>
-            <button 
+            <button
               onClick={() => router.back()}
               className='p-2 rounded-full hover:bg-[#3E3D3D30] transition-colors'
             >
@@ -266,7 +246,7 @@ const ClientParticularGamePage = () => {
             </button>
             <CurvedArrow />
           </div>
-          
+
           {/* Teams and score section */}
           <div className='flex flex-col justify-center items-center'>
             <div className='flex w-full md:w-[90%] max-w-2xl pt-1 justify-between items-center'>
@@ -307,9 +287,9 @@ const ClientParticularGamePage = () => {
 
             {/* Match overview section - using a green underline to make it stand out */}
             <div className="mt-3 mb-1">
-              <p className='font-sofiaSans font-medium text-[0.7rem] md:text-[0.8rem] inline-block relative'>
+              <p className='font-sofiaSans font-medium text-[0.7rem] md:text-[0.8rem] inline-block relative p-2'>
                 Match overview
-                <span className="absolute bottom-0 left-0 w-full h-1 bg-[#00FF00] opacity-60 rounded-full"></span>
+                <span className="absolute bottom-0 left-0 w-full h-1 bg-[#3E3D3D] rounded-full"></span>
               </p>
             </div>
           </div>
@@ -319,15 +299,15 @@ const ClientParticularGamePage = () => {
       {/* Chat Container - Adjusts based on screen size */}
       <div className=''>
         {/* Message area - takes remaining height */}
-        <div 
+        <div
           ref={messageAreaRef}
           className='border h-[calc(100vh-290px)] sm:h-[calc(100vh-340px)] bg-[#ECF5F5] flex-1 z-20 overflow-y-auto rounded-t-3xl message-area'
-          style={{  marginTop: '0', border: 'none' }}
+          style={{ marginTop: '0', border: 'none' }}
         >
           <div className='  px-3 py-1 bg-[#ECF5F5] pb-20' ref={boxRef}>
             <MessagePopup />
           </div>
-          
+
           {/* Scroll to Bottom button - shows only when not at bottom */}
           <button
             onClick={handleScrollToBottom}
@@ -339,36 +319,36 @@ const ClientParticularGamePage = () => {
             </svg>
           </button>
         </div>
-        
+
         {/* Message input - always at bottom */}
-        <MessageInput 
-          ref={inputRef} 
+        <MessageInput
+          ref={inputRef}
           onWagerClick={handleWagerClick}
         />
       </div>
 
       {/* Wager Modals */}
-      <WagerModal 
-        isOpen={isWagerModalOpen} 
+      <WagerModal
+        isOpen={isWagerModalOpen}
         onClose={() => {
           setIsWagerModalOpen(false);
           setInsufficientBalance(false);
-        }} 
+        }}
         onProceed={handleWagerProceed}
         username={selectedMessage?.username || "Pkay"}
         insufficientBalance={insufficientBalance}
       />
 
-      <FundWagerModal 
-        isOpen={isFundModalOpen} 
-        onClose={() => setIsFundModalOpen(false)} 
+      <FundWagerModal
+        isOpen={isFundModalOpen}
+        onClose={() => setIsFundModalOpen(false)}
         onConfirm={handleFundConfirm}
         amount={stakeAmount}
       />
 
-      <TransactionConfirmedModal 
-        isOpen={isConfirmationModalOpen} 
-        onClose={() => setIsConfirmationModalOpen(false)} 
+      <TransactionConfirmedModal
+        isOpen={isConfirmationModalOpen}
+        onClose={() => setIsConfirmationModalOpen(false)}
       />
     </main>
   )

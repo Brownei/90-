@@ -1,5 +1,6 @@
 "use client"
 import Logo from '@/public/icons/Logo'
+import logo from '@/assets/logo.png'
 import TwitterIcon from '@/public/icons/TwitterIcon'
 import React, { useEffect, useState } from 'react'
 import { usePathname, useRouter } from 'next/navigation';
@@ -12,8 +13,10 @@ import { SolanaPrivateKeyProvider } from "@web3auth/solana-provider";
 import { useAuthStore } from '@/stores/authStore';
 import { useAtom } from 'jotai';
 import { scrolledAtom, providerAtom, loggedInAtom, web3authAtom, isWeb3AuthInitializedAtom } from '@/stores/navStore';
+import { signIn, useSession } from 'next-auth/react';
+import Link from 'next/link';
 
-const chainConfig= {
+const chainConfig = {
   chainNamespace: CHAIN_NAMESPACES.SOLANA,
   chainId: "0x2", // Please use 0x1 for Mainnet, 0x2 for Testnet, 0x3 for Devnet
   rpcTarget: "https://api.testnet.solana.com",
@@ -29,6 +32,7 @@ const privateKeyProvider = new SolanaPrivateKeyProvider({
 
 export const useAuthLogin = () => {
   const pathname = usePathname()
+  const session = useSession()
   const router = useRouter();
   const [scrolled, setScrolled] = useAtom(scrolledAtom);
   const { isAuthenticated, isLoading, user, logout } = useAuth();
@@ -37,22 +41,24 @@ export const useAuthLogin = () => {
   const [loggedIn, setLoggedIn] = useAtom(loggedInAtom);
   const [web3auth, setWeb3auth] = useAtom(web3authAtom);
   const [isWeb3AuthInitialized, setIsWeb3AuthInitialized] = useAtom(isWeb3AuthInitializedAtom);
-  
+
+  console.log({ session })
+
   useEffect(() => {
     const initWeb3Auth = async () => {
       try {
         const web3authInstance = new Web3Auth({
-          clientId: process.env.NEXT_PUBLIC_WEB3AUTH_CLIENT_ID!,
+          clientId: process.env.NEXT_PUBLIC_WEB3AUTH_CLIENT_ID as string,
           web3AuthNetwork: WEB3AUTH_NETWORK.SAPPHIRE_DEVNET,
           privateKeyProvider: privateKeyProvider,
         });
-        
+
         await web3authInstance.initModal();
         setWeb3auth(web3authInstance);
         setIsWeb3AuthInitialized(true);
         setProvider(web3authInstance.provider);
 
-        if (web3authInstance.connected) {
+        if (web3authInstance.connected || session.status === "authenticated") {
           setLoggedIn(true);
         }
       } catch (error) {
@@ -61,7 +67,7 @@ export const useAuthLogin = () => {
     };
 
     initWeb3Auth();
-    
+
     // Cleanup function
     return () => {
       // Add any cleanup if needed
@@ -96,51 +102,8 @@ export const useAuthLogin = () => {
   };
   const login = async () => {
     try {
-      if (!web3auth) {
-        console.error("Web3Auth not initialized yet");
-        return;
-      }
-      
-      if (!isWeb3AuthInitialized) {
-        console.error("Web3Auth modal not initialized yet");
-        return;
-      }
-      
-      const web3authProvider = await web3auth.connect();
-      setProvider(web3authProvider);
-      
-      if (web3auth.connected) {
-        setLoggedIn(true);
-        
-        // Get user info and save to database
-        try {
-          const userInfo = await web3auth.getUserInfo();
-          
-          // Store user data in database
-          const response = await fetch('/api/users/store', {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-              email: userInfo.email || '',
-              name: userInfo.name || '',
-              profileImage: userInfo.profileImage || '',
-              verifier: userInfo.verifier || '',
-              verifierId: userInfo.verifierId || '',
-              publicKey: web3auth.provider ? 
-                (await web3auth.provider.request({ method: 'eth_accounts' }) as string[])[0] : null,
-              // Add any other user information you need
-            }),
-          });
-          
-          if (!response.ok) {
-            console.error("Failed to store user data:", await response.text());
-          }
-        } catch (error) {
-          console.error("Failed to get or store user info:", error);
-        }
-      }
+      await signIn("twitter")
+      setLoggedIn(true)
     } catch (error) {
       console.error("Login error:", error);
     }
@@ -170,7 +133,7 @@ export const useAuthLogin = () => {
     } else if (isWeb3AuthInitialized) {
       try {
         await login();
-        
+
         // Check if we successfully logged in
         if (loggedIn) {
           // Use authStore to update authentication state if not already handled
@@ -184,7 +147,7 @@ export const useAuthLogin = () => {
               username: userInfo.name || undefined,
             });
           }
-          
+
           // Navigate to profile page after successful login
           router.push('/profile');
         }
@@ -225,14 +188,14 @@ const Nav = () => {
     logout,
     connected,
     connect,
-    provider, 
+    provider,
     loggedIn,
     web3auth,
     isWeb3AuthInitialized,
     login
   } = useAuthLogin();
-  
-  console.log({isAuthenticated, isLoading, user, logout, connected, connect, provider, loggedIn, web3auth, isWeb3AuthInitialized})
+
+  console.log({ isAuthenticated, isLoading, user, logout, connected, connect, provider, loggedIn, web3auth, isWeb3AuthInitialized })
 
   const handleAuthAction = async () => {
     if (isAuthenticated) {
@@ -241,7 +204,7 @@ const Nav = () => {
     } else if (isWeb3AuthInitialized) {
       try {
         await login();
-        
+
         // Check if we successfully logged in
         if (loggedIn) {
           // Use authStore to update authentication state if not already handled
@@ -255,7 +218,7 @@ const Nav = () => {
               username: userInfo.name || undefined,
             });
           }
-          
+
           // Navigate to profile page after successful login
           router.push('/profile');
         }
@@ -272,56 +235,62 @@ const Nav = () => {
       router.push('/profile');
     }
   };
-  
+
   const navigateToWallet = () => {
     router.push('/wallet');
   };
 
   return (
-    <nav className={`${pathname !== '/' ? 'fixed top-0 left-0 z-50 right-0 px-3 lg:px-5 py-3 transition-colors duration-300 bg-[#ECF5F5] text-black' : 'absolute z-50 w-full px-3 lg:px-5 py-3 text-white'}`}>
+    <nav className={`${pathname !== '/' ? 'fixed top-0 left-0 z-50 right-0 px-3 lg:px-5 py-3 transition-colors duration-300 bg-[#ECF5F5] text-black ' : 'absolute z-50 w-full px-3 lg:px-5 py-3 text-white'}`}>
       <div className='flex justify-between items-center'>
-        <div className='flex gap-1 items-center'>
-          <Logo pathname={pathname} />
-          <span className={`${pathname !== '/' ? 'text-black/40' : 'text-white/40'}`}>|</span>
-          <p className='text-[0.8rem] font-dmSans'>90+</p>
-        </div>
+
+        <Link href={'/'}>
+          <Image
+            src={'/logo.png'}
+            width={500}
+            height={500}
+            alt='Logo'
+            quality={100}
+            className='size-[32px]'
+          />
+        </Link>
 
         <div className="flex items-center gap-3">
           {isAuthenticated && (
-            <button 
+            <button
               onClick={navigateToProfile}
-              className={`font-dmSans font-semibold text-[0.8rem] ${pathname !== '/' ? 'text-black' : 'text-white'}`}
+              className={`font-dmSans font-semibold text-[0.8rem] cursor-pointer ${pathname !== '/' ? 'text-black' : 'text-white'}`}
             >
               Profile
             </button>
           )}
-          
+
           {(isAuthenticated || connected) && (
-            <button 
+            <button
               onClick={navigateToWallet}
-              className={`font-dmSans font-semibold text-[0.8rem] ${pathname !== '/' ? 'text-black' : 'text-white'}`}
+              className={`font-dmSans font-semibold text-[0.8rem] cursor-pointer ${pathname !== '/' ? 'text-black' : 'text-white'}`}
             >
               Wallet
             </button>
           )}
-          
-          <button 
+
+          <button
             onClick={handleAuthAction}
             disabled={!isWeb3AuthInitialized}
-            className='bg-darkGreen flex items-center gap-3 py-2 px-3 rounded-2xl font-dmSans font-semibold text-white text-[0.8rem]'
+            className='bg-darkGreen flex items-center gap-3 py-2 px-3 rounded-2xl font-dmSans font-semibold text-white text-[0.8rem] cursor-pointer'
           >
             {!isWeb3AuthInitialized ? (
               <span className="flex gap-3 items-center">Loading...</span>
-            ) : isAuthenticated||loggedIn ? (
+            ) : isAuthenticated || loggedIn ? (
               <span className="flex gap-3 items-center">
                 {user?.image ? (
                   <div className="h-5 w-5 rounded-full overflow-hidden">
-                    <Image 
-                      src={user.image} 
-                      alt={user.name || 'User'} 
-                      width={20} 
-                      height={20} 
-                      className="object-cover" 
+                    <Image
+                      src={user.image}
+                      alt={user.name || 'User'}
+                      width={20}
+                      height={20}
+                      className="object-cover"
                     />
                   </div>
                 ) : null}

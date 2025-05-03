@@ -3,7 +3,7 @@ import React, { Suspense } from 'react'
 
 function CreateCommentHub() {
   return (
-    <main className='my-[30px]'>
+    <main className='pt-[60px] mt-[60px]'>
       <Suspense>
         <CreateNewCommentHubPage />
       </Suspense>

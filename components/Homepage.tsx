@@ -3,13 +3,14 @@ import React from 'react'
 import { trpc } from '@/trpc/client';
 import Image from 'next/image';
 import MessageIcon from '@/public/icons/MessageIcon';
-import ArrowRightIcon from '@/public/icons/ArrowRightIcon';
 import ChainIcon from '@/public/icons/ChainIcon';
 import FooterLogo from '@/public/icons/FooterLogo';
 import Link from 'next/link';
-import { ArrowRight } from 'lucide-react';
+import { ArrowRight, ChevronLeft } from 'lucide-react';
+import { useRouter } from 'next/navigation';
 const Homepage = () => {
   //const greeting = trpc.hello.useQuery({ text: "Brownson" });
+  const router = useRouter()
 
   return (
     <main>
@@ -25,10 +26,10 @@ const Homepage = () => {
             unoptimized={true}
           />
           <div className='absolute grid gap-2 top-[50%] z-40 text-white text-center w-full left-[50%] translate-x-[-50%] translate-y-[-40%] lg:translate-y-[-50%]'>
-            <h1 className='font-specialGothic text-[2rem] lg:text-[5rem] lg:leading-[70px] uppercase w-full'>The center stage for the global game</h1>
+            <h1 className='font-specialGothic text-[2rem] lg:text-[5rem] lg:leading-[70px] uppercase font-extrabold w-full'>The center stage for the global game</h1>
             <div className='flex flex-col justify-center items-center mx-4 lg:mx-0'>
               <p className='font-dmSans italic text-[0.8rem] lg:w-[600px] text-center'>The future of live football engagement, powered by you, where fans take control, interact in real time, and shape the game experience like never before.</p>
-              <button className='bg-ctaButton py-[7px] px-[20px] w-fit rounded-full text-[0.9rem] font-dmSans font-semibold mt-2 text-white'>Join the conversation</button>
+              <button onClick={() => router.push('/comment-hub')} className='bg-ctaButton py-[7px] px-[20px] w-fit rounded-full text-[0.9rem] font-dmSans font-semibold mt-2 text-white'>Join the conversation</button>
             </div>
           </div>
           <div className='bg-black/30 absolute z-20 top-0 left-0 right-0 bottom-0' />
@@ -36,7 +37,7 @@ const Homepage = () => {
 
 
         <div className='container mx-auto px-2 grid grid-cols-1 grid-flow-row lg:grid-cols-2 gap-4 mt-[25px] lg:mt-[50px]'>
-       
+
 
           <div className='bg-darkGreen rounded-md text-white p-4 grid gap-5'>
             <div className='flex justify-between items-center'>
