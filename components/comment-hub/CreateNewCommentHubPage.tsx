@@ -8,6 +8,7 @@ import Card from './ui/card'
 import ArrowRightIcon from '@/public/icons/ArrowRightIcon'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { formatString, reverseFormatString } from '@/utils/utils'
+import { ChevronLeft } from 'lucide-react'
 
 const CreateNewCommentHubPage = () => {
   const router = useRouter()
@@ -48,10 +49,12 @@ const CreateNewCommentHubPage = () => {
   return (
     <main>
       <div className='container mx-auto px-3 py-1 h-screen'>
-        <button onClick={() => router.back()} className='px-3 cursor-pointer'>
-          <ArrowRightIcon isInBackground={true} />
-        </button>
-        <h1 className='font-specialGothic font-[1.1rem] text-center mb-[20px] uppercase'>Create live hub</h1>
+        <div className='relative items-center'>
+          <button onClick={() => router.back()} className='px-3 cursor-pointer absolute top-0 bottom-0'>
+            <ChevronLeft color='black' fontSize={10} size={10} className='bg-[#D9D9D9] rounded-full size-[27px] lg:size-[31px] flex items-center justify-center' />
+          </button>
+          <h1 className='font-specialGothic font-extrabold text-[1.1rem] text-center mb-[20px] uppercase'>Create live hub</h1>
+        </div>
 
         {seletedGame !== undefined ? (
           <Card game={seletedGame} />

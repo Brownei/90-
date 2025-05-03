@@ -9,46 +9,46 @@ import { useWallet } from '@solana/wallet-adapter-react';
 // import SolanaWalletConnector from '@/components/SolanaWalletConnector';
 
 const ProfilePage = () => {
-  const {} = useWallet();
-  // const router = useRouter();
-  // const { isAuthenticated, isLoading } = useAuth();
-  // const [tweetText, setTweetText] = React.useState('');
-  // const [isSubmitting, setIsSubmitting] = React.useState(false);
-  // // const postTweet = trpc.twitter.tweet.useMutation();
+  const { } = useWallet();
+  const router = useRouter();
+  const { isAuthenticated, isLoading } = useAuth();
+  const [tweetText, setTweetText] = React.useState('');
+  const [isSubmitting, setIsSubmitting] = React.useState(false);
+  // const postTweet = trpc.twitter.tweet.useMutation();
 
-  // React.useEffect(() => {
-  //   // If not authenticated and not loading, redirect to home
-  //   if (!isLoading && !isAuthenticated) {
-  //     router.push('/');
-  //   }
-  // }, [isAuthenticated, isLoading, router]);
+  React.useEffect(() => {
+    // If not authenticated and not loading, redirect to home
+    if (!isLoading && !isAuthenticated) {
+      router.push('/');
+    }
+  }, [isAuthenticated, isLoading, router]);
 
-  // const handleTweetSubmit = async (e: React.FormEvent) => {
-  //   e.preventDefault();
-  //   if (!tweetText.trim()) return;
-    
-  //   try {
-  //     setIsSubmitting(true);
-  //     // await postTweet.mutateAsync({ text: tweetText });
-  //     setTweetText('');
-  //     alert('Tweet posted successfully!');
-  //   } catch (error) {
-  //     console.error('Error posting tweet:', error);
-  //     alert('Failed to post tweet. Check console for details.');
-  //   } finally {
-  //     setIsSubmitting(false);
-  //   }
-  // };
+  const handleTweetSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!tweetText.trim()) return;
 
-  // if (isLoading) {
-  //   return (
-  //     <div className="container mx-auto px-4 py-8">
-  //       <div className="max-w-xl mx-auto">
-  //         <h1 className="text-2xl font-bold mb-6">Loading...</h1>
-  //       </div>
-  //     </div>
-  //   );
-  // }
+    try {
+      setIsSubmitting(true);
+      // await postTweet.mutateAsync({ text: tweetText });
+      setTweetText('');
+      alert('Tweet posted successfully!');
+    } catch (error) {
+      console.error('Error posting tweet:', error);
+      alert('Failed to post tweet. Check console for details.');
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  if (isLoading) {
+    return (
+      <div className="container mx-auto px-4 py-8">
+        <div className="max-w-xl mx-auto">
+          <h1 className="text-2xl font-bold mb-6">Loading...</h1>
+        </div>
+      </div>
+    );
+  }
 
   if (!isAuthenticated) {
     return null; // Will redirect in the useEffect
@@ -58,9 +58,9 @@ const ProfilePage = () => {
     <div className="container mx-auto px-4 py-8">
       <div className="max-w-xl mx-auto">
         <h1 className="text-2xl font-bold mb-6">Your Profile</h1>
-        
+
         <ProfileCard className="mb-8" />
-        
+
         <div className="bg-white rounded-lg shadow-md p-6 mb-8">
           <h2 className="text-xl font-bold mb-4">Connect Solana Wallet</h2>
           <p className="text-sm text-gray-600 mb-4">
@@ -68,7 +68,7 @@ const ProfilePage = () => {
           </p>
           {/* <SolanaWalletConnector /> */}
         </div>
-        
+
         <div className="bg-white rounded-lg shadow-md p-6">
           <h2 className="text-xl font-bold mb-4">Post a Tweet</h2>
           <form onSubmit={handleTweetSubmit}>

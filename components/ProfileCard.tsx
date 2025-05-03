@@ -44,8 +44,10 @@ const ProfileCard: React.FC<ProfileCardProps> = ({ className = '' }) => {
             <Image
               src={user.image}
               alt={user.name || 'User'}
-              fill
-              className="object-cover"
+              className="object-cover size-[104px]"
+              quality={100}
+              width={500}
+              height={500}
             />
           </div>
         ) : (
@@ -53,9 +55,9 @@ const ProfileCard: React.FC<ProfileCardProps> = ({ className = '' }) => {
             <span className="text-gray-500 text-2xl">{user.name?.charAt(0) || 'U'}</span>
           </div>
         )}
-        
+
         <h2 className="text-xl font-bold mb-1">{user.name || 'User'}</h2>
-        
+
         {/* {isLoadingTwitterInfo ? (
           <p className="text-gray-500 text-sm mb-4">Loading Twitter info...</p>
         ) : twitterUserInfo ? (

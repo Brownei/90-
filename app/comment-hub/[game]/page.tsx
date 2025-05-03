@@ -10,7 +10,7 @@ export const metadata: Metadata = {
 
 function ParticularGamePage() {
   return (
-    <main className='h-screen overflow-hidden pt-10'>
+    <main className='h-screen overflow-hidden pt-[60px]'>
       <ClientParticularGamePage />
     </main>
   )

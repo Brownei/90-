@@ -5,7 +5,8 @@ import { useTabsStore } from '@/stores/use-tabs-store'
 import SearchComponent from './ui/search-component'
 import Carousel from '../carousel/carousel'
 import { Game, games } from '@/data'
-import PlusIcon from '@/public/icons/PlusIcon'
+import { PlusIcon } from 'lucide-react'
+// import PlusIcon from '@/public/icons/PlusIcon'
 import LoadingIcon from '@/public/icons/LoadingIcon'
 import Link from 'next/link'
 
@@ -45,13 +46,13 @@ const CommentHubPage = () => {
   return (
     <main className="bg-white min-h-screen">
       <div className="container mx-auto px-4 pb-16">
-        <div className="flex items-center justify-between py-3">
+        <div className="flex items-center justify-center py-3 gap-10 font-dmSans font-bold">
           <h2 className="text-gray-500">Community Huddle</h2>
-          <h2 className="font-medium">Live Hubs</h2>
+          <h2 className="">Live Hubs</h2>
         </div>
-        
+
         <SearchComponent setQuery={setQuery} />
-        
+
         <div className="mt-3 flex justify-center">
           <Suspense>
             <Tabs tabs={tabs} onSelected={setSelected} selected={selected} />
@@ -66,7 +67,7 @@ const CommentHubPage = () => {
               <span className="text-orange-500 ml-1">🔥</span>
             </div>
           </div>
-          
+
           <div className="bg-gray-50 rounded-xl p-3 shadow-sm">
             {isLoading ? (
               <div className="flex justify-center py-4">
@@ -91,8 +92,8 @@ const CommentHubPage = () => {
           </div>
         </div>
 
-        <Link href="/comment-hub/create-new-hub" className="fixed bottom-6 right-6 z-40 bg-green-700 hover:bg-green-800 rounded-full shadow-lg p-3 transition-colors">
-          <PlusIcon />
+        <Link href="/comment-hub/create-new-hub" className="fixed bottom-6 right-6 z-40 bg-green-700 hover:bg-green-800 rounded-full shadow-lg p-5 transition-colors">
+          <PlusIcon fontSize={64} size={32} color='#fff' />
         </Link>
       </div>
     </main>

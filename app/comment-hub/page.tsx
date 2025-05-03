@@ -8,7 +8,7 @@ export default async function CommentHub() {
   //console.log(matches)
 
   return (
-    <main className='mt-[80px] mb-[500px]'>
+    <main className='pt-[60px] mb-[500px]'>
       <Nav />
       <CommentHubPage />
     </main>
