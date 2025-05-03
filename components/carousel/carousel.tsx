@@ -7,7 +7,7 @@ import Image from "next/image";
 import CurvedArrow from "@/public/icons/CurvedArrow";
 import { formatString } from "@/utils/utils";
 import { useRouter } from "next/navigation";
-import { useAuthLogin } from "../Nav";
+import { useAuthLogin } from "@/hooks/use-auth-login";
 import { toast } from "react-hot-toast";
 const Carousel = ({
   tabs,
