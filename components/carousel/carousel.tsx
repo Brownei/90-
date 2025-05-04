@@ -27,7 +27,7 @@ const Carousel = ({
     }
   }, [emblaApi]);
 
-  const { connected, isAuthenticated, login, loggedIn } = useAuthLogin();
+  const { login, loggedIn } = useAuthLogin();
 
   return (
     <div className="overflow-hidden mt-[20px]" ref={emblaRef}>
@@ -41,7 +41,7 @@ const Carousel = ({
               key={i}
             >
               <div className="p-3 text-black">
-                <div className="flex justify-between items-center font-dmSans">
+                <div className="flex justify-between items-center font-ABCDaitype">
                   <div
                     className={`text-[0.65rem] text-[#FF0000] flex gap-1 items-center ${isLive ? "visible" : "invisible"
                       }`}
@@ -62,13 +62,13 @@ const Carousel = ({
                       height={100}
                       className="w-[50px] lg:w-[150px]"
                     />
-                    <p className="text-center text-[0.9rem] lg:text-[1rem] font-dmSans">
+                    <p className="text-center text-[0.9rem] lg:text-[1rem] font-ABCDaitype">
                       {game.homeTeam}
                     </p>
                   </div>
 
                   {isLive ? (
-                    <div className="flex items-center gap-1 font-dmSans font-bold">
+                    <div className="flex items-center gap-1 font-ABCDaitype font-bold">
                       <p className="text-[#FF0000] text-[1.5rem] lg:text-[2rem]">
                         {game.homeScore}
                       </p>
@@ -78,7 +78,7 @@ const Carousel = ({
                       </p>
                     </div>
                   ) : (
-                    <div className="font-dmSans text-[1rem] lg:text-[1.1rem]">
+                    <div className="font-ABCDaitype text-[1rem] lg:text-[1.1rem]">
                       20:00
                     </div>
                   )}
@@ -91,7 +91,7 @@ const Carousel = ({
                       height={100}
                       className="w-[50px] lg:w-[150px]"
                     />
-                    <p className="text-center text-[0.9rem] lg:text-[1rem] font-dmSans">
+                    <p className="text-center text-[0.9rem] lg:text-[1rem] font-ABCDaitype">
                       {game.awayTeam}
                     </p>
                   </div>
@@ -100,15 +100,15 @@ const Carousel = ({
                 <div className="flex justify-center items-center">
                   <button
                     onClick={() => {
-                      if (isAuthenticated) {
+                      if (loggedIn) {
                         toast.success("Joining the hub");
                         router.push(`/comment-hub/${urlRoute}`);
+                      } else {
+                        toast.error("Please login to join the hub");
+                        login();
                       }
-
-                      toast.error("Please login to join the hub");
-                      login();
                     }}
-                    className="w-fit bg-darkGreen py-1 cursor-pointer px-6 text-white font-dmSans font-extrabold rounded-xl"
+                    className="w-fit bg-darkGreen py-1 cursor-pointer px-6 text-white font-ABCDaitype font-extrabold rounded-xl"
                   >
                     {!isLive ? "Launch Hub" : "Join Hub"}
                   </button>

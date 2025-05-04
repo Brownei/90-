@@ -5,10 +5,7 @@ import React, { useEffect } from "react"
 
 const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const router = useRouter()
-  const {
-    loggedIn,
-    isAuthenticated,
-  } = useAuthLogin();
+  const { loggedIn } = useAuthLogin();
 
 
   //  useEffect(() => {
@@ -16,10 +13,11 @@ const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   //     router.push("/login"); // ✅ safe inside useEffect
   //   }
   // }, [loggedIn, isAuthenticated]);
-
-  if (!loggedIn && !isAuthenticated) {
-    router.push('/')
-  }
+  useEffect(() => {
+    if (!loggedIn) {
+      router.push('/');
+    }
+  }, [loggedIn, router]);
 
   return (
     <>

@@ -259,17 +259,17 @@ const ClientParticularGamePage = () => {
                   height={100}
                   className='w-[40px] md:w-[50px] lg:w-[60px] transition-transform hover:scale-105'
                 />
-                <p className='text-center text-[0.65rem] md:text-[0.7rem] lg:text-[0.8rem] font-sofiaSans font-medium mt-1'>FC Barcelona</p>
+                <p className='text-center text-[0.65rem] md:text-[0.7rem] lg:text-[0.8rem] font-ABCDaitype font-medium mt-1'>FC Barcelona</p>
               </div>
 
               {/* Score or time */}
               <div className='grid place-items-center'>
-                <div className='flex items-center gap-2 leading-8 font-dmSans font-bold'>
+                <div className='flex items-center gap-2 leading-8 font-ABCDaitype font-bold'>
                   <p className='text-[2rem] md:text-[2.2rem] lg:text-[2.5rem]'>4</p>
                   <span className='text-[2rem] md:text-[2.2rem] lg:text-[2.5rem]'> - </span>
                   <p className='text-[2rem] md:text-[2.2rem] lg:text-[2.5rem]'>1</p>
                 </div>
-                <div className='font-dmSans text-[0.65rem] md:text-[0.7rem] bg-[#ffffff20] px-3 py-0.5 rounded-full'>45 : 04</div>
+                <div className='font-ABCDaitype text-[0.65rem] md:text-[0.7rem] bg-[#ffffff20] px-3 py-0.5 rounded-full'>45 : 04</div>
               </div>
 
               {/* Away team */}
@@ -281,13 +281,13 @@ const ClientParticularGamePage = () => {
                   height={100}
                   className='w-[40px] md:w-[50px] lg:w-[60px] transition-transform hover:scale-105'
                 />
-                <p className='text-center text-[0.65rem] md:text-[0.7rem] lg:text-[0.8rem] font-sofiaSans font-medium mt-1'>Real Madrid FC</p>
+                <p className='text-center text-[0.65rem] md:text-[0.7rem] lg:text-[0.8rem] font-ABCDaitype font-medium mt-1'>Real Madrid FC</p>
               </div>
             </div>
 
             {/* Match overview section - using a green underline to make it stand out */}
             <div className="mt-3 mb-1">
-              <p className='font-sofiaSans font-medium text-[0.7rem] md:text-[0.8rem] inline-block relative p-2'>
+              <p className='font-ABCDaitype font-medium text-[0.7rem] md:text-[0.8rem] inline-block relative p-2'>
                 Match overview
                 <span className="absolute bottom-0 left-0 w-full h-1 bg-[#3E3D3D] rounded-full"></span>
               </p>

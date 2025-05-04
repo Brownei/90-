@@ -6,22 +6,23 @@ import ProfileCard from '@/components/ProfileCard';
 import { useAuth } from '@/utils/useAuth';
 import { trpc } from '@/trpc/client';
 import { useWallet } from '@solana/wallet-adapter-react';
+import { useAuthLogin } from '@/hooks/use-auth-login';
 // import SolanaWalletConnector from '@/components/SolanaWalletConnector';
 
 const ProfilePage = () => {
   const { } = useWallet();
   const router = useRouter();
-  const { isAuthenticated, isLoading } = useAuth();
+  const { loggedIn, isLoading } = useAuthLogin();
   const [tweetText, setTweetText] = React.useState('');
   const [isSubmitting, setIsSubmitting] = React.useState(false);
   // const postTweet = trpc.twitter.tweet.useMutation();
 
   React.useEffect(() => {
     // If not authenticated and not loading, redirect to home
-    if (!isLoading && !isAuthenticated) {
+    if (!isLoading && !loggedIn) {
       router.push('/');
     }
-  }, [isAuthenticated, isLoading, router]);
+  }, [loggedIn, isLoading, router]);
 
   const handleTweetSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -50,7 +51,7 @@ const ProfilePage = () => {
     );
   }
 
-  if (!isAuthenticated) {
+  if (!loggedIn) {
     return null; // Will redirect in the useEffect
   }
 

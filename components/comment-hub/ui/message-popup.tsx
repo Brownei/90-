@@ -16,7 +16,7 @@ import toast from 'react-hot-toast'
 
 const RefereeAction = () => {
   return (
-    <div className="border-b border-[#B7B7B7] py-4">
+    <div className="border-b border-[#B7B7B7] py-4 font-ABCDaitype">
       <div className="flex flex-col">
         <div className="text-gray-500 text-xs mb-2">REFEREE</div>
         <div className="flex gap-2">
@@ -72,7 +72,7 @@ const JosiahComment = ({ id = "josiah-1", onShowReplies, replies = [] }: {
         <div className="size-[50px] rounded-full bg-yellow-200 flex items-center justify-center font-bold text-xl">
           🔥
         </div>
-        <div className="grid gap-1 w-full font-sofiaSans">
+        <div className="grid gap-1 w-full font-ABCDaitype">
           <p className="flex gap-1 items-center">
             <span className="text-[#616061] text-[0.75rem] font-medium">Josiah🔥</span>
             <span className="text-[0.5rem] text-[#808080]/55">9:16 AM</span>
@@ -110,7 +110,7 @@ const StrikeComment = () => {
         <div className="size-[50px] rounded-full bg-yellow-200 flex items-center justify-center font-bold text-xl">
           🔥
         </div>
-        <div className="grid gap-1 w-full font-sofiaSans">
+        <div className="grid gap-1 w-full font-ABCDaitype">
           <p className="flex gap-1 items-center">
             <span className="text-[#616061] text-[0.75rem] font-medium">Josiah🔥</span>
             <span className="text-[0.5rem] text-[#808080]/55">9:16 AM</span>
@@ -142,7 +142,7 @@ const Replies = ({ replies, messageUsername }: { replies: Reply[], messageUserna
               height={36}
               className="size-[36px] rounded-full"
             />
-            <div className="grid gap-1 w-full font-sofiaSans">
+            <div className="grid gap-1 w-full font-ABCDaitype">
               <p className="flex gap-1 items-center">
                 <span className="text-[#616061] text-[0.6rem] md:text-[0.7rem] font-medium">{reply.username}</span>
                 <span className="text-[0.5rem] text-[#808080]/55">{reply.time}</span>
@@ -376,7 +376,7 @@ const MessagePopup = () => {
                   height={36}
                   className="size-[36px] rounded-full"
                 />
-                <div className="grid gap-1 w-full font-sofiaSans">
+                <div className="grid gap-1 w-full font-ABCDaitype">
                   <p className="flex gap-1 items-center">
                     <span className="text-[#616061] text-[0.6rem] md:text-[0.7rem] font-medium">{reply.username}</span>
                     <span className="text-[0.5rem] text-[#808080]/55">{reply.time}</span>
@@ -451,7 +451,7 @@ const MessagePopup = () => {
                   height={36}
                   className="size-[36px] rounded-full"
                 />
-                <div className="grid gap-1 w-full font-sofiaSans">
+                <div className="grid gap-1 w-full font-ABCDaitype">
                   <p className="flex gap-1 items-center">
                     <span className="text-[#616061] text-[0.6rem] md:text-[0.7rem] font-medium">{reply.username}</span>
                     <span className="text-[0.5rem] text-[#808080]/55">{reply.time}</span>
@@ -522,7 +522,7 @@ const MessagePopup = () => {
               className='size-[50px] rounded-full'
             />
 
-            <div className='grid gap-1 w-full font-sofiaSans'>
+            <div className='grid gap-1 w-full font-ABCDaitype'>
               <p className='flex gap-1 items-center'>
                 <span className='text-[#616061] text-[0.6rem] md:text-[0.75rem] font-medium'>{message.username}</span>
                 <span className='text-[0.5rem] lg:text-[0.5rem] text-[#808080]/55'>{message.time}</span>

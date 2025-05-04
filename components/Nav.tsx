@@ -12,27 +12,26 @@ const Nav = () => {
   const pathname = usePathname()
   const router = useRouter();
   const {
-    scrolled,
-    setScrolled,
     isAuthenticated,
     isLoading,
-    user,
     logout,
     connected,
     connect,
+    user,
     provider,
     loggedIn,
+    setUser,
     web3auth,
     isWeb3AuthInitialized,
-    login
+    login,
+    setIsAuthenticated
   } = useAuthLogin();
 
-  console.log({ isAuthenticated, isLoading, user, logout, connected, connect, provider, loggedIn, web3auth, isWeb3AuthInitialized })
+  console.log({ isAuthenticated, isLoading, logout, connected, connect, provider, loggedIn, web3auth, isWeb3AuthInitialized })
 
   const handleAuthAction = async () => {
-    if (isAuthenticated) {
-      // Use the logout function from useAuthLogin
-      logout();
+    if (loggedIn) {
+      await logout();
     } else if (isWeb3AuthInitialized) {
       try {
         await login();
@@ -42,17 +41,18 @@ const Nav = () => {
           // Use authStore to update authentication state if not already handled
           if (!isAuthenticated && web3auth && web3auth.connected) {
             const userInfo = await web3auth.getUserInfo();
-            useAuthStore.getState().setIsAuthenticated(true);
-            useAuthStore.getState().setUser({
-              id: userInfo.verifierId || undefined,
-              name: userInfo.name || undefined,
-              image: userInfo.profileImage || undefined,
-              username: userInfo.name || undefined,
-            });
+            setIsAuthenticated(true)
+            setUser({
+              name: userInfo.name,
+              profileImage: userInfo.profileImage,
+              idToken: userInfo.idToken,
+              email: userInfo.email
+            })
+
           }
 
           // Navigate to profile page after successful login
-          router.push('/profile');
+          // router.push('/profile');
         }
       } catch (error) {
         console.error("Authentication error:", error);
@@ -72,6 +72,8 @@ const Nav = () => {
     router.push('/wallet');
   };
 
+  console.log({ user })
+
   return (
     <nav className={`${pathname !== '/' ? 'fixed top-0 left-0 z-50 right-0 px-3 lg:px-5 py-3 transition-colors duration-300 bg-[#ECF5F5] text-black ' : 'absolute z-50 w-full px-3 lg:px-5 py-3 text-white'}`}>
       <div className='flex justify-between items-center'>
@@ -88,19 +90,19 @@ const Nav = () => {
         </Link>
 
         <div className="flex items-center gap-3">
-          {isAuthenticated && (
+          {(loggedIn && user !== null) && (
             <button
               onClick={navigateToProfile}
-              className={`font-dmSans font-semibold text-[0.8rem] cursor-pointer ${pathname !== '/' ? 'text-black' : 'text-white'}`}
+              className={`font-ABCDaitype font-semibold text-[0.8rem] cursor-pointer ${pathname !== '/' ? 'text-black' : 'text-white'}`}
             >
               Profile
             </button>
           )}
 
-          {(isAuthenticated || connected) && (
+          {(loggedIn && user !== null && connected) && (
             <button
               onClick={navigateToWallet}
-              className={`font-dmSans font-semibold text-[0.8rem] cursor-pointer ${pathname !== '/' ? 'text-black' : 'text-white'}`}
+              className={`font-ABCDaitype font-semibold text-[0.8rem] cursor-pointer ${pathname !== '/' ? 'text-black' : 'text-white'}`}
             >
               Wallet
             </button>
@@ -109,19 +111,20 @@ const Nav = () => {
           <button
             onClick={handleAuthAction}
             disabled={!isWeb3AuthInitialized}
-            className='bg-darkGreen flex items-center gap-3 py-2 px-3 rounded-2xl font-dmSans font-semibold text-white text-[0.8rem] cursor-pointer'
+            className='bg-darkGreen flex items-center gap-3 py-2 px-3 rounded-2xl font-ABCDaitype font-semibold text-white text-[0.8rem] cursor-pointer'
           >
             {!isWeb3AuthInitialized ? (
               <span className="flex gap-3 items-center">Loading...</span>
-            ) : isAuthenticated || loggedIn ? (
+            ) : (loggedIn && user !== null) ? (
               <span className="flex gap-3 items-center">
-                {user?.image ? (
+                {user?.profileImage ? (
                   <div className="h-5 w-5 rounded-full overflow-hidden">
                     <Image
-                      src={user.image}
+                      src={user.profileImage}
                       alt={user.name || 'User'}
-                      width={20}
-                      height={20}
+                      width={500}
+                      height={500}
+                      quality={100}
                       className="object-cover"
                     />
                   </div>
@@ -131,7 +134,7 @@ const Nav = () => {
               </span>
             ) : (
               <>
-                <span className='hidden lg:flex gap-3 items-center'>Register/Sign in with <TwitterIcon /></span>
+                <span className='hidden lg:flex gap-3 items-center font-bold'>Register/Sign in with <TwitterIcon /></span>
                 <span className='flex gap-3 lg:hidden items-center'>Connect <TwitterIcon /></span>
               </>
             )}

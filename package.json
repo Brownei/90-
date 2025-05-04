@@ -9,7 +9,7 @@
     "lint": "next lint",
     "db:generate": "drizzle-kit generate",
     "db:migrate": "node lib/db/migrate.ts",
-    "db:push": "drizzle-kit push:sqlite",
+    "db:push": "drizzle-kit push",
     "db:migrate-from-prisma": "node scripts/migrate-from-prisma.js"
   },
   "dependencies": {
