@@ -45,8 +45,8 @@ const CommentHubPage = () => {
 
   return (
     <main className="bg-white min-h-screen">
-      <div className="container mx-auto px-4 pb-16">
-        <div className="flex items-center justify-center py-3 gap-10 font-dmSans font-bold">
+      <div className="container mx-auto px-4">
+        <div className="flex items-center justify-center py-3 gap-10 font-ABCDaitype font-bold">
           <h2 className="text-gray-500">Community Huddle</h2>
           <h2 className="">Live Hubs</h2>
         </div>
@@ -61,8 +61,8 @@ const CommentHubPage = () => {
 
         <div className="mt-5">
           <div className="flex justify-between items-center mb-1">
-            <h3 className="font-dmSans text-base">Live Hubs</h3>
-            <div className="flex items-center text-xs text-gray-500">
+            <h3 className="font-ABCDaitype text-base">Live Hubs</h3>
+            <div className="flex items-center text-xs text-gray-500 font-ABCDaitype">
               <span>Most trending</span>
               <span className="text-orange-500 ml-1">🔥</span>
             </div>
@@ -80,7 +80,7 @@ const CommentHubPage = () => {
         </div>
 
         <div className="mt-5">
-          <h3 className="font-dmSans text-base mb-1">Upcoming Hubs</h3>
+          <h3 className="font-ABCDaitype text-base mb-1">Upcoming Hubs</h3>
           <div className="bg-gray-50 rounded-xl p-3 shadow-sm">
             {isLoading ? (
               <div className="flex justify-center py-4">

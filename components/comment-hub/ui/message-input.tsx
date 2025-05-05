@@ -62,7 +62,7 @@ const MessageInput = forwardRef<HTMLDivElement | null, MessageInputProps>(
     }, []);
 
     return (
-      <div ref={ref} className='fixed bottom-0 bg-[#ECF5F5] p-3 right-0 left-0 z-40 shadow-lg border-t border-gray-200'>
+      <div ref={ref} className='fixed bottom-0 bg-[#ECF5F5] p-3 right-0 left-0 z-40 shadow-lg border-t border-gray-200 font-ABCDaitype'>
         <div className='flex gap-2 items-center max-w-2xl mx-auto'>
           <button
             onClick={onWagerClick}

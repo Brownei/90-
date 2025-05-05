@@ -2,7 +2,7 @@
 const nextConfig = {
   reactStrictMode: true,
   images: {
-    domains: ['pbs.twimg.com', 'abs.twimg.com', 'images.unsplash.com', 'randomuser.me'],
+    domains: ['pbs.twimg.com', 'lh3.googleusercontent.com', 'abs.twimg.com', 'images.unsplash.com', 'randomuser.me'],
   },
   // Use webpack fallbacks for browser compatibility
   webpack: (config, { isServer }) => {
@@ -16,7 +16,7 @@ const nextConfig = {
     }
     return config;
   },
-// @ts-ignore
+  // @ts-ignore
   typescript: {
     ignoreBuildErrors: true,
   },

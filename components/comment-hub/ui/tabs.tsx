@@ -22,13 +22,13 @@ const Tabs: React.FC<TabsProps> = ({ tabs, selected, onSelected }) => {
   }
 
   return (
-    <div className='grid grid-cols-4 grid-flow-row lg:flex gap-4 lg:gap-2'>
+    <div className='grid grid-cols-3 grid-flow-row w-full lg:flex gap-4 lg:gap-2'>
       {tabs.map((tab, i) => {
         const url = formatString(tab)
         const decodeUrl = pathname.get("tabs") !== null ? reverseFormatString(pathname.get("tabs") as string) : ''
 
         return (
-          <button className={`${pathname.get("tabs") === null && tab === 'All' ? 'bg-darkGreen text-white' : decodeUrl === tab && pathname.get("tabs") !== null ? 'bg-darkGreen text-white' : 'border-2 border-black/50 bg-transparent'} py-[2px] rounded-xl w-full font-light min-w-fit lg:min-w-[140px] lg:py-1 font-dmSans text-[12px] lg:text-[0.9rem] cursor-pointer`} key={i} onClick={() => routerPush(tab, `comment-hub/?tabs=${url}`)}>
+          <button className={`${pathname.get("tabs") === null && tab === 'All' ? 'bg-darkGreen text-white' : decodeUrl === tab && pathname.get("tabs") !== null ? 'bg-darkGreen text-white' : 'border-2 border-black/50 bg-transparent'} py-[2px] rounded-xl w-full font-light min-w-fit lg:min-w-[140px] lg:py-1 font-ABCDaitype text-[12px] lg:text-[0.9rem] cursor-pointer`} key={i} onClick={() => routerPush(tab, `comment-hub/?tabs=${url}`)}>
             {tab}
           </button>
         )

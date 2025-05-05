@@ -10,7 +10,7 @@ const nextConfig: NextConfig = {
       new URL('https://media.tenor.com/**'),
       new URL('https://images.unsplash.com/**'),
       new URL('https://randomuser.me/**'),
-     
+      new URL('https://lh3.googleusercontent.com/a/**'),
     ],
   },
   typescript: {

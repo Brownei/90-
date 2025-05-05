@@ -1,14 +1,13 @@
 "use client"
 import { useAtom } from 'jotai';
 import { useAuthStore } from '@/stores/authStore';
-import { CHAIN_NAMESPACES, IAdapter, IProvider, WEB3AUTH_NETWORK, getEvmChainConfig } from "@web3auth/base";
-import { useEffect } from 'react'
-import { scrolledAtom, providerAtom, loggedInAtom, web3authAtom, isWeb3AuthInitializedAtom } from '@/stores/navStore';
-import { signIn, useSession } from 'next-auth/react';
-import { useAuth } from '@/utils/useAuth';
+import { CHAIN_NAMESPACES, WEB3AUTH_NETWORK, } from "@web3auth/base";
+import { useEffect, } from 'react'
+import { scrolledAtom, providerAtom, loggedInAtom, web3authAtom, isWeb3AuthInitializedAtom, userAtom } from '@/stores/navStore';
+import { useSession } from 'next-auth/react';
 import { useWallet, } from '@solana/wallet-adapter-react';
 import { Web3Auth } from "@web3auth/modal";
-import { usePathname, useRouter } from 'next/navigation';
+import { useRouter } from 'next/navigation';
 import { SolanaPrivateKeyProvider } from "@web3auth/solana-provider";
 
 const chainConfig = {
@@ -27,18 +26,21 @@ const privateKeyProvider = new SolanaPrivateKeyProvider({
 });
 
 export const useAuthLogin = () => {
-  const pathname = usePathname()
   const session = useSession()
-  const router = useRouter();
   const [scrolled, setScrolled] = useAtom(scrolledAtom);
-  const { isAuthenticated, isLoading, user, logout } = useAuth();
+  const {
+    setIsAuthenticated,
+    setIsLoading,
+    isAuthenticated,
+    isLoading
+  } = useAuthStore();
   const { connected, connect } = useWallet();
   const [provider, setProvider] = useAtom(providerAtom);
+  const [user, setUser] = useAtom(userAtom);
   const [loggedIn, setLoggedIn] = useAtom(loggedInAtom);
   const [web3auth, setWeb3auth] = useAtom(web3authAtom);
   const [isWeb3AuthInitialized, setIsWeb3AuthInitialized] = useAtom(isWeb3AuthInitializedAtom);
-
-  console.log({ session })
+  const router = useRouter()
 
   useEffect(() => {
     const initWeb3Auth = async () => {
@@ -49,6 +51,7 @@ export const useAuthLogin = () => {
           privateKeyProvider: privateKeyProvider,
         });
 
+        // web3authInstance.provider.
         await web3authInstance.initModal();
         setWeb3auth(web3authInstance);
         setIsWeb3AuthInitialized(true);
@@ -69,6 +72,7 @@ export const useAuthLogin = () => {
       // Add any cleanup if needed
     };
   }, []);
+
 
   useEffect(() => {
     const handleScroll = () => {
@@ -95,6 +99,8 @@ export const useAuthLogin = () => {
     }
     const user = await web3auth.getUserInfo();
     console.log(user);
+
+    return user;
   };
   const login = async () => {
     try {
@@ -120,7 +126,14 @@ export const useAuthLogin = () => {
         // Get user info and save to database
         try {
           const userInfo = await web3auth.getUserInfo();
+          // getUs
 
+          setUser({
+            name: userInfo.name,
+            profileImage: userInfo.profileImage,
+            idToken: userInfo.idToken,
+            email: userInfo.email
+          })
           // Store user data in database
           const response = await fetch('/api/users/store', {
             method: 'POST',
@@ -133,15 +146,17 @@ export const useAuthLogin = () => {
               profileImage: userInfo.profileImage || '',
               verifier: userInfo.verifier || '',
               verifierId: userInfo.verifierId || '',
-              publicKey: web3auth.provider ?
-                (await web3auth.provider.request({ method: 'eth_accounts' }) as string[])[0] : null,
-              // Add any other user information you need
+              // publicKey: web3auth.provider ?
+              //   (await web3auth.provider.request({ method: 'eth_accounts' }) as string[])[0] : null,
+              // // Add any other user information you need
             }),
           });
 
           if (!response.ok) {
             console.error("Failed to store user data:", await response.text());
+            return;
           }
+
         } catch (error) {
           console.error("Failed to get or store user info:", error);
         }
@@ -157,6 +172,9 @@ export const useAuthLogin = () => {
         await web3auth.logout();
         setLoggedIn(false);
         setProvider(null);
+        setIsAuthenticated(false)
+
+        router.push('/')
       }
     } catch (error) {
       console.error("Logout error:", error);
@@ -164,43 +182,43 @@ export const useAuthLogin = () => {
   };
 
   // Combine both logout methods
-  const combinedLogout = async () => {
-    await webAuthLogout();
-    logout(); // This is the NextAuth logout
-  };
+  // const combinedLogout = async () => {
+  //   await webAuthLogout();
+  //   logout(); // This is the NextAuth logout
+  // };
 
-  const handleAuthAction = async () => {
-    if (isAuthenticated) {
-      // Use the logout function from useAuthLogin
-      logout();
-    } else if (isWeb3AuthInitialized) {
-      try {
-        await login();
-
-        // Check if we successfully logged in
-        if (loggedIn) {
-          // Use authStore to update authentication state if not already handled
-          if (!isAuthenticated && web3auth && web3auth.connected) {
-            const userInfo = await web3auth.getUserInfo();
-            useAuthStore.getState().setIsAuthenticated(true);
-            useAuthStore.getState().setUser({
-              id: userInfo.verifierId || undefined,
-              name: userInfo.name || undefined,
-              image: userInfo.profileImage || undefined,
-              username: userInfo.name || undefined,
-            });
-          }
-
-          // Navigate to profile page after successful login
-          router.push('/profile');
-        }
-      } catch (error) {
-        console.error("Authentication error:", error);
-      }
-    } else {
-      console.error("Web3Auth is not initialized yet");
-    }
-  };
+  // const handleAuthAction = async () => {
+  //   if (isAuthenticated) {
+  //     // Use the logout function from useAuthLogin
+  //     logout();
+  //   } else if (isWeb3AuthInitialized) {
+  //     try {
+  //       await login();
+  //
+  //       // Check if we successfully logged in
+  //       if (loggedIn) {
+  //         // Use authStore to update authentication state if not already handled
+  //         if (!isAuthenticated && web3auth && web3auth.connected) {
+  //           const userInfo = await web3auth.getUserInfo();
+  //           useAuthStore.getState().setIsAuthenticated(true);
+  //           useAuthStore.getState().setUser({
+  //             id: userInfo.verifierId || undefined,
+  //             name: userInfo.name || undefined,
+  //             image: userInfo.profileImage || undefined,
+  //             username: userInfo.name || undefined,
+  //           });
+  //         }
+  //
+  //         // Navigate to profile page after successful login
+  //         router.push('/profile');
+  //       }
+  //     } catch (error) {
+  //       console.error("Authentication error:", error);
+  //     }
+  //   } else {
+  //     console.error("Web3Auth is not initialized yet");
+  //   }
+  // };
 
   return {
     scrolled,
@@ -208,13 +226,17 @@ export const useAuthLogin = () => {
     isAuthenticated,
     isLoading,
     user,
-    logout: combinedLogout, // Return the combined logout function
+    logout: webAuthLogout, // Return the combined logout function
     connected,
     connect,
     provider,
     loggedIn,
     web3auth,
     isWeb3AuthInitialized,
-    login
+    login,
+    setIsAuthenticated,
+    setIsLoading,
+    setUser,
+    getUserInfo
   }
 }

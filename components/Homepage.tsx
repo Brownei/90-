@@ -1,16 +1,22 @@
 'use client';
 import React from 'react'
-import { trpc } from '@/trpc/client';
 import Image from 'next/image';
 import MessageIcon from '@/public/icons/MessageIcon';
 import ChainIcon from '@/public/icons/ChainIcon';
 import FooterLogo from '@/public/icons/FooterLogo';
 import Link from 'next/link';
-import { ArrowRight, ChevronLeft } from 'lucide-react';
-import { useRouter } from 'next/navigation';
+import { ArrowRight, } from 'lucide-react';
+import { useAuthLogin } from '@/hooks/use-auth-login';
+
 const Homepage = () => {
-  //const greeting = trpc.hello.useQuery({ text: "Brownson" });
-  const router = useRouter()
+  const { loggedIn, user } = useAuthLogin()
+  // async function joinConversation() {
+  //   if (!isAuthenticated && !loggedIn) {
+  //     await login()
+  //   }
+  //
+  //   router.push('/comment-hub')
+  // }
 
   return (
     <main>
@@ -26,20 +32,19 @@ const Homepage = () => {
             unoptimized={true}
           />
           <div className='absolute grid gap-2 top-[50%] z-40 text-white text-center w-full left-[50%] translate-x-[-50%] translate-y-[-40%] lg:translate-y-[-50%]'>
-            <h1 className='font-specialGothic text-[2rem] lg:text-[5rem] lg:leading-[70px] uppercase font-extrabold w-full'>The center stage for the global game</h1>
+            <h1 className='font-ABCDaitype text-[2rem] lg:text-[5rem] lg:leading-[70px] uppercase font-extrabold w-full'>The center stage for the global game</h1>
             <div className='flex flex-col justify-center items-center mx-4 lg:mx-0'>
-              <p className='font-dmSans italic text-[0.8rem] lg:w-[600px] text-center'>The future of live football engagement, powered by you, where fans take control, interact in real time, and shape the game experience like never before.</p>
-              <button onClick={() => router.push('/comment-hub')} className='bg-ctaButton py-[7px] px-[20px] w-fit rounded-full text-[0.9rem] font-dmSans font-semibold mt-2 text-white'>Join the conversation</button>
+              <p className='font-ABCDaitype italic text-[0.8rem] lg:w-[600px] text-center'>The future of live football engagement, powered by you, where fans take control, interact in real time, and shape the game experience like never before.</p>
             </div>
           </div>
           <div className='bg-black/30 absolute z-20 top-0 left-0 right-0 bottom-0' />
         </div>
 
 
-        <div className='container mx-auto px-2 grid grid-cols-1 grid-flow-row lg:grid-cols-2 gap-4 mt-[25px] lg:mt-[50px]'>
+        <div className={`container mx-auto px-2 grid grid-cols-1 grid-flow-row ${(loggedIn && user !== null) ? 'lg:grid-cols-1' : 'lg:grid-cols-2'} gap-4 mt-[25px] lg:mt-[50px]`}>
 
 
-          <div className='bg-darkGreen rounded-md text-white p-4 grid gap-5'>
+          <div className={`bg-darkGreen rounded-md text-white p-4 grid gap-5 ${(loggedIn && user !== null) ? 'hidden' : 'block'}`}>
             <div className='flex justify-between items-center'>
               <ChainIcon />
               <Link href={'/comment-hub'} className='border p-2 rounded-full'>
@@ -47,10 +52,11 @@ const Homepage = () => {
               </Link>
             </div>
             <div className='grid gap-2'>
-              <h4 className='font-sofiaSans font-bold text-base'>Jump In, No Hassle</h4>
-              <p className='font-dmSans italic text-sm lg:text-[0.8rem]'>Connect your X account, share your profile with your followers and banter!</p>
+              <h4 className='font-ABCDaitype font-bold text-base'>Jump In, No Hassle</h4>
+              <p className='font-ABCDaitype italic text-sm lg:text-[0.8rem]'>Connect your X account, share your profile with your followers and banter!</p>
             </div>
           </div>
+
           <div className='bg-darkGreen rounded-md text-white p-4 grid gap-5'>
             <div className='flex justify-between items-center'>
               <MessageIcon />
@@ -59,8 +65,8 @@ const Homepage = () => {
               </Link>
             </div>
             <div className='grid gap-2'>
-              <h4 className='font-sofiaSans font-bold text-base'>Comment Hubs</h4>
-              <p className='font-dmSans italic text-[1rem] lg:text-[0.8rem]'>Step into the Comment Hub, where fans from all over the world connect to debate, celebrate, and Interact in real-time.</p>
+              <h4 className='font-ABCDaitype font-bold text-base'>Comment Hubs</h4>
+              <p className='font-ABCDaitype italic text-[1rem] lg:text-[0.8rem]'>Step into the Comment Hub, where fans from all over the world connect to debate, celebrate, and Interact in real-time.</p>
             </div>
           </div>
         </div>
@@ -77,7 +83,7 @@ const Homepage = () => {
             unoptimized={true}
           />
           <div className='relative flex flex-col justify-center text-center items-center w-full'>
-            <h4 className='font-sofiaSans font-bold text-[1.5rem]'>Sidebets: Coming Soon {"–"} Bet on Your Banter</h4>
+            <h4 className='font-ABCDaitype font-bold text-[1.5rem]'>Sidebets: Coming Soon {"–"} Bet on Your Banter</h4>
             <p className='font-dmsans italic w-full lg:w-[800px] text-center text-[1rem] lg:text-[0.8rem]'>Soon, {"you’ll"} be able to instantly bet your takes during live matches. Whether {"it's"} a bold prediction or a hot debate, Sidebets will let you put your insights on the line, enabling Peer to Peer bets</p>
 
             <Image
@@ -94,17 +100,24 @@ const Homepage = () => {
 
         <div className='bg-[#141517]  text-white lg:pb-[20px] mt-[25px] lg:mt-[50px]'>
           <div className='mb-[50px] flex flex-col justify-center items-center gap-3 p-4 lg:px-6 lg:pt-12 '>
-            <h4 className='font-sofiaSans font-bold text-[1.5rem]'>What’s Next? Stay Tuned…</h4>
+            <h4 className='font-ABCDaitype font-bold text-[1.5rem]'>What’s Next? Stay Tuned…</h4>
             <p className='font-dmsans italic w-full lg:w-[800px] text-center text-[1rem] lg:text-[0.8rem]'>The game never stops and neither do we. Big features are on the horizon, and you won’t want to miss what’s coming next.
               Be part of the future of live football Interaction</p>
             <div className='bg-ash flex justify-between items-center rounded-full p-1'>
-              <input className='outline-none border-none text-white font-dmSans w-full lg:w-[354px] text-[0.7rem] p-2' placeholder='Enter your email address' />
-              <button className='text-black bg-white rounded-full font-dmSans font-semibold text-[0.7rem] p-2'>Subscribe</button>
+              <input className='outline-none border-none text-white font-ABCDaitype w-full lg:w-[354px] text-[0.7rem] p-2' placeholder='Enter your email address' />
+              <button className='text-black bg-white rounded-full font-ABCDaitype font-semibold text-[0.7rem] p-2'>Subscribe</button>
             </div>
           </div>
           <div className='border-ash border-[0.75px] w-full' />
-          <div className='flex justify-between items-center text-[0.6rem] px-2 py-3'>
-            <FooterLogo />
+          <div className='flex justify-between items-center text-[0.6rem] px-2 py-3 font-ABCDaitype'>
+            <Image
+              src={'/logo.png'}
+              width={500}
+              height={500}
+              alt='Logo'
+              quality={100}
+              className='size-[20px]'
+            />
             <p className='text-white/40'>Copyright © 2025, 90+</p>
             <div className='flex gap-1 items-center text-[#ECF5F5]'>
               <Link href={'/'}>Support</Link>
