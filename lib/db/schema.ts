@@ -12,17 +12,25 @@ export const users = pgTable('users', {
   updatedAt: text('updated_at').notNull().default('CURRENT_TIMESTAMP'),
 });
 
+export const usersRelation = relations(users, ({one}) => ({
+  wallets: one(wallets)
+}))
+
 // Wallet Schema
 export const wallets = pgTable('wallets', {
-  id: text('id').primaryKey(),
-  userId: text('user_id').notNull(),
-  publicKey: text('public_key').notNull().unique(),
+  id: serial('id').primaryKey(),
+  userId: text('user_id').references(() => users.id),
   provider: text('provider').notNull(),
+  publicKey: text('public_key').notNull().unique(),
   solanaBalance: real('solana_balance'),
   isMainWallet: boolean('is_main_wallet').notNull().default(false),
   createdAt: text('created_at').notNull().default('CURRENT_TIMESTAMP'),
   updatedAt: text('updated_at').notNull().default('CURRENT_TIMESTAMP'),
 });
+
+export const walletsRelations = relations(wallets, ({ one }) => ({
+	user: one(users, { fields: [wallets.userId], references: [users.id] }),
+}));
 
 // Token Schema
 export const tokens = pgTable('tokens', {

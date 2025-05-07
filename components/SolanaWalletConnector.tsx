@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState, useCallback } from 'react';
 import { useConnection, useWallet } from '@solana/wallet-adapter-react';
-import { WalletMultiButton } from '@solana/wallet-adapter-react-ui';
+// import { WalletMultiButton } from '@solana/wallet-adapter-react-ui';
 import { PublicKey } from '@solana/web3.js';
 import bs58 from 'bs58';
 import { useRouter } from 'next/navigation';
@@ -10,6 +10,8 @@ import { useAuth } from '@/utils/useAuth';
 
 // Import the Solana wallet adapter CSS
 import '@solana/wallet-adapter-react-ui/styles.css';
+import { useAuthLogin } from '@/hooks/use-auth-login';
+import dynamic from 'next/dynamic';
 
 interface SolanaWalletConnectorProps {
   className?: string;
@@ -23,7 +25,7 @@ const SolanaWalletConnector: React.FC<SolanaWalletConnectorProps> = ({ className
   const [walletBalance, setWalletBalance] = useState<number | null>(null);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const router = useRouter();
-  const { isAuthenticated: isTwitterAuthenticated } = useAuth();
+  const { loggedIn: isTwitterAuthenticated } = useAuthLogin();
 
   // Fetch wallet balance
   const fetchBalance = useCallback(async () => {
@@ -104,7 +106,7 @@ const SolanaWalletConnector: React.FC<SolanaWalletConnectorProps> = ({ className
   return (
     <div className={`flex flex-col items-center ${className}`}>
       <div className="mb-4">
-        <WalletMultiButton />
+        <WalletMultiButton className='bg-darkGreen flex items-center gap-3 py-2 px-3 rounded-2xl font-ABCDaitype font-semibold text-white text-[0.8rem] cursor-pointer'/>
       </div>
       
       {connected && publicKey && (
@@ -151,5 +153,38 @@ const SolanaWalletConnector: React.FC<SolanaWalletConnectorProps> = ({ className
     </div>
   );
 };
+
+const WalletMultiButton = dynamic(
+  () =>
+    import("@solana/wallet-adapter-react-ui").then(
+      (mod) => mod.WalletMultiButton
+    ),
+  {
+    ssr: false,
+    loading: () => {
+      return (
+        <div
+          className="bg-black border border-gray-800 rounded-md animate-pulse flex items-center"
+          style={{
+            width: "173.47px",
+            height: "48px",
+            padding: "0 12px",
+            gap: "8px",
+          }}
+        >
+          <div
+            className="rounded-full bg-purple-400/30"
+            style={{ width: "24px", height: "24px" }}
+          ></div>
+          <div
+            className="h-4 bg-white/10 rounded-sm"
+            style={{ width: "100px" }}
+          ></div>
+        </div>
+      );
+    },
+  }
+);
+
 
 export default SolanaWalletConnector; 

@@ -35,7 +35,7 @@ const SolanaWalletProvider: React.FC<SolanaWalletProviderProps> = ({ children })
   );
 
   return (
-    <ConnectionProvider endpoint={endpoint}>
+    <ConnectionProvider endpoint={clusterApiUrl(network)}>
       <WalletProvider wallets={wallets} autoConnect>
         <WalletModalProvider>
           {children}

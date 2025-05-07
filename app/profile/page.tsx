@@ -7,15 +7,23 @@ import { useAuth } from '@/utils/useAuth';
 import { trpc } from '@/trpc/client';
 import { useWallet } from '@solana/wallet-adapter-react';
 import { useAuthLogin } from '@/hooks/use-auth-login';
-// import SolanaWalletConnector from '@/components/SolanaWalletConnector';
+import { SolanaWallet } from '@web3auth/solana-provider';
+import { IProvider } from '@web3auth/base';
 
 const ProfilePage = () => {
   const { } = useWallet();
   const router = useRouter();
-  const { loggedIn, isLoading } = useAuthLogin();
+  const { loggedIn, provider, isLoading } = useAuthLogin();
   const [tweetText, setTweetText] = React.useState('');
   const [isSubmitting, setIsSubmitting] = React.useState(false);
   // const postTweet = trpc.twitter.tweet.useMutation();
+  const solanaWallet = new SolanaWallet(provider as IProvider)
+
+  async function getAccountAddress() {
+    const accounts = await solanaWallet.requestAccounts()
+    
+    return accounts[0];
+  }
 
   React.useEffect(() => {
     // If not authenticated and not loading, redirect to home
@@ -56,7 +64,7 @@ const ProfilePage = () => {
   }
 
   return (
-    <div className="container mx-auto px-4 py-8">
+    <div className="container mx-auto px-4 py-8 font-ABCDaitype">
       <div className="max-w-xl mx-auto">
         <h1 className="text-2xl font-bold mb-6">Your Profile</h1>
 
@@ -67,7 +75,6 @@ const ProfilePage = () => {
           <p className="text-sm text-gray-600 mb-4">
             Connect your Solana wallet to access additional features and participate in the ecosystem.
           </p>
-          {/* <SolanaWalletConnector /> */}
         </div>
 
         <div className="bg-white rounded-lg shadow-md p-6">

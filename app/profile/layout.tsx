@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import AuthProvider from "@/components/providers/auth-provider";
+import { cookies } from "next/headers";
 
 export const metadata: Metadata = {
   title: "90+: Profile",
@@ -11,9 +12,11 @@ export default async function ProfileLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const serverCookies = await cookies()
+  const token = serverCookies.get("session")?.value as string
 
   return (
-    <AuthProvider>
+    <AuthProvider token={token}>
       {children}
     </AuthProvider>
   );

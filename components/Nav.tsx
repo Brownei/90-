@@ -35,25 +35,6 @@ const Nav = () => {
     } else if (isWeb3AuthInitialized) {
       try {
         await login();
-
-        // Check if we successfully logged in
-        if (loggedIn) {
-          // Use authStore to update authentication state if not already handled
-          if (!isAuthenticated && web3auth && web3auth.connected) {
-            const userInfo = await web3auth.getUserInfo();
-            setIsAuthenticated(true)
-            setUser({
-              name: userInfo.name,
-              profileImage: userInfo.profileImage,
-              idToken: userInfo.idToken,
-              email: userInfo.email
-            })
-
-          }
-
-          // Navigate to profile page after successful login
-          // router.push('/profile');
-        }
       } catch (error) {
         console.error("Authentication error:", error);
       }
@@ -91,21 +72,22 @@ const Nav = () => {
 
         <div className="flex items-center gap-3">
           {(loggedIn && user !== null) && (
-            <button
-              onClick={navigateToProfile}
+            <Link
+              href={'/profile'}
               className={`font-ABCDaitype font-semibold text-[0.8rem] cursor-pointer ${pathname !== '/' ? 'text-black' : 'text-white'}`}
             >
               Profile
-            </button>
+            </Link>
           )}
 
           {(loggedIn && user !== null && connected) && (
-            <button
+            <Link
+              href={'/wallet'}
               onClick={navigateToWallet}
               className={`font-ABCDaitype font-semibold text-[0.8rem] cursor-pointer ${pathname !== '/' ? 'text-black' : 'text-white'}`}
             >
               Wallet
-            </button>
+            </Link>
           )}
 
           <button

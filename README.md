@@ -34,11 +34,10 @@ pnpm install
 ### 3. Create your .env 
 Copy the details on the env.template file and place it on your own .env file
 
-### 4. Generate the drizzle client and push to database
+### 4. Generate the drizzle client 
 
 ```bash
 pnpm db:generate
-pnpm db:push
 ```
 
 ### 5. Take a look at the SOLANO_WALLET_README.md for more details on the web3 aspect

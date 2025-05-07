@@ -22,13 +22,15 @@ CREATE TABLE "users" (
 );
 --> statement-breakpoint
 CREATE TABLE "wallets" (
-	"id" text PRIMARY KEY NOT NULL,
-	"user_id" text NOT NULL,
-	"public_key" text NOT NULL,
+	"id" serial PRIMARY KEY NOT NULL,
+	"user_id" text,
 	"provider" text NOT NULL,
+	"public_key" text NOT NULL,
 	"solana_balance" real,
 	"is_main_wallet" boolean DEFAULT false NOT NULL,
 	"created_at" text DEFAULT 'CURRENT_TIMESTAMP' NOT NULL,
 	"updated_at" text DEFAULT 'CURRENT_TIMESTAMP' NOT NULL,
 	CONSTRAINT "wallets_public_key_unique" UNIQUE("public_key")
 );
+--> statement-breakpoint
+ALTER TABLE "wallets" ADD CONSTRAINT "wallets_user_id_users_id_fk" FOREIGN KEY ("user_id") REFERENCES "public"."users"("id") ON DELETE no action ON UPDATE no action;

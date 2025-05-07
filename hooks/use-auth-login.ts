@@ -1,14 +1,16 @@
 "use client"
 import { useAtom } from 'jotai';
 import { useAuthStore } from '@/stores/authStore';
-import { CHAIN_NAMESPACES, WEB3AUTH_NETWORK, } from "@web3auth/base";
+import { CHAIN_NAMESPACES, CustomChainConfig, IProvider, WEB3AUTH_NETWORK, } from "@web3auth/base";
 import { useEffect, } from 'react'
 import { scrolledAtom, providerAtom, loggedInAtom, web3authAtom, isWeb3AuthInitializedAtom, userAtom } from '@/stores/navStore';
 import { useWallet, } from '@solana/wallet-adapter-react';
 import { Web3Auth } from "@web3auth/modal";
 import { useRouter } from 'next/navigation';
-import { SolanaPrivateKeyProvider } from "@web3auth/solana-provider";
+import { SolanaPrivateKeyProvider, SolanaWallet } from "@web3auth/solana-provider";
 import { trpc } from '@/trpc/client';
+import { Connection, PublicKey } from '@solana/web3.js';
+import { encryptData } from '@/utils/utils';
 
 const chainConfig = {
   chainNamespace: CHAIN_NAMESPACES.SOLANA,
@@ -20,7 +22,6 @@ const chainConfig = {
   tickerName: "Solana",
   logo: "https://images.toruswallet.io/solana.svg"
 };
-
 const privateKeyProvider = new SolanaPrivateKeyProvider({
   config: { chainConfig: chainConfig },
 });
@@ -128,19 +129,33 @@ export const useAuthLogin = () => {
         // Get user info and save to database
         try {
           const userInfo = await web3auth.getUserInfo();
-          // getUs
-
+          const solanaWallet = new SolanaWallet(web3auth.provider as IProvider)
+          const accounts = await solanaWallet.requestAccounts()
+          const connectionConfig = await solanaWallet.request<string[], CustomChainConfig>({
+            method: "solana_provider_config",
+            params: [],
+          })
+          const connection = new Connection(connectionConfig.rpcTarget);
+          const balance = await connection.getBalance(new PublicKey(accounts[0]))
+          const encryptedProvider = encryptData(JSON.stringify(web3auth.provider))
+          const balanceString = String(balance)
           await loginMutation.mutateAsync({
             name: userInfo.name as string,
             email: userInfo.email as string,
             profileImage: userInfo.profileImage as string,
-            email_verified: true
+            email_verified: true,
+            publicKey: accounts[0],
+            balance: balanceString,
+            encryptedProvider: encryptedProvider
           })
 
           setUser({
               name: userInfo.name,
               profileImage: userInfo.profileImage,
-              email: userInfo.email
+              email: userInfo.email,
+              address: new PublicKey(accounts[0]),
+              balance: balanceString,
+              provider: web3auth.provider!,
           })
         } catch (error) {
           console.error("Failed to get or store user info:", error);
