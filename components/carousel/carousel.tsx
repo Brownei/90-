@@ -5,7 +5,7 @@ import { DotButton, useDotButton } from "./carousel-buttons";
 import { Game } from "@/data";
 import Image from "next/image";
 import CurvedArrow from "@/public/icons/CurvedArrow";
-import { formatString } from "@/utils/utils";
+import { formatDateToBritish, formatString } from "@/utils/utils";
 import { useRouter } from "next/navigation";
 import { useAuthLogin } from "@/hooks/use-auth-login";
 import { toast } from "react-hot-toast";
@@ -13,7 +13,7 @@ const Carousel = ({
   tabs,
   isLive = false,
 }: {
-  tabs: Game[];
+  tabs: UpcomingMatch[] | Game[] | undefined;
   isLive: boolean;
 }) => {
   const router = useRouter();
@@ -32,7 +32,11 @@ const Carousel = ({
   return (
     <div className="overflow-hidden mt-[20px]" ref={emblaRef}>
       <div className="flex lg:gap-1 lg[touch-action:pan-y_pinch-zoom] lg:ml-[calc(1rem_*_ -1)]">
-        {tabs.map((game, i) => {
+        {isLive && (tabs as Game[]).length === 0 ? (
+          <p className="font-ABCDaitype text-[1.5rem] flex items-center justify-center text-center p-5">No live games currently</p>
+        ) : (
+          <>
+          {        (tabs as Game[]).map((game, i) => {
           const urlRoute = formatString(`${game.homeTeam} vs ${game.awayTeam}`);
 
           return (
@@ -93,6 +97,84 @@ const Carousel = ({
                     />
                     <p className="text-center text-[0.9rem] lg:text-[1rem] font-ABCDaitype">
                       {game.awayTeam}
+                    </p>
+                  </div>
+                </div>
+
+                <div className="flex justify-center items-center">
+                  <button
+                    onClick={() => {
+                      if (loggedIn) {
+                        toast.success("Joining the hub");
+                        router.push(`/comment-hub/${urlRoute}`);
+                      } else {
+                        toast.error("Please login to join the hub");
+                        login();
+                      }
+                    }}
+                    className="w-fit bg-darkGreen py-1 cursor-pointer px-6 text-white font-ABCDaitype font-extrabold rounded-xl"
+                  >
+                    {!isLive ? "Launch Hub" : "Join Hub"}
+                  </button>
+                </div>
+              </div>
+            </div>
+          );
+        })}
+          </>
+        )}
+
+        {!isLive && (tabs as UpcomingMatch[])?.map((game, i) => {
+          const urlRoute = formatString(`${game.home.name} vs ${game.away.name}`);
+          const {date, time} = formatDateToBritish(game.status.utcTime)
+
+          return (
+            <div
+              className="min-w-0 lg:lg:transform-gpu lg:pl-[1rem] lg:flex-[0_0_50%] flex-[0_0_100%] gap-3 border border-[#BEBEBE]/50 bg-white rounded-[12px]"
+              key={i}
+            >
+              <div className="p-3 text-black">
+                <div className="flex justify-between items-center font-ABCDaitype">
+                  <div
+                    className={`text-[0.65rem] text-[#FF0000] flex gap-1 items-center ${isLive ? "visible" : "invisible"
+                      }`}
+                  >
+                    <div className="bg-[#FF0000] size-1 rounded" />
+                    Live
+                  </div>
+                  <p className="font-semibold text-[1rem]">Premier League</p>
+                  <CurvedArrow />
+                </div>
+
+                <div className="flex justify-between items-center p-4">
+                  <div className="flex flex-col items-center">
+                    <Image
+                      src={"https://upload.wikimedia.org/wikipedia/en/5/53/Arsenal_FC.svg"}
+                      alt={game.home.name}
+                      width={100}
+                      height={100}
+                      className="w-[50px] lg:w-[150px]"
+                    />
+                    <p className="text-center text-[0.9rem] lg:text-[1rem] font-ABCDaitype">
+                      {game.home.name}
+                    </p>
+                  </div>
+
+                    <div className="font-ABCDaitype text-[1rem] lg:text-[1.1rem] flex flex-col gap-1 items-center">
+                      <p>{date}</p>
+                      <p>{time}</p>
+                    </div>
+
+                  <div className="flex flex-col items-center">
+                    <Image
+                      src={"https://upload.wikimedia.org/wikipedia/en/5/53/Arsenal_FC.svg"}
+                      alt={game.away.name}
+                      width={100}
+                      height={100}
+                      className="w-[50px] lg:w-[150px]"
+                    />
+                    <p className="text-center text-[0.9rem] lg:text-[1rem] font-ABCDaitype">
+                      {game.away.name}
                     </p>
                   </div>
                 </div>

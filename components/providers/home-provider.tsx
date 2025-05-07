@@ -1,8 +1,13 @@
 "use client"
 import { useAuthLogin } from "@/hooks/use-auth-login";
 import { decryptData } from "@/utils/utils";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import React, { useEffect } from "react"
+
+interface ProvidersProps {
+  children: React.ReactNode;
+  token: string
+}
 
 interface UserReturns {
         id: string, 
@@ -11,22 +16,17 @@ interface UserReturns {
         profileImage: string
 }
 
-const AuthProvider = ({ children, token }: { children: React.ReactNode, token: string }) => {
+const HomeProvider = ({ children, token }: ProvidersProps) => {
+    const pathname = usePathname()
   const router = useRouter()
-  const {  setUser, setLoggedIn, setIsLoading } = useAuthLogin();
+  const {  setUser, setIsLoading, setLoggedIn } = useAuthLogin();
 
-
-  //  useEffect(() => {
-  //   if (!loggedIn && !isAuthenticated) {
-  //     router.push("/login"); // ✅ safe inside useEffect
-  //   }
-  // }, [loggedIn, isAuthenticated]);
   useEffect(() => {
     if(token !== undefined) {
       setIsLoading(true)
       const parsedData = decryptData(token)
       const user = JSON.parse(parsedData) as UserReturns
-      console.log({user})
+      console.log(user)
 
       setUser({
         name: user.name,
@@ -37,10 +37,10 @@ const AuthProvider = ({ children, token }: { children: React.ReactNode, token: s
 
       setLoggedIn(true)
       setIsLoading(false)
-    } else {
+    } else if (pathname !== '/' && token === undefined) {
       router.push('/')
     }
-  }, [token, setUser, router]);
+  }, [token, setUser, router, setIsLoading, setLoggedIn, pathname]);
 
   return (
     <>
@@ -49,4 +49,4 @@ const AuthProvider = ({ children, token }: { children: React.ReactNode, token: s
   )
 }
 
-export default AuthProvider
+export default HomeProvider

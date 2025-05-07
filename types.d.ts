@@ -17,3 +17,17 @@ interface MatchesResponse {
   count: number;
   error?: string;
 }
+
+interface UpcomingMatch {
+  away: {
+    id: string
+    name: string
+  },
+  home: {
+    id: string
+    name: string
+  }
+  status: {
+    utcTime: string
+  }
+}

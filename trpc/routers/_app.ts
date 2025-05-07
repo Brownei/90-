@@ -1,8 +1,8 @@
 import { z } from 'zod';
 import { baseProcedure, createTRPCRouter } from '../init';
-import { externalApiForMatches, formatDate, getTomorrowDate } from '@/utils/utils';
-
 // import { twitterRouter } from './twitter';
+import { gameRouter } from './games';
+import { usersRouter } from './users';
 
 export const appRouter = createTRPCRouter({
   hello: baseProcedure
@@ -17,23 +17,8 @@ export const appRouter = createTRPCRouter({
       };
     }),
 
-  matches: baseProcedure
-    .query(async () => {
-      const today = formatDate(new Date())
-      const tomorrow = getTomorrowDate()
-      try {
-        const res = await externalApiForMatches(`https://api.football-data.org/v4/competitions/PL/matches/?season=2025&dateFrom=${today}&dateTo=${tomorrow}`)
-        console.log(res)
-      } catch (err) {
-        console.error('Error executing scraper:', err);
-        return {
-          matches: [],
-          count: 0,
-          error: 'Failed to fetch matches'
-        };
-      }
-    })
-  // twitter: twitterRouter,
+  users: usersRouter,
+  games: gameRouter,
 });
 // export type definition of API
 export type AppRouter = typeof appRouter;

@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import AuthProvider from "@/components/providers/auth-provider";
+import { cookies } from "next/headers";
 
 export const metadata: Metadata = {
   title: "90+: Comment Hub",
@@ -11,14 +12,12 @@ export default async function CommentHubLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const serverCookies = await cookies()
+  const token = serverCookies.get("session")?.value as string
 
   return (
-    <html lang="en">
-      <body>
-        <AuthProvider>
+        <AuthProvider token={token}>
           {children}
         </AuthProvider>
-      </body>
-    </html>
   );
 }

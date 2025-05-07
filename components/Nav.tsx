@@ -30,7 +30,7 @@ const Nav = () => {
   console.log({ isAuthenticated, isLoading, logout, connected, connect, provider, loggedIn, web3auth, isWeb3AuthInitialized })
 
   const handleAuthAction = async () => {
-    if (loggedIn) {
+    if (loggedIn && user !== null) {
       await logout();
     } else if (isWeb3AuthInitialized) {
       try {

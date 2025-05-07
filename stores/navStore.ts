@@ -3,10 +3,10 @@ import { Web3Auth } from '@web3auth/modal';
 import { IProvider, } from '@web3auth/base';
 
 type AuthUserInfo = {
+  id?: string 
   profileImage?: string
   name?: string
   email?: string
-  idToken?: string
 }
 
 // Create atoms for the Nav component state

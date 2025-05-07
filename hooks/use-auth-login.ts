@@ -4,11 +4,11 @@ import { useAuthStore } from '@/stores/authStore';
 import { CHAIN_NAMESPACES, WEB3AUTH_NETWORK, } from "@web3auth/base";
 import { useEffect, } from 'react'
 import { scrolledAtom, providerAtom, loggedInAtom, web3authAtom, isWeb3AuthInitializedAtom, userAtom } from '@/stores/navStore';
-import { useSession } from 'next-auth/react';
 import { useWallet, } from '@solana/wallet-adapter-react';
 import { Web3Auth } from "@web3auth/modal";
 import { useRouter } from 'next/navigation';
 import { SolanaPrivateKeyProvider } from "@web3auth/solana-provider";
+import { trpc } from '@/trpc/client';
 
 const chainConfig = {
   chainNamespace: CHAIN_NAMESPACES.SOLANA,
@@ -26,7 +26,6 @@ const privateKeyProvider = new SolanaPrivateKeyProvider({
 });
 
 export const useAuthLogin = () => {
-  const session = useSession()
   const [scrolled, setScrolled] = useAtom(scrolledAtom);
   const {
     setIsAuthenticated,
@@ -41,6 +40,8 @@ export const useAuthLogin = () => {
   const [web3auth, setWeb3auth] = useAtom(web3authAtom);
   const [isWeb3AuthInitialized, setIsWeb3AuthInitialized] = useAtom(isWeb3AuthInitializedAtom);
   const router = useRouter()
+  const loginMutation = trpc.users.login.useMutation()
+  const logoutMutation = trpc.users.logout.useMutation()
 
   useEffect(() => {
     const initWeb3Auth = async () => {
@@ -57,7 +58,7 @@ export const useAuthLogin = () => {
         setIsWeb3AuthInitialized(true);
         setProvider(web3authInstance.provider);
 
-        if (web3authInstance.connected || session.status === "authenticated") {
+        if (web3authInstance.connected) {
           setLoggedIn(true);
         }
       } catch (error) {
@@ -103,6 +104,7 @@ export const useAuthLogin = () => {
     return user;
   };
   const login = async () => {
+    setIsLoading(true)
     try {
       // await signIn("twitter")
       // setLoggedIn(true)
@@ -128,35 +130,18 @@ export const useAuthLogin = () => {
           const userInfo = await web3auth.getUserInfo();
           // getUs
 
-          setUser({
-            name: userInfo.name,
-            profileImage: userInfo.profileImage,
-            idToken: userInfo.idToken,
-            email: userInfo.email
+          await loginMutation.mutateAsync({
+            name: userInfo.name as string,
+            email: userInfo.email as string,
+            profileImage: userInfo.profileImage as string,
+            email_verified: true
           })
-          // Store user data in database
-          const response = await fetch('/api/users/store', {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-              email: userInfo.email || '',
-              name: userInfo.name || '',
-              profileImage: userInfo.profileImage || '',
-              verifier: userInfo.verifier || '',
-              verifierId: userInfo.verifierId || '',
-              // publicKey: web3auth.provider ?
-              //   (await web3auth.provider.request({ method: 'eth_accounts' }) as string[])[0] : null,
-              // // Add any other user information you need
-            }),
-          });
 
-          if (!response.ok) {
-            console.error("Failed to store user data:", await response.text());
-            return;
-          }
-
+          setUser({
+              name: userInfo.name,
+              profileImage: userInfo.profileImage,
+              email: userInfo.email
+          })
         } catch (error) {
           console.error("Failed to get or store user info:", error);
         }
@@ -164,18 +149,22 @@ export const useAuthLogin = () => {
 
     } catch (error) {
       console.error("Login error:", error);
+    } finally {
+      setIsLoading(false)
     }
   };
   const webAuthLogout = async () => {
     try {
-      if (web3auth) {
+      if (web3auth?.connected) {
         await web3auth.logout();
-        setLoggedIn(false);
-        setProvider(null);
-        setIsAuthenticated(false)
-
-        router.push('/')
       }
+
+      setLoggedIn(false);
+      setProvider(null);
+      setIsAuthenticated(false)
+      await logoutMutation.mutateAsync()
+      setUser(null)
+      router.push('/')
     } catch (error) {
       console.error("Logout error:", error);
     }
@@ -231,6 +220,7 @@ export const useAuthLogin = () => {
     connect,
     provider,
     loggedIn,
+    setLoggedIn,
     web3auth,
     isWeb3AuthInitialized,
     login,

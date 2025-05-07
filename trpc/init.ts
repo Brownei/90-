@@ -1,16 +1,37 @@
 import { initTRPC } from '@trpc/server';
+import { FetchCreateContextFnOptions } from '@trpc/server/adapters/fetch';
+import { cookies } from 'next/headers';
+import { NextResponse } from 'next/server';
 import { cache } from 'react';
-export const createTRPCContext = cache(async () => {
-  /**
-   * @see: https://trpc.io/docs/server/context
-   */
-  return { userId: 'user_123' };
+
+export const createTRPCContext = cache(async ({ req }: FetchCreateContextFnOptions) => {
+  return {
+    req,
+    // 👇 you can return res-like helpers here
+    setCookie: async (name: string, value: string) => {
+      const session = await cookies()
+      session.set(name, value, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === 'production',
+        path: '/',
+        maxAge: 60 * 60 * 24 * 7, // 7 days
+      });
+    },
+    deleteCookie: async (name: string) => {
+      const session = await cookies()
+      const currentSession = session.get(name)?.value as string
+      if(currentSession !== undefined) {
+        session.delete(name)
+      }
+    },
+  }
 });
 // Avoid exporting the entire t-object
 // since it's not very descriptive.
 // For instance, the use of a t variable
 // is common in i18n libraries.
-const t = initTRPC.create({
+export type TRPCContext = Awaited<ReturnType<typeof createTRPCContext>>;
+const t = initTRPC.context<TRPCContext>().create({
   /**
    * @see https://trpc.io/docs/server/data-transformers
    */

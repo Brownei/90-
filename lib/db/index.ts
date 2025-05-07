@@ -1,17 +1,13 @@
-import { createClient } from '@libsql/client';
-import { drizzle } from 'drizzle-orm/libsql';
-import * as schema from './schema';
+import { drizzle } from 'drizzle-orm/node-postgres';
 
-// Database singleton to prevent multiple instances in development
-// Similar to how Prisma client is handled
 let db: ReturnType<typeof createDrizzleClient>;
 
 function createDrizzleClient() {
-  const client = createClient({
-    url: process.env.DATABASE_URL ?? 'file:./dev.db',
-  });
+  // const client = createClient({
+  //   url: process.env.POSTGRES_DATABASE_URL as string,
+  // });
   
-  return drizzle(client, { schema });
+  return drizzle(process.env.POSTGRES_DATABASE_URL as string);
 }
 
 // For Node.js environments, avoid creating multiple connections
