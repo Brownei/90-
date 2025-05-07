@@ -1,30 +1,24 @@
-@import url('https://db.onlinewebfonts.com/c/4c4a87973ef80fc72049e01b9085fadc?family=ABC+Diatype');
-@import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&display=swap');
-@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300..700;1,300..700&display=swap');
-@import url('https://fonts.googleapis.com/css2?family=Special+Gothic+Expanded+One&display=swap');
-@import url('https://fonts.googleapis.com/css2?family=Sofia+Sans+Semi+Condensed:ital,wght@0,1..1000;1,1..1000&display=swap');
 @import "tailwindcss";
 
 :root {
-  --background: #ECF5F5;
-  --foreground: #171717;
+	--background: #ecf5f5;
+	--foreground: #171717;
+	/* --font-abc: "Abc Diatype", "sans-serif"; */
 }
 
 @theme inline {
-  --font-dmSans: "sans-serif", "sans-serif";
-  --font-cormorantGaramond: "sans-serif";
-  --font-ABCDaitype: "ABC Diatype";
-  --font-specialGothic: "sans-serif";
-  --font-sofiaSans: "sans-serif";
-  --color-ctaButton: #0072CA;
-  --color-darkGreen: #0A6B41;
-  --color-gradientDarkGreen: #006644;
-  --color-gradientLightGreen: #00cc66;
-  --color-ash: #303030;
-  --color-lightAsh: #BEBEBE;
-  --spacing-thirtyFromFull: 'calc(100%)';
+	--font-abc: "Abc Diatype", "sans-serif";
+	--font-dm-sans: "DM Sans", "sans-serif";
+	--color-ctaButton: #0072ca;
+	--color-darkGreen: #0a6b41;
+	--color-gradientDarkGreen: #006644;
+	--color-gradientLightGreen: #00cc66;
+	--color-ash: #303030;
+	--color-lightAsh: #bebebe;
+	--spacing-thirtyFromFull: "calc(100%)";
 }
 
 body {
-  background: var(--background);
+	background: var(--background);
+	font-family: var(--font-abc);
 }

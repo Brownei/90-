@@ -1,14 +1,21 @@
-"use client"
-import SearchIcon from '@/public/icons/SearchIcon'
-import React from 'react'
+"use client";
+import SearchIcon from "@/public/icons/SearchIcon";
+import React from "react";
 
-const SearchComponent = ({ setQuery }: { setQuery: React.Dispatch<React.SetStateAction<string>> }) => {
-  return (
-    <div className='border-2 border-black/50 rounded-xl flex gap-3 items-center mb-4 py-2 px-3'>
-      <SearchIcon />
-      <input className='outline-none w-full text-[#BEBEBE] text-[0.9rem] font-dmSans' placeholder='Search.....' onChange={(e) => setQuery(e.target.value)} />
-    </div>
-  )
-}
+const SearchComponent = ({
+	setQuery,
+}: {
+	setQuery: React.Dispatch<React.SetStateAction<string>>;
+}) => {
+	return (
+		<div className="relative">
+			<SearchIcon className="absolute top-1/2 left-4 -translate-y-1/2" />
+			<input
+				className="outline-none w-full text-[#BEBEBE] border-2 border-[#BEBEBE] rounded-2xl pl-10 px-4 py-4 h-12"
+				onChange={(e) => setQuery(e.target.value)}
+			/>
+		</div>
+	);
+};
 
-export default SearchComponent
+export default SearchComponent;

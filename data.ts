@@ -84,7 +84,7 @@ export const games: Game[] = [
     homeScore: 1,
     awayScore: 1,
     matchTime: "43'",
-    homeImage: "https://upload.wikimedia.org/wikipedia/en/4/47/FC_Barcelona_%28crest%29.svg",
+    homeImage: "https://upload.wikimedia.org/wikipedia/en/4/47/FC_Barcelona.svg",
     awayImage: "https://upload.wikimedia.org/wikipedia/en/5/56/Real_Madrid_CF.svg"
   },
   {
@@ -93,7 +93,7 @@ export const games: Game[] = [
     homeScore: 3,
     awayScore: 0,
     matchTime: "82'",
-    homeImage: "https://upload.wikimedia.org/wikipedia/commons/1/1f/FC_Bayern_München_logo_%282017%29.svg",
+    homeImage: "https://upload.wikimedia.org/wikipedia/commons/1/1f/FC_Bayern_München_logo.svg",
     awayImage: "https://upload.wikimedia.org/wikipedia/commons/6/67/Borussia_Dortmund_logo.svg"
   },
   {
