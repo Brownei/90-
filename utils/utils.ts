@@ -1,4 +1,6 @@
 import axios, { AxiosError, AxiosResponse } from "axios";
+import { clsx, type ClassValue } from "clsx";
+import { twMerge } from "tailwind-merge";
 
 export function formatString(str: string) {
   const lowercaseStr = str.toLowerCase();
@@ -72,3 +74,7 @@ export function formatNumberInThousands(num: number): string {
   }
   return num.toString();
 };
+
+export function cn(...inputs: ClassValue[]) {
+	return twMerge(clsx(inputs));
+}
