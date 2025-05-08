@@ -1,5 +1,6 @@
 import { relations } from 'drizzle-orm';
 import { pgTable, serial, text, integer, boolean, real } from 'drizzle-orm/pg-core';
+import { finished } from 'stream';
 
 // User Schema
 export const users = pgTable('users', {
@@ -78,6 +79,7 @@ export const repliesRelations = relations(replies, ({ one }) => ({
 export const hubs = pgTable('hubs', {
   id: serial('id').primaryKey(),
   name: text('name').notNull(),
+  isGameFinished: boolean('is_game_finished').default(false),
   createdAt: text('created_at').notNull().default('CURRENT_TIMESTAMP'),
   updatedAt: text('updated_at').notNull().default('CURRENT_TIMESTAMP'),
 })

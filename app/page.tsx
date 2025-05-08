@@ -1,7 +1,7 @@
 import Homepage from "@/components/Homepage";
 import Nav from "@/components/Nav";
 
-export default function Home() {
+export default async function Home() {
   return (
     <>
       <Nav />

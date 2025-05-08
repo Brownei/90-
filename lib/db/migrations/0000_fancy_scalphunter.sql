@@ -9,6 +9,7 @@ CREATE TABLE "comments" (
 CREATE TABLE "hubs" (
 	"id" serial PRIMARY KEY NOT NULL,
 	"name" text NOT NULL,
+	"is_game_finished" boolean DEFAULT false,
 	"created_at" text DEFAULT 'CURRENT_TIMESTAMP' NOT NULL,
 	"updated_at" text DEFAULT 'CURRENT_TIMESTAMP' NOT NULL
 );

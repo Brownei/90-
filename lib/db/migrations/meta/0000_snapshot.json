@@ -1,5 +1,5 @@
 {
-  "id": "83b0310d-7d9b-418c-a6c7-9a76f3ecfaff",
+  "id": "dc28c8f5-edfa-4468-8175-8b6062049201",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "7",
   "dialect": "postgresql",
@@ -90,6 +90,13 @@
           "type": "text",
           "primaryKey": false,
           "notNull": true
+        },
+        "is_game_finished": {
+          "name": "is_game_finished",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": false,
+          "default": false
         },
         "created_at": {
           "name": "created_at",

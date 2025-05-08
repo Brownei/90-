@@ -9,6 +9,7 @@ import { formatDateToBritish, formatString } from "@/utils/utils";
 import { useRouter } from "next/navigation";
 import { useAuthLogin } from "@/hooks/use-auth-login";
 import { toast } from "react-hot-toast";
+import { trpc } from "@/trpc/client";
 const Carousel = ({
   tabs,
   isLive = false,
@@ -18,6 +19,7 @@ const Carousel = ({
 }) => {
   const router = useRouter();
   const [emblaRef, emblaApi] = useEmblaCarousel({ loop: false });
+  const launchNewHubMutation = trpc.hubs.launchHubs.useMutation()
   const { selectedIndex, scrollSnaps, onDotButtonClick } =
     useDotButton(emblaApi);
 
@@ -29,6 +31,23 @@ const Carousel = ({
 
   const { login, loggedIn } = useAuthLogin();
 
+  async function launchNewHub(urlRoute: string, home: string, away: string) {
+    if (loggedIn) {
+      toast.success("Joining the hub");
+
+      await launchNewHubMutation.mutateAsync({
+        name: urlRoute,
+        home,
+        away
+      })
+
+      router.push(`/comment-hub/${urlRoute}`);
+    } else {
+      toast.error("Please login to join the hub");
+      login();
+    }
+  } 
+
   return (
     <div className="overflow-hidden mt-[20px]" ref={emblaRef}>
       <div className="flex lg:gap-1 lg[touch-action:pan-y_pinch-zoom] lg:ml-[calc(1rem_*_ -1)]">
@@ -36,7 +55,7 @@ const Carousel = ({
           <p className="font-ABCDaitype text-[1.5rem] flex items-center justify-center text-center p-5">No live games currently</p>
         ) : (
           <>
-          {        (tabs as Game[]).map((game, i) => {
+          {(tabs as Game[]).map((game, i) => {
           const urlRoute = formatString(`${game.homeTeam} vs ${game.awayTeam}`);
 
           return (
@@ -104,13 +123,7 @@ const Carousel = ({
                 <div className="flex justify-center items-center">
                   <button
                     onClick={() => {
-                      if (loggedIn) {
-                        toast.success("Joining the hub");
-                        router.push(`/comment-hub/${urlRoute}`);
-                      } else {
-                        toast.error("Please login to join the hub");
-                        login();
-                      }
+
                     }}
                     className="w-fit bg-darkGreen py-1 cursor-pointer px-6 text-white font-ABCDaitype font-extrabold rounded-xl"
                   >

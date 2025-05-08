@@ -88,7 +88,7 @@ const CommentHubPage = () => {
                 <LoadingIcon />
               </div>
             ) : (
-              <Carousel tabs={filteredGames} isLive />
+              <Carousel tabs={games} isLive />
             )}
           </div>
         </div>
@@ -101,7 +101,7 @@ const CommentHubPage = () => {
                 <LoadingIcon />
               </div>
             ) : (
-              <Carousel tabs={filteredUpcomingGames?.slice(0, 4)} isLive={false} />
+              <Carousel tabs={filteredUpcomingGames} isLive={false} />
             )}
           </div>
         </div>
