@@ -48,13 +48,20 @@ export const useAuthLogin = () => {
   useEffect(() => {
     const initWeb3Auth = async () => {
       try {
+        // Check if client ID exists
+        const clientId = process.env.NEXT_PUBLIC_WEB3AUTH_CLIENT_ID;
+        
+        if (!clientId) {
+          console.error("Web3Auth client ID is missing! Please add NEXT_PUBLIC_WEB3AUTH_CLIENT_ID to your .env.local file");
+          return;
+        }
+
         const web3authInstance = new Web3Auth({
-          clientId: process.env.NEXT_PUBLIC_WEB3AUTH_CLIENT_ID as string,
+          clientId,
           web3AuthNetwork: WEB3AUTH_NETWORK.SAPPHIRE_DEVNET,
           privateKeyProvider: privateKeyProvider,
         });
 
-        // web3authInstance.provider.
         await web3authInstance.initModal();
         setWeb3auth(web3authInstance);
         setIsWeb3AuthInitialized(true);
@@ -190,52 +197,13 @@ export const useAuthLogin = () => {
     }
   };
 
-  // Combine both logout methods
-  // const combinedLogout = async () => {
-  //   await webAuthLogout();
-  //   logout(); // This is the NextAuth logout
-  // };
-
-  // const handleAuthAction = async () => {
-  //   if (isAuthenticated) {
-  //     // Use the logout function from useAuthLogin
-  //     logout();
-  //   } else if (isWeb3AuthInitialized) {
-  //     try {
-  //       await login();
-  //
-  //       // Check if we successfully logged in
-  //       if (loggedIn) {
-  //         // Use authStore to update authentication state if not already handled
-  //         if (!isAuthenticated && web3auth && web3auth.connected) {
-  //           const userInfo = await web3auth.getUserInfo();
-  //           useAuthStore.getState().setIsAuthenticated(true);
-  //           useAuthStore.getState().setUser({
-  //             id: userInfo.verifierId || undefined,
-  //             name: userInfo.name || undefined,
-  //             image: userInfo.profileImage || undefined,
-  //             username: userInfo.name || undefined,
-  //           });
-  //         }
-  //
-  //         // Navigate to profile page after successful login
-  //         router.push('/profile');
-  //       }
-  //     } catch (error) {
-  //       console.error("Authentication error:", error);
-  //     }
-  //   } else {
-  //     console.error("Web3Auth is not initialized yet");
-  //   }
-  // };
-
   return {
     scrolled,
     setScrolled,
     isAuthenticated,
     isLoading,
     user,
-    logout: webAuthLogout, // Return the combined logout function
+    logout: webAuthLogout,
     connected,
     connect,
     provider,

@@ -105,41 +105,65 @@ export async function externalFootballApi(endpoint: string): Promise<APIResponse
 }
 
 const ALGORITHM = "aes-256-cbc";
-const SECRET = crypto.createHash('sha256').update(process.env.NEXT_PUBLIC_COOKIE_SECRET!).digest();
-const IV = crypto.randomBytes(16); // Store or transmit this with encrypted data
+// Fix: Add default value if environment variable is missing
+const SECRET = crypto.createHash('sha256')
+  .update(process.env.NEXT_PUBLIC_COOKIE_SECRET || 'default-secret-key')
+  .digest();
+
+// Fix: Create IV function instead of using a global variable
+function createIV() {
+  return crypto.randomBytes(16);
+}
 
 export function encryptData(text: string): string {
-  const cipher = crypto.createCipheriv(ALGORITHM, SECRET, IV);
-  const encrypted = Buffer.concat([cipher.update(text), cipher.final()]);
-  return IV.toString('hex') + ':' + encrypted.toString('hex');
+  try {
+    const iv = createIV();
+    const cipher = crypto.createCipheriv(ALGORITHM, SECRET, iv);
+    const encrypted = Buffer.concat([cipher.update(text), cipher.final()]);
+    return iv.toString('hex') + ':' + encrypted.toString('hex');
+  } catch (error) {
+    console.error('Encryption error:', error);
+    // Return a fallback or throw an error depending on your needs
+    return '';
+  }
 }
 
 export function decryptData(encryptedText: string): string {
-  const [ivHex, dataHex] = encryptedText.split(':');
-  const iv = Buffer.from(ivHex, 'hex');
-  const encrypted = Buffer.from(dataHex, 'hex');
-  const decipher = crypto.createDecipheriv(ALGORITHM, SECRET, iv);
-  const decrypted = Buffer.concat([decipher.update(encrypted), decipher.final()]);
-  return decrypted.toString();
+  try {
+    // Validate input format
+    if (!encryptedText || !encryptedText.includes(':')) {
+      return '';
+    }
+    
+    const [ivHex, dataHex] = encryptedText.split(':');
+    const iv = Buffer.from(ivHex, 'hex');
+    const encrypted = Buffer.from(dataHex, 'hex');
+    const decipher = crypto.createDecipheriv(ALGORITHM, SECRET, iv);
+    const decrypted = Buffer.concat([decipher.update(encrypted), decipher.final()]);
+    return decrypted.toString();
+  } catch (error) {
+    console.error('Decryption error:', error);
+    // Return a fallback or throw an error depending on your needs
+    return '';
+  }
 }
 
-
 export function formatDateToBritish(rawDate: string): {date: string, time: string} {
-const date = new Date(rawDate);
+  const date = new Date(rawDate);
 
-// Format: "10 May 2025"
-const formattedDate = date.toLocaleDateString("en-GB", {
-  day: "2-digit",
-  month: "short",
-  year: "numeric",
-});
+  // Format: "10 May 2025"
+  const formattedDate = date.toLocaleDateString("en-GB", {
+    day: "2-digit",
+    month: "short",
+    year: "numeric",
+  });
 
-// Format: "14:00"
-const formattedTime = date.toLocaleTimeString("en-GB", {
-  hour: "2-digit",
-  minute: "2-digit",
-  hour12: false,
-});
+  // Format: "14:00"
+  const formattedTime = date.toLocaleTimeString("en-GB", {
+    hour: "2-digit",
+    minute: "2-digit",
+    hour12: false,
+  });
 
   return {
     date: formattedDate,
