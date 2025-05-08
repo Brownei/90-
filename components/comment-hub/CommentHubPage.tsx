@@ -4,7 +4,7 @@ import Tabs from './ui/tabs'
 import { useTabsStore } from '@/stores/use-tabs-store'
 import SearchComponent from './ui/search-component'
 import Carousel from '../carousel/carousel'
-import { Game } from '@/data'
+import { Game, games } from '@/data'
 import { PlusIcon } from 'lucide-react'
 // import PlusIcon from '@/public/icons/PlusIcon'
 import LoadingIcon from '@/public/icons/LoadingIcon'
@@ -20,7 +20,7 @@ const tabs = [
 const CommentHubPage = () => {
   const { selected, setSelected } = useTabsStore()
   const [isLoading, setIsLoading] = React.useState(false)
-  const { data: games, isLoading: isLiveMatchesLoading, error } = trpc.games.liveMatches.useQuery()
+  const { data: liveGames, isLoading: isLiveMatchesLoading, error } = trpc.games.liveMatches.useQuery()
   const { data: fixturedGames, isLoading: isFixturedMatchesLoading, error: fixturedGamesError } = trpc.games.getAllFixtures.useQuery<UpcomingMatch[]>()
   const [query, setQuery] = React.useState("")
   const [filteredGames, setFilteredGames] = React.useState<Game[]>(games)

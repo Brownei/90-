@@ -1,7 +1,6 @@
 import { initTRPC } from '@trpc/server';
 import { FetchCreateContextFnOptions } from '@trpc/server/adapters/fetch';
 import { cookies } from 'next/headers';
-import { NextResponse } from 'next/server';
 import { cache } from 'react';
 
 export const createTRPCContext = cache(async ({ req }: FetchCreateContextFnOptions) => {
@@ -12,9 +11,9 @@ export const createTRPCContext = cache(async ({ req }: FetchCreateContextFnOptio
       const session = await cookies()
       session.set(name, value, {
         httpOnly: true,
+        sameSite: 'lax',
         secure: process.env.NODE_ENV === 'production',
-        path: '/',
-        maxAge: 60 * 60 * 24 * 7, // 7 days
+        expires: 60 * 60 * 24 * 7, // 7 days
       });
     },
     deleteCookie: async (name: string) => {

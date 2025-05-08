@@ -2,7 +2,7 @@
 import { useAtom } from 'jotai';
 import { useAuthStore } from '@/stores/authStore';
 import { CHAIN_NAMESPACES, CustomChainConfig, IProvider, WEB3AUTH_NETWORK, } from "@web3auth/base";
-import { useEffect, } from 'react'
+import { useEffect, useState, } from 'react'
 import { scrolledAtom, providerAtom, loggedInAtom, web3authAtom, isWeb3AuthInitializedAtom, userAtom } from '@/stores/navStore';
 import { useWallet, } from '@solana/wallet-adapter-react';
 import { Web3Auth } from "@web3auth/modal";
@@ -30,12 +30,11 @@ export const useAuthLogin = () => {
   const [scrolled, setScrolled] = useAtom(scrolledAtom);
   const {
     setIsAuthenticated,
-    setIsLoading,
     isAuthenticated,
-    isLoading
   } = useAuthStore();
   const { connected, connect } = useWallet();
   const [provider, setProvider] = useAtom(providerAtom);
+  const [isLoading, setIsLoading] = useState(false);
   const [user, setUser] = useAtom(userAtom);
   const [loggedIn, setLoggedIn] = useAtom(loggedInAtom);
   const [web3auth, setWeb3auth] = useAtom(web3authAtom);
@@ -144,8 +143,8 @@ export const useAuthLogin = () => {
             email: userInfo.email as string,
             profileImage: userInfo.profileImage as string,
             email_verified: true,
-            publicKey: accounts[0],
-            balance: balanceString,
+            publicKey: String(new PublicKey(accounts[0])),
+            balance,
             encryptedProvider: encryptedProvider
           })
 

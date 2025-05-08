@@ -31,3 +31,13 @@ interface UpcomingMatch {
     utcTime: string
   }
 }
+
+interface UserReturns {
+  id: string, 
+  email: string, 
+  name: string,
+  profileImage: string
+  publicKey: PublicKey;
+  encryptedProvider: string;
+  balance: number
+}

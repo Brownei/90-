@@ -43,12 +43,6 @@ const Nav = () => {
     }
   };
 
-  const navigateToProfile = () => {
-    if (isAuthenticated) {
-      router.push('/profile');
-    }
-  };
-
   const navigateToWallet = () => {
     router.push('/wallet');
   };

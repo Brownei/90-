@@ -12,67 +12,87 @@ import StatsIcon from '@/public/icons/StatsIcon'
 import WagerModal from './ui/WagerModal'
 import FundWagerModal from './ui/FundWagerModal'
 import TransactionConfirmedModal from './ui/TransactionConfirmedModal'
-import { useMessageStore } from '@/stores/use-messages-store'
+import { Message, useMessageStore } from '@/stores/use-messages-store'
+import pusherClient from '@/lib/pusher/init'
 
 // Add sample messages data if not already in the store
-const sampleMessages = [
+
+
+const sampleMessages: Message[] = [
   {
-    id: 'msg-sample-1',
-    avatarUrl: 'https://randomuser.me/api/portraits/men/32.jpg',
-    username: 'FootballFan22',
-    time: '5:30 PM',
-    content: 'What a game so far! That last play was incredible.',
-    isRef: false,
-    reactions: ['👍', '🔥'],
-    actionNos: 5,
+    id: 1,
+    message: "What a game so far! That last play was incredible.",
+    hubId: 101,
+    userId: 1001,
+    author: {
+      id: 1001,
+      name: "FootballFan22",
+      profileImage: "https://randomuser.me/api/portraits/men/32.jpg"
+    },
+    time: "17:30",
     replies: [
       {
-        id: 'reply-sample-1',
-        avatarUrl: 'https://randomuser.me/api/portraits/women/22.jpg',
-        username: 'SoccerLover',
-        time: '5:32 PM',
-        content: 'Absolutely! The midfielder is on fire today!'
+        id: 11,
+        commentId: 1,
+        content: "Absolutely! The midfielder is on fire today!",
+        author: {
+          id: 1002,
+          name: "SoccerLover",
+          profileImage: "https://randomuser.me/api/portraits/women/22.jpg"
+        }
       }
     ]
   },
   {
-    id: 'msg-sample-2',
-    avatarUrl: 'https://randomuser.me/api/portraits/women/45.jpg',
-    username: 'SportAnalyst',
-    time: '5:35 PM',
-    content: 'The defense needs to tighten up in the second half. Too many opportunities for the opponent.',
-    isRef: false,
-    reactions: ['👀', '👍'],
-    actionNos: 8,
+    id: 2,
+    message: "The defense needs to tighten up in the second half. Too many opportunities for the opponent.",
+    hubId: 101,
+    userId: 1003,
+    author: {
+      id: 1003,
+      name: "SportAnalyst",
+      profileImage: "https://randomuser.me/api/portraits/women/45.jpg"
+    },
+    time: "17:35",
     replies: []
   },
   {
-    id: 'msg-sample-3',
-    avatarUrl: 'https://randomuser.me/api/portraits/men/67.jpg',
-    username: 'GameChanger',
-    time: '5:40 PM',
-    content: 'I bet we\'ll see a substitution in the next 10 minutes. The striker looks tired.',
-    isRef: false,
-    reactions: ['👍', '🤔'],
-    actionNos: 15,
+    id: 3,
+    message: "I bet we'll see a substitution in the next 10 minutes. The striker looks tired.",
+    hubId: 101,
+    userId: 1004,
+    author: {
+      id: 1004,
+      name: "GameChanger",
+      profileImage: "https://randomuser.me/api/portraits/men/67.jpg"
+    },
+    time: "17:40",
     replies: [
       {
-        id: 'reply-sample-2',
-        avatarUrl: 'https://randomuser.me/api/portraits/men/28.jpg',
-        username: 'CoachMike',
-        time: '5:42 PM',
-        content: 'Good call! I think they should bring in the young forward.'
+        id: 12,
+        commentId: 3,
+        content: "Good call! I think they should bring in the young forward.",
+        author: {
+          id: 1005,
+          name: "CoachMike",
+          profileImage: "https://randomuser.me/api/portraits/men/28.jpg"
+        }
       },
       {
-        id: 'reply-sample-3',
-        avatarUrl: 'https://randomuser.me/api/portraits/women/36.jpg',
-        username: 'TacticalGenius',
-        time: '5:43 PM',
-        content: 'No way, they need to focus on defense first!'
+        id: 13,
+        commentId: 3,
+        content: "No way, they need to focus on defense first!",
+        author: {
+          id: 1006,
+          name: "TacticalGenius",
+          profileImage: "https://randomuser.me/api/portraits/women/36.jpg"
+        }
       }
     ]
   }
 ];
+;
+;
 
 type Params = {
   game: string
@@ -110,6 +130,19 @@ const ClientParticularGamePage = () => {
       setMessageCount(messages.length);
     }
   }, [messages.length, messageCount]);
+
+  useEffect(() => {
+    const channel = pusherClient.subscribe('comment-hub')
+    
+    channel.bind('new-message', (payload: Message) => {
+      console.log(payload)
+      addMessage(payload)
+    })
+
+    return () => {
+      pusherClient.unsubscribe('comment-hub')
+    }
+  }, [])
 
   const scrollToBottom = () => {
     if (messageAreaRef.current) {

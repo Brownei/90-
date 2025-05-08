@@ -1,6 +1,7 @@
 "use client"
 import { useAuthLogin } from "@/hooks/use-auth-login";
 import { decryptData } from "@/utils/utils";
+import { IProvider } from "@web3auth/base";
 import { usePathname, useRouter } from "next/navigation";
 import React, { useEffect } from "react"
 
@@ -9,29 +10,28 @@ interface ProvidersProps {
   token: string
 }
 
-interface UserReturns {
-        id: string, 
-        email: string, 
-        name: string,
-        profileImage: string
-}
-
 const HomeProvider = ({ children, token }: ProvidersProps) => {
     const pathname = usePathname()
   const router = useRouter()
   const {  setUser, setIsLoading, setLoggedIn } = useAuthLogin();
+  console.log({token})
 
   useEffect(() => {
     if(token !== undefined) {
       setIsLoading(true)
       const parsedData = decryptData(token)
       const user = JSON.parse(parsedData) as UserReturns
-      console.log(user)
+      const decryptedProvider = decryptData(user.encryptedProvider)
+      const provider = JSON.parse(decryptedProvider) as IProvider
+      console.log({user})
 
       setUser({
         name: user.name,
         profileImage: user.profileImage,
         email: user.email,
+        address: user.publicKey,
+        balance: String(user.balance),
+        provider: provider,
         id: user.id
       })
 

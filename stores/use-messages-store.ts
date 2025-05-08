@@ -3,43 +3,37 @@ import { create } from "zustand";
 import { persist } from "zustand/middleware";
 
 export interface Message {
-  id: string;
-  avatarUrl: string;
-  username: string;
-  time: string;
-  content: string;
-  isRef: boolean
-  reactions?: string[];
-  actionNos: number;
-  replies?: Reply[]; // 🆕 allow replies inside
-  reactionsToRef?: {
-    "laughing": number,
-    "clapping": number,
-    "thumbs-down": number,
-  }
+  message: string,
+  id: number,
+  hubId: number,
+  userId: number,
+  author: {
+    id: number,
+    name: string
+    profileImage: string
+  },
+  time: string
+  replies: Reply[]
 }
 
-type Reaction =
-  "laughing" |
-  "clapping" |
-  "thumbs-down"
-
-
 export interface Reply {
-  id: string;
-  avatarUrl: string;
-  username: string;
-  time: string;
+  id: number;
+  commentId: number;
   content: string;
+  author: {
+    id: number;
+    name: string;
+    profileImage: string
+  };
 }
 
 interface MessageStore {
   messages: Message[];
   addMessage: (message: Message) => void;
-  addReaction: (messageId: string, reaction: string) => void;
-  addReply: (messageId: string, reply: Reply) => void;
-  addActionNos: (messageId: string, emoji: number) => void;
-  addReactionsToRef: (messageId: string, type: Reaction) => void;
+  // addReaction: (messageId: string, reaction: string) => void;
+  addReply: (messageId: number, reply: Reply) => void;
+  // addActionNos: (messageId: string, emoji: number) => void;
+  // addReactionsToRef: (messageId: string, type: Reaction) => void;
 }
 
 export const useMessageStore = create<MessageStore>()(
@@ -52,32 +46,32 @@ export const useMessageStore = create<MessageStore>()(
           messages: [...state.messages, message]
         })),
 
-      addReactionsToRef: (messageId, type) =>
-        set((state) => ({
-          messages: state.messages.map((m) =>
-            m.id === messageId
-              ? ({
-                ...m,
-                reactionsToRef: {
-                  ...m.reactionsToRef, // Retain existing reactions
-                  [type]: (m.reactionsToRef?.[type] || 0) + 1, // Increment the specific reaction
-                },
-              } as Message)
-              : m
-          ),
-        })),
+      // addReactionsToRef: (messageId, type) =>
+      //   set((state) => ({
+      //     messages: state.messages.map((m) =>
+      //       m.id === messageId
+      //         ? ({
+      //           ...m,
+      //           reactionsToRef: {
+      //             ...m.reactionsToRef, // Retain existing reactions
+      //             [type]: (m.reactionsToRef?.[type] || 0) + 1, // Increment the specific reaction
+      //           },
+      //         } as Message)
+      //         : m
+      //     ),
+      //   })),
 
-      addReaction: (messageId, reaction) =>
-        set((state) => ({
-          messages: state.messages.map((msg) =>
-            msg.id === messageId
-              ? {
-                ...msg,
-                reactions: msg.reactions ? [...msg.reactions, reaction] : [reaction]
-              }
-              : msg
-          )
-        })),
+      // addReaction: (messageId, reaction) =>
+      //   set((state) => ({
+      //     messages: state.messages.map((msg) =>
+      //       msg.id === messageId
+      //         ? {
+      //           ...msg,
+      //           reactions: msg.reactions ? [...msg.reactions, reaction] : [reaction]
+      //         }
+      //         : msg
+      //     )
+      //   })),
 
       addReply: (messageId, reply) =>
         set((state) => ({
@@ -91,17 +85,17 @@ export const useMessageStore = create<MessageStore>()(
           )
         })),
 
-      addActionNos: (messageId, number) =>
-        set((state) => ({
-          messages: state.messages.map((msg) =>
-            msg.id === messageId
-              ? {
-                ...msg,
-                actionNos: msg.actionNos + number
-              }
-              : msg
-          )
-        }))
+      // addActionNos: (messageId, number) =>
+      //   set((state) => ({
+      //     messages: state.messages.map((msg) =>
+      //       msg.id === messageId
+      //         ? {
+      //           ...msg,
+      //           actionNos: msg.actionNos + number
+      //         }
+      //         : msg
+      //     )
+      //   }))
     }),
     { name: "messages-store" }
   )

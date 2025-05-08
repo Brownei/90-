@@ -16,7 +16,7 @@ export const usersRouter = createTRPCRouter({
         name: z.string(),
         email: z.string(),
         encryptedProvider: z.string(),
-        balance: z.string(),
+        balance: z.number(),
         publicKey: z.string(),
         profileImage: z.string(),
         email_verified: z.boolean(),
@@ -63,6 +63,7 @@ export const usersRouter = createTRPCRouter({
           balance: newWallet[0].balance,
           encryptedProvider: newWallet[0].provider
         }))
+
         await ctx.setCookie('session', token)
       }
     }),

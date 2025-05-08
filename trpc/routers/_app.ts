@@ -3,6 +3,7 @@ import { baseProcedure, createTRPCRouter } from '../init';
 // import { twitterRouter } from './twitter';
 import { gameRouter } from './games';
 import { usersRouter } from './users';
+import { messagesRouter } from './messages';
 
 export const appRouter = createTRPCRouter({
   hello: baseProcedure
@@ -16,7 +17,7 @@ export const appRouter = createTRPCRouter({
         greeting: `hello ${opts.input.text}`,
       };
     }),
-
+  messages: messagesRouter,
   users: usersRouter,
   games: gameRouter,
 });
