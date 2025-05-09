@@ -50,7 +50,7 @@ const Nav = () => {
   console.log({ user })
 
   return (
-    <nav className={`${pathname !== '/' ? 'fixed top-0 left-0 z-50 right-0 px-3 lg:px-5 py-3 transition-colors duration-300 bg-[#ECF5F5] text-black ' : 'absolute z-50 w-full px-3 lg:px-5 py-3 text-white'}`}>
+    <nav className={`${pathname !== '/' ? 'fixed top-0 left-0 z-50 right-0 px-3 lg:px-5 py-3 transition-colors duration-300 bg-[#ECF5F5] text-black ' : 'absolute z-50 w-full px-3 lg:px-5 py-3 bg-[#ECF5F5] text-black'}`}>
       <div className='flex justify-between items-center'>
 
         <Link href={'/'}>
@@ -70,7 +70,6 @@ const Nav = () => {
               href={'/profile'}
               className={`font-ABCDaitype font-semibold text-[0.8rem] cursor-pointer ${pathname !== '/' ? 'text-black' : 'text-white'}`}
             >
-              Profile
             </Link>
           )}
 
@@ -106,12 +105,12 @@ const Nav = () => {
                   </div>
                 ) : null}
                 <span className='hidden lg:inline'>{user?.name || 'User'}</span>
-                <span className='lg:hidden'>Logout</span>
+                <span className='lg:hidden'></span>
               </span>
             ) : (
               <>
-                <span className='hidden lg:flex gap-3 items-center font-bold'>Register/Sign in with <TwitterIcon /></span>
-                <span className='flex gap-3 lg:hidden items-center'>Connect <TwitterIcon /></span>
+                <span className='hidden lg:flex gap-3 items-center font-bold'> Join Now</span>
+                <span className='flex gap-3 lg:hidden items-center'>Join Now</span>
               </>
             )}
           </button>
