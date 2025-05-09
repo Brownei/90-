@@ -10,6 +10,7 @@ import { PlusIcon } from 'lucide-react'
 import LoadingIcon from '@/public/icons/LoadingIcon'
 import Link from 'next/link'
 import { trpc } from '@/trpc/client'
+import LiveCarousel from '../carousel/live-carousel'
 
 const tabs = [
   "All",
@@ -21,7 +22,7 @@ const CommentHubPage = () => {
   const { selected, setSelected } = useTabsStore()
   const [isLoading, setIsLoading] = React.useState(false)
   const { data: liveGames, isLoading: isLiveMatchesLoading, error } = trpc.games.liveMatches.useQuery()
-  const { data: fixturedGames, isLoading: isFixturedMatchesLoading, error: fixturedGamesError } = trpc.games.getAllFixtures.useQuery<UpcomingMatch[]>()
+  const { data: fixturedGames, isLoading: isFixturedMatchesLoading, error: fixturedGamesError } = trpc.games.getAllFixtures.useQuery()
   const [query, setQuery] = React.useState("")
   const [filteredGames, setFilteredGames] = React.useState<Game[]>(games)
   const [filteredUpcomingGames, setFilteredUpcomingGames] = React.useState<UpcomingMatch[] | undefined>(!isFixturedMatchesLoading ? fixturedGames : [])
@@ -88,7 +89,7 @@ const CommentHubPage = () => {
                 <LoadingIcon />
               </div>
             ) : (
-              <Carousel tabs={games} isLive />
+              <LiveCarousel tabs={liveGames} />
             )}
           </div>
         </div>
@@ -101,7 +102,7 @@ const CommentHubPage = () => {
                 <LoadingIcon />
               </div>
             ) : (
-              <Carousel tabs={filteredUpcomingGames} isLive={false} />
+              <Carousel tabs={fixturedGames?.slice(0, 9)}  />
             )}
           </div>
         </div>

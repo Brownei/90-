@@ -14,7 +14,10 @@ export const users = pgTable('users', {
 });
 
 export const usersRelation = relations(users, ({one, many}) => ({
-  wallets: one(wallets),
+  wallets: one(wallets, {
+    fields: [users.id],
+    references: [wallets.userId]
+  }),
   for: many(wagers, {relationName: 'for'}),
   against: many(wagers, {relationName: 'against'}),
   comments: many(comments),
@@ -85,7 +88,10 @@ export const hubs = pgTable('hubs', {
 })
 
 export const hubsRelations = relations(hubs, ({one, many}) => ({
-  teams: one(teams),
+  teams: one(teams, {
+    fields: [hubs.id],
+    references: [teams.hubId], // make sure this matches your foreign key
+  }),
   comments: many(comments),
   wagers: many(wagers),
 }))
@@ -95,6 +101,7 @@ export const teams = pgTable('teams', {
   hubId: integer('hub_id').references(() => hubs.id),
   home: text('home').notNull(),
   away: text('away').notNull(),
+  startTime: text('start_time').notNull(),
   createdAt: text('created_at').notNull().default('CURRENT_TIMESTAMP'),
 })
 

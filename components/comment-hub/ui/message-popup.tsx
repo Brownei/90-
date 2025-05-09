@@ -13,6 +13,7 @@ import { Wallet } from '@project-serum/anchor'
 import { PublicKey } from '@solana/web3.js'
 import { useAuth } from '@/utils/useAuth'
 import toast from 'react-hot-toast'
+import { trpc } from '@/trpc/client'
 
 const RefereeAction = () => {
   return (
@@ -136,16 +137,16 @@ const Replies = ({ replies, messageUsername }: { replies: Reply[], messageUserna
         <div key={reply.id} className="mb-3">
           <div className="flex gap-2 items-start">
             <img
-              src={reply.avatarUrl}
-              alt={reply.username}
+              src={reply.author.profileImage}
+              alt={reply.author.name}
               width={36}
               height={36}
               className="size-[36px] rounded-full"
             />
             <div className="grid gap-1 w-full font-ABCDaitype">
               <p className="flex gap-1 items-center">
-                <span className="text-[#616061] text-[0.6rem] md:text-[0.7rem] font-medium">{reply.username}</span>
-                <span className="text-[0.5rem] text-[#808080]/55">{reply.time}</span>
+                <span className="text-[#616061] text-[0.6rem] md:text-[0.7rem] font-medium">{reply.author.name}</span>
+                <span className="text-[0.5rem] text-[#808080]/55">{reply.author.name}</span>
               </p>
               <div className="bg-gray-50 rounded-lg px-3 py-2">
                 <p className="text-[0.9rem] tracking-[0.2px]">{reply.content}</p>
@@ -158,10 +159,11 @@ const Replies = ({ replies, messageUsername }: { replies: Reply[], messageUserna
   );
 };
 
-const MessagePopup = () => {
-  const { messages, addReaction, addActionNos, addReply } = useMessageStore()
+const MessagePopup = ({seletedGame}: {seletedGame: any}) => {
+  const { messages, addReply } = useMessageStore()
+  const {} = trpc.messages.getAllMessages.useQuery({hubName: seletedGame.name})
   const { user, isAuthenticated } = useAuth()
-
+  // const {} =
   const [selectedMessage, setSelectedMessage] = useState<any>(null)
   const [isWagerModalOpen, setIsWagerModalOpen] = useState(false)
   const [isFundModalOpen, setIsFundModalOpen] = useState(false)
@@ -170,7 +172,7 @@ const MessagePopup = () => {
   const [wagerCondition, setWagerCondition] = useState('')
   const [stakeAmount, setStakeAmount] = useState(0)
   const [replyText, setReplyText] = useState('')
-  const [replyingTo, setReplyingTo] = useState<string | null>(null)
+  const [replyingTo, setReplyingTo] = useState<number | null>(null)
   const [showAllReplies, setShowAllReplies] = useState<Record<string, boolean>>({})
 
   // Custom message state for Josiah comments with proper typing
@@ -211,29 +213,7 @@ const MessagePopup = () => {
   });
 
   // Add some initial replies for demonstration purposes only on first render
-  useEffect(() => {
-    // Add a sample reply to josiah-1 if none exists yet
-    if (customMessages["josiah-1"].replies.length === 0) {
-      setCustomMessages(prev => ({
-        ...prev,
-        "josiah-1": {
-          ...prev["josiah-1"],
-          replies: [
-            {
-              id: "reply-demo-1",
-              avatarUrl: "https://via.placeholder.com/50?text=F",
-              username: "FanNow22",
-              time: "9:20 AM",
-              content: "Absolutely right! This is getting ridiculous 😡"
-            }
-          ]
-        }
-      }));
-    }
-  }, []);
-
-  // Custom handler for Josiah comments
-  const handleJosiahReplyToggle = (id: string) => {
+  const handleJosiahReplyToggle = (id: number) => {
     setShowAllReplies(prev => ({
       ...prev,
       [id]: !prev[id]
@@ -290,64 +270,66 @@ const MessagePopup = () => {
     }
   }
 
-  const handleShowReplies = (messageId: string) => {
+  const handleShowReplies = (messageId: number) => {
     setShowAllReplies(prev => ({
       ...prev,
       [messageId]: !prev[messageId]
     }));
   }
 
-  const handleReplyClick = (messageId: string) => {
+  const handleReplyClick = (messageId: number) => {
     setReplyingTo(messageId);
   }
 
-  const handleSubmitReply = (messageId: string) => {
-    if (!replyText.trim()) return;
-
-    // Check if it's a standard message or custom Josiah message
-    if (messageId.startsWith("josiah-")) {
-      const reply: Reply = {
-        id: `reply-${Date.now()}`,
-        avatarUrl: user?.image || "https://via.placeholder.com/50?text=U",
-        username: user?.username || "You",
-        time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-        content: replyText
-      };
-
-      // Update the custom messages state
-      setCustomMessages(prev => ({
-        ...prev,
-        [messageId]: {
-          ...prev[messageId],
-          replies: [...prev[messageId].replies, reply]
-        }
-      }));
-
-      // Show success notification
-      toast.success("Reply added successfully!");
-    } else {
-      // For regular messages in the message store
-      const reply: Reply = {
-        id: `reply-${Date.now()}`,
-        avatarUrl: user?.image || "https://via.placeholder.com/50?text=U",
-        username: user?.username || "You",
-        time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-        content: replyText
-      };
-
-      addReply(messageId, reply);
-      toast.success("Reply added successfully!");
-    }
-
-    // Clear the reply text but keep the reply input open
-    setReplyText('');
-
-    // Make sure the replies section is expanded
-    setShowAllReplies(prev => ({
-      ...prev,
-      [messageId]: true
-    }));
-  }
+  // const handleSubmitReply = (messageId: string) => {
+  //   if (!replyText.trim()) return;
+  //
+  //   // Check if it's a standard message or custom Josiah message
+  //   if (messageId.startsWith("josiah-")) {
+  //     const reply: Reply = {
+  //       id: 1,
+  //       author: {
+  //         id: 1,
+  //         name: user?.name as string,
+  //         profileImage: user?.image || "https://via.placeholder.com/50?text=U",
+  //       }
+  //       content: replyText
+  //     };
+  //
+  //     // Update the custom messages state
+  //     setCustomMessages(prev => ({
+  //       ...prev,
+  //       [messageId]: {
+  //         ...prev[messageId],
+  //         replies: [...prev[messageId].replies, reply]
+  //       }
+  //     }));
+  //
+  //     // Show success notification
+  //     toast.success("Reply added successfully!");
+  //   } else {
+  //     // For regular messages in the message store
+  //     const reply: Reply = {
+  //       id: `reply-${Date.now()}`,
+  //       avatarUrl: user?.image || "https://via.placeholder.com/50?text=U",
+  //       username: user?.username || "You",
+  //       time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+  //       content: replyText
+  //     };
+  //
+  //     addReply(messageId, reply);
+  //     toast.success("Reply added successfully!");
+  //   }
+  //
+  //   // Clear the reply text but keep the reply input open
+  //   setReplyText('');
+  //
+  //   // Make sure the replies section is expanded
+  //   setShowAllReplies(prev => ({
+  //     ...prev,
+  //     [messageId]: true
+  //   }));
+  // }
 
   // Enhanced messages for demo
   const enhancedMessages = [
@@ -359,7 +341,7 @@ const MessagePopup = () => {
       {/* Add the custom comments to match the image */}
       <JosiahComment
         id="josiah-1"
-        onShowReplies={handleJosiahReplyToggle}
+        // onShowReplies={handleJosiahReplyToggle}
         replies={customMessages["josiah-1"].replies}
       />
 
@@ -370,16 +352,16 @@ const MessagePopup = () => {
             <div key={reply.id} className="mb-3">
               <div className="flex gap-2 items-start">
                 <img
-                  src={reply.avatarUrl}
-                  alt={reply.username}
+                  src={reply.author.profileImage}
+                  alt={reply.author.name}
                   width={36}
                   height={36}
                   className="size-[36px] rounded-full"
                 />
                 <div className="grid gap-1 w-full font-ABCDaitype">
                   <p className="flex gap-1 items-center">
-                    <span className="text-[#616061] text-[0.6rem] md:text-[0.7rem] font-medium">{reply.username}</span>
-                    <span className="text-[0.5rem] text-[#808080]/55">{reply.time}</span>
+                    <span className="text-[#616061] text-[0.6rem] md:text-[0.7rem] font-medium">{reply.author.name}</span>
+                    <span className="text-[0.5rem] text-[#808080]/55">{reply.author.name}</span>
                   </p>
                   <div className="bg-gray-50 rounded-lg px-3 py-2">
                     <p className="text-[0.9rem] tracking-[0.2px]">{reply.content}</p>
@@ -390,51 +372,51 @@ const MessagePopup = () => {
           ))}
 
           {/* Add Reply button at the bottom of replies */}
-          {replyingTo !== "josiah-1" && (
-            <div className="mt-2 mb-3">
-              <button
-                onClick={() => setReplyingTo("josiah-1")}
-                className="text-blue-600 text-sm hover:text-blue-800"
-              >
-                Add a reply...
-              </button>
-            </div>
-          )}
+          {/* {replyingTo !== "josiah-1" && ( */}
+          {/*   <div className="mt-2 mb-3"> */}
+          {/*     <button */}
+          {/*       onClick={() => setReplyingTo("josiah-1")} */}
+          {/*       className="text-blue-600 text-sm hover:text-blue-800" */}
+          {/*     > */}
+          {/*       Add a reply... */}
+          {/*     </button> */}
+          {/*   </div> */}
+          {/* )} */}
 
           {/* Reply input for Josiah comment */}
-          {replyingTo === "josiah-1" && (
-            <div className="flex gap-2 items-center">
-              <input
-                type="text"
-                value={replyText}
-                onChange={(e) => setReplyText(e.target.value)}
-                placeholder="Reply to Josiah..."
-                className="flex-1 p-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-400"
-                autoFocus
-              />
-              <div className="flex gap-2">
-                <button
-                  onClick={() => setReplyingTo(null)}
-                  className="text-gray-500 text-sm hover:text-gray-700"
-                >
-                  Cancel
-                </button>
-                <button
-                  onClick={() => handleSubmitReply("josiah-1")}
-                  className="bg-blue-500 text-white px-3 py-1 rounded-lg text-sm hover:bg-blue-600"
-                  disabled={!replyText.trim()}
-                >
-                  Send
-                </button>
-              </div>
-            </div>
-          )}
+          {/* {replyingTo === "josiah-1" && ( */}
+          {/*   <div className="flex gap-2 items-center"> */}
+          {/*     <input */}
+          {/*       type="text" */}
+          {/*       value={replyText} */}
+          {/*       onChange={(e) => setReplyText(e.target.value)} */}
+          {/*       placeholder="Reply to Josiah..." */}
+          {/*       className="flex-1 p-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-400" */}
+          {/*       autoFocus */}
+          {/*     /> */}
+          {/*     <div className="flex gap-2"> */}
+          {/*       <button */}
+          {/*         onClick={() => setReplyingTo(null)} */}
+          {/*         className="text-gray-500 text-sm hover:text-gray-700" */}
+          {/*       > */}
+          {/*         Cancel */}
+          {/*       </button> */}
+          {/*       <button */}
+          {/*         // onClick={() => handleSubmitReply("josiah-1")} */}
+          {/*         className="bg-blue-500 text-white px-3 py-1 rounded-lg text-sm hover:bg-blue-600" */}
+          {/*         disabled={!replyText.trim()} */}
+          {/*       > */}
+          {/*         Send */}
+          {/*       </button> */}
+          {/*     </div> */}
+          {/*   </div> */}
+          {/* )} */}
         </div>
       )}
 
       <JosiahComment
         id="josiah-2"
-        onShowReplies={handleJosiahReplyToggle}
+        // onShowReplies={handleJosiahReplyToggle}
         replies={customMessages["josiah-2"].replies}
       />
 
@@ -445,16 +427,16 @@ const MessagePopup = () => {
             <div key={reply.id} className="mb-3">
               <div className="flex gap-2 items-start">
                 <img
-                  src={reply.avatarUrl}
-                  alt={reply.username}
+                  src={reply.author.profileImage}
+                  alt={reply.author.name}
                   width={36}
                   height={36}
                   className="size-[36px] rounded-full"
                 />
                 <div className="grid gap-1 w-full font-ABCDaitype">
                   <p className="flex gap-1 items-center">
-                    <span className="text-[#616061] text-[0.6rem] md:text-[0.7rem] font-medium">{reply.username}</span>
-                    <span className="text-[0.5rem] text-[#808080]/55">{reply.time}</span>
+                    <span className="text-[#616061] text-[0.6rem] md:text-[0.7rem] font-medium">{reply.author.name}</span>
+                    <span className="text-[0.5rem] text-[#808080]/55">{reply.author.name}</span>
                   </p>
                   <div className="bg-gray-50 rounded-lg px-3 py-2">
                     <p className="text-[0.9rem] tracking-[0.2px]">{reply.content}</p>
@@ -465,45 +447,45 @@ const MessagePopup = () => {
           ))}
 
           {/* Add Reply button at the bottom of replies */}
-          {replyingTo !== "josiah-2" && (
-            <div className="mt-2 mb-3">
-              <button
-                onClick={() => setReplyingTo("josiah-2")}
-                className="text-blue-600 text-sm hover:text-blue-800"
-              >
-                Add a reply...
-              </button>
-            </div>
-          )}
+          {/* {replyingTo !== "josiah-2" && ( */}
+          {/*   <div className="mt-2 mb-3"> */}
+          {/*     <button */}
+          {/*       onClick={() => setReplyingTo("josiah-2")} */}
+          {/*       className="text-blue-600 text-sm hover:text-blue-800" */}
+          {/*     > */}
+          {/*       Add a reply... */}
+          {/*     </button> */}
+          {/*   </div> */}
+          {/* )} */}
 
           {/* Reply input for second Josiah comment */}
-          {replyingTo === "josiah-2" && (
-            <div className="flex gap-2 items-center">
-              <input
-                type="text"
-                value={replyText}
-                onChange={(e) => setReplyText(e.target.value)}
-                placeholder="Reply to Josiah..."
-                className="flex-1 p-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-400"
-                autoFocus
-              />
-              <div className="flex gap-2">
-                <button
-                  onClick={() => setReplyingTo(null)}
-                  className="text-gray-500 text-sm hover:text-gray-700"
-                >
-                  Cancel
-                </button>
-                <button
-                  onClick={() => handleSubmitReply("josiah-2")}
-                  className="bg-blue-500 text-white px-3 py-1 rounded-lg text-sm hover:bg-blue-600"
-                  disabled={!replyText.trim()}
-                >
-                  Send
-                </button>
-              </div>
-            </div>
-          )}
+          {/* {replyingTo === "josiah-2" && ( */}
+          {/*   <div className="flex gap-2 items-center"> */}
+          {/*     <input */}
+          {/*       type="text" */}
+          {/*       value={replyText} */}
+          {/*       onChange={(e) => setReplyText(e.target.value)} */}
+          {/*       placeholder="Reply to Josiah..." */}
+          {/*       className="flex-1 p-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-400" */}
+          {/*       autoFocus */}
+          {/*     /> */}
+          {/*     <div className="flex gap-2"> */}
+          {/*       <button */}
+          {/*         onClick={() => setReplyingTo(null)} */}
+          {/*         className="text-gray-500 text-sm hover:text-gray-700" */}
+          {/*       > */}
+          {/*         Cancel */}
+          {/*       </button> */}
+          {/*       <button */}
+          {/*         // onClick={() => handleSubmitReply("josiah-2")} */}
+          {/*         className="bg-blue-500 text-white px-3 py-1 rounded-lg text-sm hover:bg-blue-600" */}
+          {/*         disabled={!replyText.trim()} */}
+          {/*       > */}
+          {/*         Send */}
+          {/*       </button> */}
+          {/*     </div> */}
+          {/*   </div> */}
+          {/* )} */}
         </div>
       )}
 
@@ -515,8 +497,8 @@ const MessagePopup = () => {
         <div key={message.id} className={`${i !== enhancedMessages.length - 1 && 'border-b border-[#B7B7B7] '} py-4`}>
           <div className='flex gap-2 items-start'>
             <img
-              src={message.avatarUrl}
-              alt={message.id}
+              src={message.author?.profileImage}
+              alt={message.author?.name}
               width={500}
               height={500}
               className='size-[50px] rounded-full'
@@ -524,101 +506,69 @@ const MessagePopup = () => {
 
             <div className='grid gap-1 w-full font-ABCDaitype'>
               <p className='flex gap-1 items-center'>
-                <span className='text-[#616061] text-[0.6rem] md:text-[0.75rem] font-medium'>{message.username}</span>
+                <span className='text-[#616061] text-[0.6rem] md:text-[0.75rem] font-medium'>{message.author?.name}</span>
                 <span className='text-[0.5rem] lg:text-[0.5rem] text-[#808080]/55'>{message.time}</span>
               </p>
               <p className='flex gap-2 justify-between items-start'>
-                <span className='lg:w-[700px] text-[1rem] tracking-[0.2px] w-full'>{message.content}</span>
-                {!message.isRef && (
-                  <button
-                    className='flex items-center gap-[2px]'
-                    onClick={() => handleWagerClick(message)}
-                  >
-                    <span className='text-[0.9rem] lg:text-[0.9rem]'>⚽</span>
-                    <span className='text-[#000]/50 text-[0.6rem] w-[15%] lg:text-[0.8rem]'> {formatNumberInThousands(message.actionNos)}</span>
-                  </button>
-                )}
+                <span className='lg:w-[700px] text-[1rem] tracking-[0.2px] w-full'>{message.message}</span>
+                {/* {!message.isRef && ( */}
+                {/*   <button */}
+                {/*     className='flex items-center gap-[2px]' */}
+                {/*     onClick={() => handleWagerClick(message)} */}
+                {/*   > */}
+                {/*     <span className='text-[0.9rem] lg:text-[0.9rem]'>⚽</span> */}
+                {/*     <span className='text-[#000]/50 text-[0.6rem] w-[15%] lg:text-[0.8rem]'> {formatNumberInThousands(message.actionNos)}</span> */}
+                {/*   </button> */}
+                {/* )} */}
               </p>
 
               <div className='lg:w-[700px] text-[1rem] tracking-[0.2px] w-[calc(100%_-_10%)] flex justify-between items-center'>
-                {message.replies && message.replies.length > 0 && !message.isRef ? (
+                {message.replies && message.replies.length > 0 ? (
                   <button
-                    onClick={() => handleShowReplies(message.id)}
+                    onClick={() => handleShowReplies(message.id!)}
                     className='text-[#000000] underline text-[0.7rem] lg:text-[0.75rem] hover:text-blue-600'
                   >
-                    {showAllReplies[message.id] ? 'Hide replies' : `View ${message.replies.length} ${message.replies.length === 1 ? 'reply' : 'replies'}`}
+                    {showAllReplies[message.id!] ? 'Hide replies' : `View ${message.replies.length} ${message.replies.length === 1 ? 'reply' : 'replies'}`}
                   </button>
                 ) : (
                   <button
-                    onClick={() => handleReplyClick(message.id)}
                     className='text-[#000000]/60 text-[0.7rem] lg:text-[0.75rem] hover:text-black'
                   >
-                    {!message.isRef && `Reply to ${message.username}`}
+                    {`Reply to ${message.author?.name}`}
                   </button>
                 )}
 
                 <div className='flex gap-2 items-center'>
-                  {!message.isRef && (
-                    <button
-                      className='bg-yellow-100 text-yellow-800 px-2 py-1 rounded-full text-xs font-medium hover:bg-yellow-200'
-                      onClick={() => handleWagerClick(message)}
-                    >
-                      Wager
-                    </button>
-                  )}
+                  {/* {!message.isRef && ( */}
+                  {/*   <button */}
+                  {/*     className='bg-yellow-100 text-yellow-800 px-2 py-1 rounded-full text-xs font-medium hover:bg-yellow-200' */}
+                  {/*     onClick={() => handleWagerClick(message)} */}
+                  {/*   > */}
+                  {/*     Wager */}
+                  {/*   </button> */}
+                  {/* )} */}
 
-                  {!message.isRef && (
-                    <div className='flex gap-2 items-center'>
-                      <span className='text-[#000000]/43 text-[0.6rem] md:text-[0.7rem] lg:text-[0.8rem]'> +{message.reactions?.length || 0}</span>
-                      <button>
-                        <ReactionsIcon />
-                      </button>
-                    </div>
-                  )}
-
-                  {!message.isRef && (
-                    <button>
-                      <ShareIcon />
-                    </button>
-                  )}
                 </div>
 
-                {message.isRef && (
-                  <div className='flex gap-2 items-center'>
-                    <button className='px-2 py-[1px] border border-[#000]/50 rounded-full'>
-                      😂
-                      <span>{message.reactionsToRef?.laughing}</span>
-                    </button>
-                    <button className='px-2 py-[1px] border border-[#000]/50 rounded-full'>
-                      👏
-                      <span>{message.reactionsToRef?.clapping}</span>
-                    </button>
-                    <button className='px-2 py-[1px] border border-[#000]/50 rounded-full'>
-                      👎
-                      <span>{message.reactionsToRef?.['thumbs-down']}</span>
-                    </button>
-                  </div>
-                )}
               </div>
 
               {/* Show all replies when expanded */}
-              {showAllReplies[message.id] && message.replies && (
-                <div className="ml-12 mt-3 border-l-2 border-gray-200 pl-4">
-                  <Replies replies={message.replies} messageUsername={message.username} />
-
-                  {/* Add Reply button at the bottom of replies */}
-                  {replyingTo !== message.id && (
-                    <div className="mt-2 mb-3">
-                      <button
-                        onClick={() => setReplyingTo(message.id)}
-                        className="text-blue-600 text-sm hover:text-blue-800"
-                      >
-                        Add a reply...
-                      </button>
-                    </div>
-                  )}
-                </div>
-              )}
+              {/* {showAllReplies[message.id] && message.replies && ( */}
+              {/*   <div className="ml-12 mt-3 border-l-2 border-gray-200 pl-4"> */}
+              {/*     <Replies replies={message.replies} messageUsername={message.username} /> */}
+              {/**/}
+              {/*     {replyingTo !== message.id && ( */}
+              {/*       <div className="mt-2 mb-3"> */}
+              {/*         <button */}
+              {/*           onClick={() => setReplyingTo(message.id)} */}
+              {/*           className="text-blue-600 text-sm hover:text-blue-800" */}
+              {/*         > */}
+              {/*           Add a reply... */}
+              {/*         </button> */}
+              {/*       </div> */}
+              {/*     )} */}
+              {/*   </div> */}
+              {/* )} */}
 
               {/* Reply input when replying to this message */}
               {replyingTo === message.id && (
@@ -627,7 +577,7 @@ const MessagePopup = () => {
                     type="text"
                     value={replyText}
                     onChange={(e) => setReplyText(e.target.value)}
-                    placeholder={`Reply to ${message.username}...`}
+                    placeholder={`Reply to ${message.author?.name}...`}
                     className="flex-1 p-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-400"
                     autoFocus
                   />
@@ -639,7 +589,6 @@ const MessagePopup = () => {
                       Cancel
                     </button>
                     <button
-                      onClick={() => handleSubmitReply(message.id)}
                       className="bg-blue-500 text-white px-3 py-1 rounded-lg text-sm hover:bg-blue-600"
                       disabled={!replyText.trim()}
                     >
@@ -660,6 +609,7 @@ const MessagePopup = () => {
           setIsWagerModalOpen(false)
           setInsufficientBalance(false)
         }}
+        selectedGame={seletedGame}
         onProceed={handleWagerProceed}
         username={selectedMessage?.username || "User"}
         insufficientBalance={insufficientBalance}

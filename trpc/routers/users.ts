@@ -3,6 +3,7 @@ import { baseProcedure, createTRPCRouter } from "../init";
 import { db, users, wallets } from "@/lib/db";
 import { eq } from "drizzle-orm";
 import { encryptData } from "@/utils/utils";
+import { PublicKey } from "@solana/web3.js";
 
 export const usersRouter = createTRPCRouter({
   logout: baseProcedure
@@ -34,10 +35,11 @@ export const usersRouter = createTRPCRouter({
           name: existingUser[0].users.name, 
           profileImage: existingUser[0].users.image,
           publicKey: existingUser[0].wallets?.publicKey,
-          encryptedProvider: existingUser[0].wallets?.provider,
           balance: existingUser[0].wallets?.solanaBalance,
         }))
         await ctx.setCookie('session', token)
+
+        return token
       } else {
         const newUser = await db.insert(users).values({
           email,
@@ -47,7 +49,7 @@ export const usersRouter = createTRPCRouter({
         }).returning({id: users.id, email: users.email, profileImage: users.image, name: users.name})
 
         const newWallet = await db.insert(wallets).values({
-          publicKey: publicKey,
+          publicKey: publicKey.toString(),
           userId: newUser[0].id,
           isMainWallet: false,
           provider: encryptedProvider,
@@ -59,12 +61,13 @@ export const usersRouter = createTRPCRouter({
           email: newUser[0].email, 
           name: newUser[0].name,
           profileImage: newUser[0].profileImage,
-          publicKey: newWallet[0].publicKey,
+          publicKey,
           balance: newWallet[0].balance,
-          encryptedProvider: newWallet[0].provider
         }))
 
         await ctx.setCookie('session', token)
+
+        return token;
       }
     }),
 });

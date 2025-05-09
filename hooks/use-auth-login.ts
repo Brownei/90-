@@ -11,6 +11,7 @@ import { SolanaPrivateKeyProvider, SolanaWallet } from "@web3auth/solana-provide
 import { trpc } from '@/trpc/client';
 import { Connection, PublicKey } from '@solana/web3.js';
 import { encryptData } from '@/utils/utils';
+import { useSessionStore } from '@/stores/use-session-store';
 
 const chainConfig = {
   chainNamespace: CHAIN_NAMESPACES.SOLANA,
@@ -42,6 +43,7 @@ export const useAuthLogin = () => {
   const router = useRouter()
   const loginMutation = trpc.users.login.useMutation()
   const logoutMutation = trpc.users.logout.useMutation()
+  const {setSession} = useSessionStore()
 
   useEffect(() => {
     const initWeb3Auth = async () => {
@@ -138,15 +140,19 @@ export const useAuthLogin = () => {
           const balance = await connection.getBalance(new PublicKey(accounts[0]))
           const encryptedProvider = encryptData(JSON.stringify(web3auth.provider))
           const balanceString = String(balance)
-          await loginMutation.mutateAsync({
+          const publicKey = new PublicKey(accounts[0])
+          const token = await loginMutation.mutateAsync({
             name: userInfo.name as string,
             email: userInfo.email as string,
             profileImage: userInfo.profileImage as string,
             email_verified: true,
-            publicKey: String(new PublicKey(accounts[0])),
+            publicKey: new PublicKey(accounts[0]).toString(),
             balance,
             encryptedProvider: encryptedProvider
           })
+
+          console.log(token)
+          setSession(token as string)
 
           setUser({
               name: userInfo.name,
@@ -154,7 +160,6 @@ export const useAuthLogin = () => {
               email: userInfo.email,
               address: new PublicKey(accounts[0]),
               balance: balanceString,
-              provider: web3auth.provider!,
           })
         } catch (error) {
           console.error("Failed to get or store user info:", error);
@@ -178,6 +183,7 @@ export const useAuthLogin = () => {
       setIsAuthenticated(false)
       await logoutMutation.mutateAsync()
       setUser(null)
+      setSession(null)
       router.push('/')
     } catch (error) {
       console.error("Logout error:", error);

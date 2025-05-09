@@ -38,6 +38,6 @@ interface UserReturns {
   name: string,
   profileImage: string
   publicKey: PublicKey;
-  encryptedProvider: string;
+  // encryptedProvider: string;
   balance: number
 }

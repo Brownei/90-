@@ -27,7 +27,7 @@ const Nav = () => {
     setIsAuthenticated
   } = useAuthLogin();
 
-  console.log({ isAuthenticated, isLoading, logout, connected, connect, provider, loggedIn, web3auth, isWeb3AuthInitialized })
+  // console.log({ isAuthenticated, isLoading, logout, connected, connect, provider, loggedIn, web3auth, isWeb3AuthInitialized })
 
   const handleAuthAction = async () => {
     if (loggedIn && user !== null) {

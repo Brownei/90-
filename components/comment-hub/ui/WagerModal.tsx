@@ -1,9 +1,18 @@
-import React, { useState } from 'react';
+import { BettingClient } from '@/client/betting-client';
+import { Game } from '@/data';
+import { useAuthLogin } from '@/hooks/use-auth-login';
+import { bettingClientAtom } from '@/stores/navStore';
+import { Wallet } from '@project-serum/anchor';
+import { useWallet } from '@solana/wallet-adapter-react';
+import { Keypair } from '@solana/web3.js';
+import { useAtom } from 'jotai';
+import React, { useEffect, useState } from 'react';
 
 interface WagerModalProps {
   isOpen: boolean;
   onClose: () => void;
   onProceed: (condition: string, stake: number) => void;
+  selectedGame: any
   username?: string;
   insufficientBalance?: boolean;
 }
@@ -11,20 +20,27 @@ interface WagerModalProps {
 const WagerModal: React.FC<WagerModalProps> = ({ 
   isOpen, 
   onClose, 
+  selectedGame,
   onProceed, 
   username = '', 
   insufficientBalance = false 
 }) => {
   const [wagerCondition, setWagerCondition] = useState('');
+  const {user} = useAuthLogin()
+  const bettingClient = new BettingClient(user?.address!)
   const [stakeAmount, setStakeAmount] = useState('');
   const [forUsername, setForUsername] = useState(username);
   const [againstUsername, setAgainstUsername] = useState('');
   
   if (!isOpen) return null;
 
-  const handleProceed = () => {
+  const handleProceed = async (home: string, away: string, hubId: number, startTime: number) => {
     if (wagerCondition && stakeAmount) {
-      onProceed(wagerCondition, parseFloat(stakeAmount));
+      // onProceed(wagerCondition, parseFloat(stakeAmount));
+      const transaction = await bettingClient.initialize(2)
+      console.log(transaction)
+
+      const bet = await bettingClient.createMatch(home, away, String(hubId), startTime)
     }
   };
 
@@ -102,7 +118,14 @@ const WagerModal: React.FC<WagerModalProps> = ({
         <div className="flex justify-end">
           <button 
             className="bg-green-700 text-white px-4 py-2 rounded"
-            onClick={handleProceed}
+            onClick={
+              async () => await handleProceed(
+                selectedGame.team.home,
+                selectedGame.team.away,
+                selectedGame.id,
+                selectedGame.team.startTime
+              )
+            }
             disabled={!wagerCondition || !stakeAmount}
           >
             Book

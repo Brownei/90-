@@ -1,5 +1,5 @@
-import { Connection, PublicKey, Keypair } from '@solana/web3.js';
-import { Program, Provider, web3, BN, AnchorProvider, Wallet } from '@project-serum/anchor';
+import { Connection, PublicKey } from '@solana/web3.js';
+import { Program, Provider, web3, BN } from '@project-serum/anchor';
 import { TOKEN_PROGRAM_ID } from '@solana/spl-token';
 // @ts-ignore
 import BettingIDL from './betting.json';
@@ -24,27 +24,27 @@ export class BettingClient {
   private provider: Provider;
   private programId: PublicKey;
   private connection: Connection;
-  private wallet: Wallet;
+  private address: PublicKey;
 
   constructor(
-    wallet: Wallet,
+    address: PublicKey,
     network: Network = 'testnet',
     customRpcUrl?: string
   ) {
     // Set up connection
     const rpcUrl = customRpcUrl || RPC_ENDPOINTS[network];
     this.connection = new Connection(rpcUrl, 'confirmed');
+    this.address = address;
+    const revisedProvider: Provider = {
+      publicKey: this.address,
+      connection: this.connection
+    }
     
     // Get program ID for the selected network
     this.programId = new PublicKey(PROGRAM_IDS[network]);
     
     // Set up provider
-    this.wallet = wallet;
-    this.provider = new AnchorProvider(
-      this.connection, 
-      this.wallet, 
-      { commitment: 'confirmed' }
-    );
+    this.provider = revisedProvider
     
     // Initialize program with IDL
     this.program = new Program(
@@ -69,7 +69,7 @@ export class BettingClient {
         .initialize(platformFee)
         .accounts({
           platformConfig: platformConfigPda,
-          authority: this.wallet.publicKey,
+          authority: this.address,
           systemProgram: web3.SystemProgram.programId,
         })
         .rpc();
@@ -100,7 +100,7 @@ export class BettingClient {
         .createMatch(teamA, teamB, matchId, new BN(startTime))
         .accounts({
           matchAccount: matchPda,
-          authority: this.wallet.publicKey,
+          authority: this.address,
           systemProgram: web3.SystemProgram.programId,
         })
         .rpc();
@@ -119,7 +119,7 @@ export class BettingClient {
     matchId: string,
     amount: number,
     predictedWinner: string,
-    tokenMint: PublicKey,
+    // tokenMint: PublicKey,
     bettorTokenAccount: PublicKey,
     escrowTokenAccount: PublicKey
   ): Promise<string> {
@@ -129,7 +129,7 @@ export class BettingClient {
     );
     
     const [betPda] = PublicKey.findProgramAddressSync(
-      [Buffer.from('bet'), this.wallet.publicKey.toBuffer(), matchPda.toBuffer()],
+      [Buffer.from('bet'), this.address.toBuffer(), matchPda.toBuffer()],
       this.programId
     );
     
@@ -141,7 +141,7 @@ export class BettingClient {
         .accounts({
           bet: betPda,
           matchAccount: matchPda,
-          bettor: this.wallet.publicKey,
+          bettor: this.address,
           bettorTokenAccount: bettorTokenAccount,
           escrowTokenAccount: escrowTokenAccount,
           tokenProgram: TOKEN_PROGRAM_ID,
@@ -179,7 +179,7 @@ export class BettingClient {
         .accounts({
           matchAccount: matchPda,
           platformConfig: platformConfigPda,
-          authority: this.wallet.publicKey,
+          authority: this.address,
         })
         .rpc();
       
@@ -205,7 +205,7 @@ export class BettingClient {
     );
     
     const [betPda] = PublicKey.findProgramAddressSync(
-      [Buffer.from('bet'), this.wallet.publicKey.toBuffer(), matchPda.toBuffer()],
+      [Buffer.from('bet'), this.address.toBuffer(), matchPda.toBuffer()],
       this.programId
     );
     

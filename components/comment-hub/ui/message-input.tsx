@@ -1,32 +1,38 @@
 import SendIcon from '@/public/icons/SendIcon'
 import React, { forwardRef, useState, useEffect } from 'react'
-import { useMessageStore } from '@/stores/use-messages-store'
+import { Message, useMessageStore } from '@/stores/use-messages-store'
+import { useAuthLogin } from '@/hooks/use-auth-login';
+import { trpc } from '@/trpc/client';
 
 interface MessageInputProps {
   ref: React.ForwardedRef<HTMLDivElement | null>;
+  hubId: number
   onWagerClick?: () => void;
 }
 
 const MessageInput = forwardRef<HTMLDivElement | null, MessageInputProps>(
-  ({ onWagerClick }, ref) => {
+  ({ onWagerClick, hubId }, ref) => {
+    const {user} = useAuthLogin()
     const [message, setMessage] = useState('');
     const { addMessage, messages } = useMessageStore();
+    const messagesMutation = trpc.messages.sendMessages.useMutation()
 
-    const handleSendMessage = () => {
+    const handleSendMessage = async () => {
       if (!message.trim()) return;
 
-      // Create a new message object
-      const newMessage = {
-        id: `msg-${Date.now()}`,
-        avatarUrl: 'https://via.placeholder.com/50?text=U',
-        username: 'You',
+      const newMessage: Message = {
+        message: message.trim(),
+        hubId,
+        replies: [],
+        userId: Number(user?.id),
         time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-        content: message,
-        isRef: false,
-        reactions: [],
-        actionNos: 0,
-        replies: []
       };
+
+      await messagesMutation.mutateAsync({
+        hubId,
+        content: newMessage.message,
+        userId: Number(user?.id)
+      })
 
       // Add the message to the store
       addMessage(newMessage);
@@ -36,10 +42,10 @@ const MessageInput = forwardRef<HTMLDivElement | null, MessageInputProps>(
     };
 
     // Handle enter key press
-    const handleKeyPress = (e: React.KeyboardEvent) => {
+    const handleKeyPress = async (e: React.KeyboardEvent) => {
       if (e.key === 'Enter' && !e.shiftKey) {
         e.preventDefault();
-        handleSendMessage();
+        await handleSendMessage();
 
         // Keep focus on input after sending
         const inputField = document.querySelector('.message-input') as HTMLInputElement;
@@ -77,7 +83,7 @@ const MessageInput = forwardRef<HTMLDivElement | null, MessageInputProps>(
               className='outline-none w-full p-1 bg-transparent message-input'
               value={message}
               onChange={(e) => setMessage(e.target.value)}
-              onKeyDown={handleKeyPress}
+              onKeyDown={async(e) => await handleKeyPress(e)}
               placeholder="Type a message..."
             />
             <button

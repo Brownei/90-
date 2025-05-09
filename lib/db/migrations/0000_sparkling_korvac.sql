@@ -27,6 +27,7 @@ CREATE TABLE "teams" (
 	"hub_id" integer,
 	"home" text NOT NULL,
 	"away" text NOT NULL,
+	"start_time" text NOT NULL,
 	"created_at" text DEFAULT 'CURRENT_TIMESTAMP' NOT NULL
 );
 --> statement-breakpoint

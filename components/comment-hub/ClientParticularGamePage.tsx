@@ -14,6 +14,8 @@ import FundWagerModal from './ui/FundWagerModal'
 import TransactionConfirmedModal from './ui/TransactionConfirmedModal'
 import { Message, useMessageStore } from '@/stores/use-messages-store'
 import pusherClient from '@/lib/pusher/init'
+import { trpc } from '@/trpc/client'
+import LoadingIcon from '@/public/icons/LoadingIcon'
 
 // Add sample messages data if not already in the store
 
@@ -100,10 +102,12 @@ type Params = {
 
 const ClientParticularGamePage = () => {
   const isLive = true
+  const hubId = 1
   const router = useRouter()
   const { game } = useParams<Params>()
-  const [homeTeam, awayTeam] = reverseFormatString(game).split("Vs")
-  const seletedGame = games.find((g) => g.awayTeam === awayTeam?.trim() && g.homeTeam === homeTeam?.trim()) as Game
+  const {data: seletedGame, isLoading, error} = trpc.hubs.getAParticularHub.useQuery({name: game})
+  // const [homeTeam, awayTeam] = reverseFormatString(game).split("Vs")
+  // const seletedGame = games.find((g) => g.awayTeam === awayTeam?.trim() && g.homeTeam === homeTeam?.trim()) as Game
   const inputRef = React.useRef<HTMLDivElement>(null);
   const boxRef = React.useRef<HTMLDivElement>(null);
   const messageAreaRef = useRef<HTMLDivElement>(null);
@@ -262,11 +266,21 @@ const ClientParticularGamePage = () => {
   }
 
 
-  return (
+  if (isLoading) {
+    return (
+      <div className="flex justify-center py-4">
+        <LoadingIcon />
+      </div>
+    )
+  } else if (error) {
+    return (
+      <div className='flex justify-center py-4'>
+        <p>Big Errror Occured</p>
+      </div>
+    )
+  } else {
+    return (
     <main className=' overflow-hidden min-h-screen flex flex-col'>
-      {/* Mobile status bar */}
-
-      {/* Header section - fixed on desktop, normal flow on mobile */}
       <div className='overflow-visible text-white z-30 shadow-md pb-3 bg-gradient-to-b from-gradientDarkGreen to-gradientLightGreen'>
         <div className='container mx-auto px-4 md:px-6 pt-2 pb-2'>
           {/* Navigation bar */}
@@ -286,8 +300,8 @@ const ClientParticularGamePage = () => {
               {/* Home team */}
               <div className='flex flex-col items-center'>
                 <img
-                  src={seletedGame.homeImage}
-                  alt="FC Barcelona"
+                  src={seletedGame?.hub.name}
+                  alt={seletedGame?.hub.name}
                   width={100}
                   height={100}
                   className='w-[40px] md:w-[50px] lg:w-[60px] transition-transform hover:scale-105'
@@ -308,7 +322,7 @@ const ClientParticularGamePage = () => {
               {/* Away team */}
               <div className='flex flex-col items-center'>
                 <img
-                  src={seletedGame.awayImage}
+                  src={seletedGame?.hub.name}
                   alt="Real Madrid FC"
                   width={100}
                   height={100}
@@ -338,7 +352,7 @@ const ClientParticularGamePage = () => {
           style={{ marginTop: '0', border: 'none' }}
         >
           <div className='  px-3 py-1 bg-[#ECF5F5] pb-20' ref={boxRef}>
-            <MessagePopup />
+            <MessagePopup seletedGame={seletedGame}/>
           </div>
 
           {/* Scroll to Bottom button - shows only when not at bottom */}
@@ -355,6 +369,7 @@ const ClientParticularGamePage = () => {
 
         {/* Message input - always at bottom */}
         <MessageInput
+          hubId={hubId}
           ref={inputRef}
           onWagerClick={handleWagerClick}
         />
@@ -368,6 +383,7 @@ const ClientParticularGamePage = () => {
           setInsufficientBalance(false);
         }}
         onProceed={handleWagerProceed}
+        selectedGame={seletedGame}
         username={selectedMessage?.username || "Pkay"}
         insufficientBalance={insufficientBalance}
       />
@@ -385,6 +401,7 @@ const ClientParticularGamePage = () => {
       />
     </main>
   )
+  }
 }
 
 export default ClientParticularGamePage

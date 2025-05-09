@@ -10,12 +10,13 @@ import { useRouter } from "next/navigation";
 import { useAuthLogin } from "@/hooks/use-auth-login";
 import { toast } from "react-hot-toast";
 import { trpc } from "@/trpc/client";
-const Carousel = ({
+
+const LiveCarousel = ({
   tabs,
 }: {
-  tabs: any[] | Game[] | undefined;
+  tabs:  Game[] | undefined;
 }) => {
-  const router = useRouter();
+    const router = useRouter();
   const [emblaRef, emblaApi] = useEmblaCarousel({ loop: false });
   const launchNewHubMutation = trpc.hubs.launchHubs.useMutation()
   const { selectedIndex, scrollSnaps, onDotButtonClick } =
@@ -63,55 +64,65 @@ const Carousel = ({
   return (
     <div className="overflow-hidden mt-[20px]" ref={emblaRef}>
       <div className="flex lg:gap-1 lg[touch-action:pan-y_pinch-zoom] lg:ml-[calc(1rem_*_ -1)]">
-        {tabs!.map((game, i) => {
-          const urlRoute = formatString(`${game.home.name} vs ${game.away.name}`);
-          const {date, time} = formatDateToBritish(game.status.utcTime)
-          {/* console.log(game.home.name) */}
+        {tabs?.length === 0 ? (
+          <p className="font-ABCDaitype text-[1.5rem] flex items-center justify-center text-center p-5">No live games currently</p>
+        ) : (
+          <>
+            {tabs?.map((game, i) => {
+            const urlRoute = formatString(`${game.homeTeam} vs ${game.awayTeam}`);
 
-          return (
-            <div
-              className="min-w-0 lg:lg:transform-gpu lg:pl-[1rem] lg:flex-[0_0_50%] flex-[0_0_100%] gap-3 border border-[#BEBEBE]/50 bg-white rounded-[12px]"
-              key={i}
-            >
-              <div className="p-3 text-black">
-                <div className="flex justify-between items-center font-ABCDaitype">
-                  <div
-                    className={`text-[0.65rem] text-[#FF0000] flex gap-1 items-center`}
-                  >
-                  </div>
-                  <p className="font-semibold text-[1rem]">Premier League</p>
-                  <CurvedArrow />
-                </div>
-
-                <div className="flex justify-between items-center p-4">
-                  <div className="flex flex-col items-center">
-                    <Image
-                      src={"https://upload.wikimedia.org/wikipedia/en/5/53/Arsenal_FC.svg"}
-                      alt={game.home.name}
-                      width={100}
-                      height={100}
-                      className="w-[50px] lg:w-[150px]"
-                    />
-                    <p className="text-center text-[0.9rem] lg:text-[1rem] font-ABCDaitype text-black">
-                      {game.home.name}
-                    </p>
+            return (
+              <div
+                className="min-w-0 lg:lg:transform-gpu lg:pl-[1rem] lg:flex-[0_0_50%] flex-[0_0_100%] gap-3 border border-[#BEBEBE]/50 bg-white rounded-[12px]"
+                key={i}
+              >
+                <div className="p-3 text-black">
+                  <div className="flex justify-between items-center font-ABCDaitype">
+                    <div
+                      className={`text-[0.65rem] text-[#FF0000] flex gap-1 items-center`}
+                    >
+                      <div className="bg-[#FF0000] size-1 rounded" />
+                      Live
+                    </div>
+                    <p className="font-semibold text-[1rem]">Premier League</p>
+                    <CurvedArrow />
                   </div>
 
-                    <div className="font-ABCDaitype text-[1rem] lg:text-[1.1rem] flex flex-col gap-1 items-center">
-                      <p>{date}</p>
-                      <p>{time}</p>
+                  <div className="flex justify-between items-center p-4">
+                    <div className="flex flex-col items-center">
+                      <Image
+                        src={game.homeImage}
+                        alt={game.homeTeam}
+                        width={100}
+                        height={100}
+                        className="w-[50px] lg:w-[150px]"
+                      />
+                      <p className="text-center text-[0.9rem] lg:text-[1rem] font-ABCDaitype">
+                        {game.homeTeam}
+                      </p>
                     </div>
 
-                  <div className="flex flex-col items-center">
+                      <div className="flex items-center gap-1 font-ABCDaitype font-bold">
+                        <p className="text-[#FF0000] text-[1.5rem] lg:text-[2rem]">
+                          {game.homeScore}
+                        </p>
+                        <span className="text-[1.5rem] lg:text-[2rem]">:</span>
+                        <p className="text-[#FF0000] text-[1.5rem] lg:text-[2rem]">
+                          {game.awayScore}
+                        </p>
+                      </div>
+
+
+                    <div className="flex flex-col items-center">
                     <Image
-                      src={"https://upload.wikimedia.org/wikipedia/en/5/53/Arsenal_FC.svg"}
-                      alt={game?.away.name}
+                      src={game.awayImage}
+                      alt={game.awayTeam}
                       width={100}
                       height={100}
                       className="w-[50px] lg:w-[150px]"
                     />
-                    <p className="text-center text-[0.9rem] lg:text-[1rem] font-ABCDaitype text-black">
-                      {game.away.name}
+                    <p className="text-center text-[0.9rem] lg:text-[1rem] font-ABCDaitype">
+                      {game.awayTeam}
                     </p>
                   </div>
                 </div>
@@ -119,17 +130,19 @@ const Carousel = ({
                 <div className="flex justify-center items-center">
                   <button
                     onClick={async () => {
-                        await launchNewHub(urlRoute, game.home.name, game.away.name, game.status.utcTime)        
+                        joinAHub(urlRoute)
                     }}
                     className="w-fit bg-darkGreen py-1 cursor-pointer px-6 text-white font-ABCDaitype font-extrabold rounded-xl"
                   >
-                    Launch Hub
+                    Join Hub
                   </button>
                 </div>
               </div>
             </div>
           );
         })}
+          </>
+        )}
       </div>
 
       <div className="flex gap-[2px] mt-[5px] flex-wrap justify-center items-center -mr-[calc((2.6rem-1.4rem)/2)]">
@@ -145,7 +158,7 @@ const Carousel = ({
         ))}
       </div>
     </div>
-  );
-};
+  )
+}
 
-export default Carousel;
+export default LiveCarousel

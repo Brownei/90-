@@ -1,5 +1,5 @@
 {
-  "id": "dc28c8f5-edfa-4468-8175-8b6062049201",
+  "id": "e05eaa46-89f7-4ed1-81d7-45cbfcd9df25",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "7",
   "dialect": "postgresql",
@@ -216,6 +216,12 @@
         },
         "away": {
           "name": "away",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "start_time": {
+          "name": "start_time",
           "type": "text",
           "primaryKey": false,
           "notNull": true

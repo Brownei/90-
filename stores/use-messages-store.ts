@@ -4,15 +4,15 @@ import { persist } from "zustand/middleware";
 
 export interface Message {
   message: string,
-  id: number,
+  id?: number,
   hubId: number,
-  userId: number,
-  author: {
+  userId?: number,
+  author?: {
     id: number,
     name: string
     profileImage: string
   },
-  time: string
+  time?: string
   replies: Reply[]
 }
 
