@@ -1,8 +1,9 @@
+"use server"
 import { Connection, PublicKey, LAMPORTS_PER_SOL } from '@solana/web3.js';
 import { TOKEN_PROGRAM_ID } from '@solana/spl-token';
 import { db } from '../lib/db';
 import { eq, and } from 'drizzle-orm';
-import { wallets, tokens } from '../lib/db/schema';
+import { tokens, wallets} from '../lib/db/schema';
 
 const DEFAULT_RPC_ENDPOINT = process.env.NEXT_PUBLIC_SOLANA_RPC_URL || 'https://api.devnet.solana.com';
 
@@ -101,7 +102,7 @@ export async function updateWalletData(walletAddress: string) {
         // Create new token
         await db.insert(tokens)
           .values({
-            id: crypto.randomUUID(),
+            id: Number(crypto.randomUUID()),
             mintAddress: token.mint,
             balance: token.balance,
             decimals: token.decimals,

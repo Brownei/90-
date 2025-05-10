@@ -1,6 +1,6 @@
 import { z } from "zod";
 import { baseProcedure, createTRPCRouter } from "../init";
-import { db, users, wallets } from "@/lib/db";
+import { db, tokens, users, wallets } from "@/lib/db";
 import { eq } from "drizzle-orm";
 import { encryptData } from "@/utils/utils";
 import { PublicKey } from "@solana/web3.js";
@@ -21,10 +21,11 @@ export const usersRouter = createTRPCRouter({
         publicKey: z.string(),
         profileImage: z.string(),
         email_verified: z.boolean(),
+        tokenAccounts: z.array(z.any())
       }),
     )
     .mutation(async ({input, ctx}) => {
-      const {email, email_verified, balance, name, encryptedProvider, publicKey, profileImage} = input
+      const {email, email_verified, tokenAccounts, balance, name, encryptedProvider, publicKey, profileImage} = input
 
       const existingUser = await db.select().from(users).where(eq(users.email, input.email)).leftJoin(wallets, eq(users.id, wallets.userId))
 
@@ -49,12 +50,22 @@ export const usersRouter = createTRPCRouter({
         }).returning({id: users.id, email: users.email, profileImage: users.image, name: users.name})
 
         const newWallet = await db.insert(wallets).values({
-          publicKey: publicKey.toString(),
+          publicKey,
           userId: newUser[0].id,
           isMainWallet: false,
           provider: encryptedProvider,
           solanaBalance: balance,
         }).returning({id: wallets.id, publicKey: wallets.publicKey, provider: wallets.provider, balance: wallets.solanaBalance})
+
+        for (const token of tokenAccounts) {
+          await db.insert(tokens).values({
+            walletId: newWallet[0].id,
+            balance,
+            tokenName: "90plus",
+            mintAddress: publicKey,
+            decimals: token.decimals,
+        })
+        }
 
         const token = encryptData(JSON.stringify({
           id: newUser[0].id, 
@@ -70,5 +81,19 @@ export const usersRouter = createTRPCRouter({
         return token;
       }
     }),
+
+    getProvider: baseProcedure
+      .input(
+        z.object({
+          email: z.string()
+        })
+      )
+      .query(async ({input}) => {
+        const existingUser = await db.select({id: users.id, email: users.email}).from(users).where(eq(users.email, input.email))
+        
+        const wallet = await db.select({provider: wallets.provider}).from(wallets).where(eq(wallets.userId, existingUser[0].id))
+
+        return wallet[0].provider;
+      })
 });
 

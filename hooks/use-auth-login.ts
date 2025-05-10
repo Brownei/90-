@@ -12,6 +12,8 @@ import { trpc } from '@/trpc/client';
 import { Connection, PublicKey } from '@solana/web3.js';
 import { encryptData } from '@/utils/utils';
 import { useSessionStore } from '@/stores/use-session-store';
+import { PersonalWallet } from '@/helpers/wallet';
+import { airdropSol, getTokenAccounts } from '@/utils/solanaHelpers';
 
 const chainConfig = {
   chainNamespace: CHAIN_NAMESPACES.SOLANA,
@@ -136,26 +138,22 @@ export const useAuthLogin = () => {
 
         // Get user info and save to database
         try {
+          const userWallet = new PersonalWallet(provider!)
           const userInfo = await web3auth.getUserInfo();
-          const solanaWallet = new SolanaWallet(web3auth.provider as IProvider)
-          const accounts = await solanaWallet.requestAccounts()
-          const connectionConfig = await solanaWallet.request<string[], CustomChainConfig>({
-            method: "solana_provider_config",
-            params: [],
-          })
-          const connection = new Connection(connectionConfig.rpcTarget);
-          const balance = await connection.getBalance(new PublicKey(accounts[0]))
+          const accounts = await userWallet.getAccount()
+          const balance = await userWallet.getBalance()
           const encryptedProvider = encryptData(JSON.stringify(web3auth.provider))
           const balanceString = String(balance)
-          const publicKey = new PublicKey(accounts[0])
+          // const tokenAccounts = await getTokenAccounts(accounts)
           const token = await loginMutation.mutateAsync({
             name: userInfo.name as string,
             email: userInfo.email as string,
             profileImage: userInfo.profileImage as string,
             email_verified: true,
-            publicKey: new PublicKey(accounts[0]).toString(),
+            publicKey: accounts[0],
             balance,
-            encryptedProvider: encryptedProvider
+            encryptedProvider: encryptedProvider,
+            tokenAccounts: []
           })
 
           console.log(token)
@@ -165,9 +163,12 @@ export const useAuthLogin = () => {
               name: userInfo.name,
               profileImage: userInfo.profileImage,
               email: userInfo.email,
-              address: new PublicKey(accounts[0]),
+              address: accounts[0],
               balance: balanceString,
           })
+
+          const sig = await airdropSol(accounts)
+          console.log(sig)
         } catch (error) {
           console.error("Failed to get or store user info:", error);
         }
@@ -207,6 +208,7 @@ export const useAuthLogin = () => {
     connected,
     connect,
     provider,
+    setProvider,
     loggedIn,
     setLoggedIn,
     web3auth,

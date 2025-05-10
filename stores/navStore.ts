@@ -1,7 +1,6 @@
 import { atom } from 'jotai';
 import { Web3Auth } from '@web3auth/modal';
 import { IProvider, } from '@web3auth/base';
-import { PublicKey } from '@solana/web3.js';
 import { BettingClient } from '@/client/betting-client';
 
 type AuthUserInfo = {
@@ -9,7 +8,7 @@ type AuthUserInfo = {
   profileImage?: string
   name?: string
   email?: string
-  address?: PublicKey
+  address?: string
   balance?: string
   // provider?: IProvider
 }

@@ -38,6 +38,7 @@ export const wallets = pgTable('wallets', {
 
 export const walletsRelations = relations(wallets, ({ one }) => ({
 	owner: one(users, { fields: [wallets.userId], references: [users.id] }),
+  token: one(tokens, {fields: [wallets.id], references: [tokens.walletId]})
 }));
 
 export const comments = pgTable('comments', {
@@ -127,14 +128,18 @@ export const wagersRelations = relations(wagers, ({ one }) => ({
 }));
 
 // Token Schema
-// export const tokens = pgTable('tokens', {
-//   id: text('id').primaryKey(),
-//   walletId: text('wallet_id').notNull(),
-//   mintAddress: text('mint_address').notNull(),
-//   tokenName: text('token_name'),
-//   symbol: text('symbol'),
-//   balance: real('balance'),
-//   decimals: integer('decimals'),
-//   createdAt: text('created_at').notNull().default('CURRENT_TIMESTAMP'),
-//   updatedAt: text('updated_at').notNull().default('CURRENT_TIMESTAMP'),
-// });
+export const tokens = pgTable('tokens', {
+  id: serial('id').primaryKey(),
+  walletId: integer('wallet_id').notNull().references(() => wallets.id),
+  mintAddress: text('mint_address').notNull(),
+  tokenName: text('token_name'),
+  symbol: text('symbol'),
+  balance: real('balance'),
+  decimals: integer('decimals'),
+  createdAt: text('created_at').notNull().default('CURRENT_TIMESTAMP'),
+  updatedAt: text('updated_at').notNull().default('CURRENT_TIMESTAMP'),
+});
+
+export const tokensRelations = relations(tokens, ({one}) => ({
+  wallet: one(wallets, {fields: [tokens.walletId], references: [wallets.id]})
+}))

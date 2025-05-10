@@ -49,90 +49,90 @@ export const messagesRouter = createTRPCRouter({
       }
   }),
 
-getAllMessages: baseProcedure
-  .input(z.object({
-    hubName: z.string()
-  }))
-  .query(async ({ input }) => {
-    const { hubName } = input;
+  getAllMessages: baseProcedure
+    .input(z.object({
+      hubName: z.string()
+    }))
+    .query(async ({ input }) => {
+      const { hubName } = input;
 
-    // Get hub
-    const hub = await db
-      .select({ id: hubs.id })
-      .from(hubs)
-      .where(eq(hubs.name, hubName))
-      .then(res => res[0]);
+      // Get hub
+      const hub = await db
+        .select({ id: hubs.id })
+        .from(hubs)
+        .where(eq(hubs.name, hubName))
+        .then(res => res[0]);
 
-    if (!hub) throw new Error("Hub not found");
+      if (!hub) throw new Error("Hub not found");
 
-    // Fetch comments with authors
-    const rawComments = await db
-      .select({
-        id: comments.id,
-        message: comments.content,
-        hubId: comments.hubId,
-        userId: comments.userId,
-        time: comments.createdAt,
-        authorId: users.id,
-        authorName: users.name,
-        authorImage: users.image
-      })
-      .from(comments)
-      .leftJoin(users, eq(comments.userId, users.id))
-      .where(eq(comments.hubId, hub.id));
+      // Fetch comments with authors
+      const rawComments = await db
+        .select({
+          id: comments.id,
+          message: comments.content,
+          hubId: comments.hubId,
+          userId: comments.userId,
+          time: comments.createdAt,
+          authorId: users.id,
+          authorName: users.name,
+          authorImage: users.image
+        })
+        .from(comments)
+        .leftJoin(users, eq(comments.userId, users.id))
+        .where(eq(comments.hubId, hub.id));
 
-    const commentIds = rawComments.map(c => c.id);
+      const commentIds = rawComments.map(c => c.id);
 
-    // Fetch replies with authors
-    const rawReplies = await db
-      .select({
-        id: replies.id,
-        commentId: replies.commentId,
-        content: replies.content,
-        userId: replies.userId,
-        authorId: users.id,
-        authorName: users.name,
-        authorImage: users.image
-      })
-      .from(replies)
-      .leftJoin(users, eq(replies.userId, users.id))
-      .where(inArray(replies.commentId, commentIds));
+      // Fetch replies with authors
+      const rawReplies = await db
+        .select({
+          id: replies.id,
+          commentId: replies.commentId,
+          content: replies.content,
+          userId: replies.userId,
+          authorId: users.id,
+          authorName: users.name,
+          authorImage: users.image
+        })
+        .from(replies)
+        .leftJoin(users, eq(replies.userId, users.id))
+        .where(inArray(replies.commentId, commentIds));
 
-    // Group replies under their comment
-    const repliesByComment: Record<number, Reply[]> = {};
-    for (const r of rawReplies) {
-      if (!repliesByComment[r.commentId!]) repliesByComment[r.commentId!] = [];
-      repliesByComment[r.commentId!].push({
-        id: r.id,
-        commentId: r.commentId!,
-        content: r.content,
-        author: {
-          id: r.authorId!,
-          name: r.authorName!,
-          profileImage: r.authorImage!,
-        },
-      });
-    }
+      // Group replies under their comment
+      const repliesByComment: Record<number, Reply[]> = {};
+      for (const r of rawReplies) {
+        if (!repliesByComment[r.commentId!]) repliesByComment[r.commentId!] = [];
+        repliesByComment[r.commentId!].push({
+          id: r.id,
+          commentId: r.commentId!,
+          content: r.content,
+          author: {
+            id: r.authorId!,
+            name: r.authorName!,
+            profileImage: r.authorImage!,
+          },
+        });
+      }
 
-    // Structure final output
-    const messages: Message[] = rawComments.map((c) => ({
-      id: c.id!,
-      message: c.message!,
-      hubId: c.hubId!,
-      userId: c.userId!,
-      time: c.time!,
-      author: c.authorId
-        ? {
-            id: c.authorId!,
-            name: c.authorName!,
-            profileImage: c.authorImage!,
-          }
-        : undefined,
-      replies: repliesByComment[c.id] || [],
-    }));
+      // Structure final output
+      const messages: Message[] = rawComments.map((c) => ({
+        id: c.id!,
+        message: c.message!,
+        hubId: c.hubId!,
+        userId: c.userId!,
+        time: c.time!,
+        author: c.authorId
+          ? {
+              id: c.authorId!,
+              name: c.authorName!,
+              profileImage: c.authorImage!,
+            }
+          : undefined,
+        replies: repliesByComment[c.id] || [],
+      }));
 
-    return messages;
-  })
+      return messages;
+    }),
 });
-
+  
 

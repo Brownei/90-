@@ -1,11 +1,17 @@
 "use client"
 import TwitterIcon from '@/public/icons/TwitterIcon'
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import { usePathname, useRouter } from 'next/navigation';
 import Image from 'next/image';
 import { useAuthStore } from '@/stores/authStore';
 import Link from 'next/link';
 import { useAuthLogin } from '@/hooks/use-auth-login';
+import { PersonalWallet } from '@/helpers/wallet';
+import { IProvider } from '@web3auth/base';
+import { Provider } from '@project-serum/anchor';
+import { trpc } from '@/trpc/client';
+import { decryptData } from '@/utils/utils';
+import { getSolanaBalance } from '@/utils/solanaHelpers';
 
 
 const Nav = () => {
@@ -17,8 +23,9 @@ const Nav = () => {
     logout,
     connected,
     connect,
-    user,
     provider,
+    setProvider,
+    user,
     loggedIn,
     setUser,
     web3auth,
@@ -28,11 +35,28 @@ const Nav = () => {
   } = useAuthLogin();
 
   // console.log({ isAuthenticated, isLoading, logout, connected, connect, provider, loggedIn, web3auth, isWeb3AuthInitialized })
+  // const {data: userProvider, isLoading: isUserProviderLoading, error: userProviderError} = trpc.users.getProvider.useQuery({email: user?.email!})
+  const [balance, setBalance] = useState(0)
+  const [thisA, setThisA] = useState("")
+
+  useEffect(() => {
+    async function getB() {
+      const userBalance = await getSolanaBalance(user?.address!)
+
+      setProvider(provider)
+      setBalance(userBalance)
+      // console.log({provider, balance})
+    }
+
+    getB()
+  }, [])
+
+  console.log({provider, balance, thisA, isWeb3AuthInitialized})
 
   const handleAuthAction = async () => {
     if (loggedIn && user !== null) {
       await logout();
-    } else if (isWeb3AuthInitialized) {
+    } else if (isWeb3AuthInitialized && !loggedIn) {
       try {
         await login();
       } catch (error) {
@@ -88,7 +112,7 @@ const Nav = () => {
             disabled={!isWeb3AuthInitialized}
             className='bg-darkGreen flex items-center gap-3 py-2 px-3 rounded-2xl font-ABCDaitype font-semibold text-white text-[0.8rem] cursor-pointer'
           >
-            {!isWeb3AuthInitialized ? (
+            {(!isWeb3AuthInitialized || isLoading) ? (
               <span className="flex gap-3 items-center">Loading...</span>
             ) : (loggedIn && user !== null) ? (
               <span className="flex gap-3 items-center">
