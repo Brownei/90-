@@ -11,9 +11,12 @@ export const gameRouter = createTRPCRouter({
 
   liveMatches: baseProcedure
     .query(async () => {
+      const allowedLeagueIds = [47, 87, 42];
       const allLiveGames = await externalFootballApi('football-current-live')
-      const filteredGames = allLiveGames.data.response.live.filter((game: any) => game.leagueid === 47 || game.leagueid === 87 || game.leagueid === 42)
+      console.log({allLiveGames})
+      const filteredGames = allLiveGames.data.response.live.filter((game: any) => allowedLeagueIds.includes(game.leagueId))
 
+      // return allLiveGames.data.response.live;
       return filteredGames;
     }),
 

@@ -10,8 +10,9 @@ import { PersonalWallet } from '@/helpers/wallet';
 import { IProvider } from '@web3auth/base';
 import { Provider } from '@project-serum/anchor';
 import { trpc } from '@/trpc/client';
-import { decryptData } from '@/utils/utils';
+import { decryptData, encryptData } from '@/utils/utils';
 import { getSolanaBalance, updateWalletData } from '@/utils/solanaHelpers';
+import { useSessionStore } from '@/stores/use-session-store';
 
 
 const Nav = () => {
@@ -22,7 +23,6 @@ const Nav = () => {
     isLoading,
     logout,
     connected,
-    connect,
     provider,
     setProvider,
     user,
@@ -38,20 +38,38 @@ const Nav = () => {
   // const {data: userProvider, isLoading: isUserProviderLoading, error: userProviderError} = trpc.users.getProvider.useQuery({email: user?.email!})
   const [balance, setBalance] = useState(0)
   const [thisA, setThisA] = useState("")
+  const {setSession} = useSessionStore()
 
   useEffect(() => {
-    if(user !== null) {
-      async function getB() {
-        const userBalance = await getSolanaBalance(user!.address!.toString())
+  if (user !== null) {
+    const lastRunKey = 'last-balance-check';
+    const now = Date.now();
+    const lastRun = Number(localStorage.getItem(lastRunKey));
 
-        setProvider(provider)
-        setBalance(userBalance)
-        await updateWalletData(user!.address!.toString())
-    }
+    const TWO_MINUTES = 2 * 60 * 1000;
 
-    getB()
+    if (!lastRun || now - lastRun > TWO_MINUTES) {
+      const getB = async () => {
+        const userBalance = await getSolanaBalance(user!.address!.toString());
+
+        setProvider(provider);
+        setBalance(userBalance);
+        await updateWalletData(user!.address!.toString());
+
+        setUser({
+            ...user,
+            balance: userBalance.toString()
+        })
+        const token = encryptData(JSON.stringify(user))
+        setSession(token)
+        localStorage.setItem(lastRunKey, String(now));
+      };
+
+      getB();
     }
-  }, [user])
+  }
+}, [user]);
+
 
   console.log({provider, balance, add: user?.address?.toString()})
 

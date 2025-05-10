@@ -14,7 +14,7 @@ import { trpc } from "@/trpc/client";
 const LiveCarousel = ({
   tabs,
 }: {
-  tabs:  Game[] | undefined;
+  tabs:  any[] | undefined;
 }) => {
     const router = useRouter();
   const [emblaRef, emblaApi] = useEmblaCarousel({ loop: false });
@@ -30,15 +30,17 @@ const LiveCarousel = ({
 
   const { login, loggedIn } = useAuthLogin();
 
-  async function launchNewHub(urlRoute: string, home: string, away: string, startTime: string) {
+  async function launchNewHub(urlRoute: string, home: string, away: string, startTime: string, homeScore: number, awayScore: number) {
     if (loggedIn) {
-      toast.success("Joining the hub");
+      toast.success("Launching the hub");
 
       await launchNewHubMutation.mutateAsync({
         name: urlRoute,
         startTime,
         home,
         away,
+        awayScore,
+        homeScore
       })
 
       router.push(`/comment-hub/${urlRoute}`);
@@ -69,7 +71,8 @@ const LiveCarousel = ({
         ) : (
           <>
             {tabs?.map((game, i) => {
-            const urlRoute = formatString(`${game.homeTeam} vs ${game.awayTeam}`);
+            const urlRoute = formatString(`${game.home.name} vs ${game.away.name}`);
+            const {data: hub, isLoading, error} = trpc.hubs.getAParticularHub.useQuery({name: urlRoute})
 
             return (
               <div
@@ -91,38 +94,41 @@ const LiveCarousel = ({
                   <div className="flex justify-between items-center p-4">
                     <div className="flex flex-col items-center">
                       <Image
-                        src={game.homeImage}
-                        alt={game.homeTeam}
+                        src={"https://upload.wikimedia.org/wikipedia/en/5/53/Arsenal_FC.svg"}
+                        alt={game.home.name}
                         width={100}
                         height={100}
                         className="w-[50px] lg:w-[150px]"
                       />
                       <p className="text-center text-[0.9rem] lg:text-[1rem] font-ABCDaitype">
-                        {game.homeTeam}
+                        {game.home.name}
                       </p>
                     </div>
 
+                    <div className="flex flex-col gap-2">
                       <div className="flex items-center gap-1 font-ABCDaitype font-bold">
                         <p className="text-[#FF0000] text-[1.5rem] lg:text-[2rem]">
-                          {game.homeScore}
+                          {game.home.score}
                         </p>
                         <span className="text-[1.5rem] lg:text-[2rem]">:</span>
                         <p className="text-[#FF0000] text-[1.5rem] lg:text-[2rem]">
-                          {game.awayScore}
+                          {game.away.score}
                         </p>
                       </div>
+                      <div>{game.status.liveTime.long}</div>
+                    </div>
 
 
                     <div className="flex flex-col items-center">
                     <Image
-                      src={game.awayImage}
-                      alt={game.awayTeam}
+                      src={"https://upload.wikimedia.org/wikipedia/en/5/53/Arsenal_FC.svg"}
+                      alt={game.away.name}
                       width={100}
                       height={100}
                       className="w-[50px] lg:w-[150px]"
                     />
                     <p className="text-center text-[0.9rem] lg:text-[1rem] font-ABCDaitype">
-                      {game.awayTeam}
+                      {game.away.name}
                     </p>
                   </div>
                 </div>
@@ -130,11 +136,15 @@ const LiveCarousel = ({
                 <div className="flex justify-center items-center">
                   <button
                     onClick={async () => {
-                        joinAHub(urlRoute)
+                        if(hub?.hub.name === urlRoute) {
+                            joinAHub(urlRoute)
+                        } else {
+                          await launchNewHub(urlRoute, game.home.name, game.away.name, game.status.utcTime, game.home.score, game.away.score)
+                        }
                     }}
                     className="w-fit bg-darkGreen py-1 cursor-pointer px-6 text-white font-ABCDaitype font-extrabold rounded-xl"
                   >
-                    Join Hub
+                    {(!isLoading && hub?.hub.name === urlRoute) ? 'Join Hub': 'Launch Hub'}
                   </button>
                 </div>
               </div>

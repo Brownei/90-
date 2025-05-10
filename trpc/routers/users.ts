@@ -12,6 +12,17 @@ export const usersRouter = createTRPCRouter({
       await ctx.deleteCookie('session')
   }),
 
+  getCurrentUser: baseProcedure
+    .input(
+      z.object({
+        email: z.string()
+      })  
+    ).mutation(async ({input}) => {
+      const existingUser = await db.select({email: users.email}).from(users).where(eq(users.email, input.email))
+
+      return existingUser[0]
+  }),
+
   login: baseProcedure
     .input(
       z.object({

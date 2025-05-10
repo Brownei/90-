@@ -164,8 +164,10 @@ export const useAuthLogin = () => {
               balance: balance.toString(),
           })
 
-          const sig = await airdropSol(accounts)
-          console.log(sig)
+          // if (balance === 0) {
+          //   const sig = await airdropSol(accounts)
+          //   console.log(sig)
+          // }
         } catch (error) {
           console.error("Failed to get or store user info:", error);
         }

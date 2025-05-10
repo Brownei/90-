@@ -10,6 +10,7 @@ import { useRouter } from "next/navigation";
 import { useAuthLogin } from "@/hooks/use-auth-login";
 import { toast } from "react-hot-toast";
 import { trpc } from "@/trpc/client";
+import { url } from "inspector";
 const Carousel = ({
   tabs,
 }: {
@@ -68,6 +69,7 @@ const Carousel = ({
         {tabs!.map((game, i) => {
           const urlRoute = formatString(`${game.home.name} vs ${game.away.name}`);
           const {date, time} = formatDateToBritish(game.status.utcTime)
+          const {data: hub, isLoading, error} = trpc.hubs.getAParticularHub.useQuery({name: urlRoute})
           {/* console.log(game.home.name) */}
 
           return (
@@ -125,7 +127,7 @@ const Carousel = ({
                     }}
                     className="w-fit bg-darkGreen py-1 cursor-pointer px-6 text-white font-ABCDaitype font-extrabold rounded-xl"
                   >
-                    Launch Hub
+                    {(!isLoading && hub?.hub.name === urlRoute) ? 'Join Hub': 'Launch Hub'}
                   </button>
                 </div>
               </div>

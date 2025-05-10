@@ -27,16 +27,16 @@ const CommentHubPage = () => {
   const [filteredGames, setFilteredGames] = React.useState<Game[]>(games)
   const [filteredUpcomingGames, setFilteredUpcomingGames] = React.useState<UpcomingMatch[] | undefined>(!isFixturedMatchesLoading ? fixturedGames : [])
 
-  console.log({ games, fixturedGames })
+  console.log({ liveGames, fixturedGames })
 
   React.useEffect(() => {
     setIsLoading(true);
 
     const timeoutId = setTimeout(() => {
-      if (query !== "" && games && fixturedGames) {
-        const gamesFiltered = games.filter((g: any) =>
-          g.awayTeam.toLowerCase().includes(query.toLowerCase()) ||
-          g.homeTeam.toLowerCase().includes(query.toLowerCase())
+      if (query !== "" && (!isLiveMatchesLoading && liveGames) && (!isFixturedMatchesLoading && fixturedGames)) {
+        const gamesFiltered = liveGames.filter((g: any) =>
+          g.away.name.toLowerCase().includes(query.toLowerCase()) ||
+          g.home.name.toLowerCase().includes(query.toLowerCase())
         );
 
         const upcomingGamesFilter = fixturedGames.filter((g: UpcomingMatch) =>
@@ -46,9 +46,12 @@ const CommentHubPage = () => {
 
         setFilteredGames(gamesFiltered);
         setFilteredUpcomingGames(upcomingGamesFilter);
-      } else {
-        setFilteredGames(games);
+      } else if((!isLiveMatchesLoading && liveGames) && (!isFixturedMatchesLoading && fixturedGames)) {
+        setFilteredGames(liveGames);
         setFilteredUpcomingGames(fixturedGames);
+      } else {
+        setFilteredUpcomingGames([])
+        setFilteredGames([])
       }
 
       setIsLoading(false);
@@ -89,7 +92,7 @@ const CommentHubPage = () => {
                 <LoadingIcon />
               </div>
             ) : (
-              <LiveCarousel tabs={liveGames} />
+              <LiveCarousel tabs={filteredGames} />
             )}
           </div>
         </div>
@@ -102,7 +105,7 @@ const CommentHubPage = () => {
                 <LoadingIcon />
               </div>
             ) : (
-              <Carousel tabs={fixturedGames?.slice(0, 9)}  />
+              <Carousel tabs={filteredUpcomingGames?.slice(0, 9)}  />
             )}
           </div>
         </div>

@@ -175,7 +175,7 @@ const MessagePopup = ({seletedGame}: {seletedGame: any}) => {
   const [replyingTo, setReplyingTo] = useState<number | null>(null)
   const [showAllReplies, setShowAllReplies] = useState<Record<string, boolean>>({})
 
-  console.log({allMessages, seletedGame})
+  // console.log({allMessages, seletedGame})
 
   // Custom message state for Josiah comments with proper typing
   const [customMessages, setCustomMessages] = useState<Record<string, CustomMessage>>({
