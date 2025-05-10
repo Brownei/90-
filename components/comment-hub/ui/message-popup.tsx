@@ -161,7 +161,7 @@ const Replies = ({ replies, messageUsername }: { replies: Reply[], messageUserna
 
 const MessagePopup = ({seletedGame}: {seletedGame: any}) => {
   const { messages, addReply } = useMessageStore()
-  const {} = trpc.messages.getAllMessages.useQuery({hubName: seletedGame.name})
+  const {data: allMessages, isLoading, error} = trpc.messages.getAllMessages.useQuery({hubName: seletedGame.hub.name})
   const { user, isAuthenticated } = useAuth()
   // const {} =
   const [selectedMessage, setSelectedMessage] = useState<any>(null)
@@ -174,6 +174,8 @@ const MessagePopup = ({seletedGame}: {seletedGame: any}) => {
   const [replyText, setReplyText] = useState('')
   const [replyingTo, setReplyingTo] = useState<number | null>(null)
   const [showAllReplies, setShowAllReplies] = useState<Record<string, boolean>>({})
+
+  console.log({allMessages, seletedGame})
 
   // Custom message state for Josiah comments with proper typing
   const [customMessages, setCustomMessages] = useState<Record<string, CustomMessage>>({

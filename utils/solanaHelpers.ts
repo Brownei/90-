@@ -94,7 +94,7 @@ export async function updateWalletData(walletAddress: string) {
         // Update existing token
         await db.update(tokens)
           .set({
-            balance: token.balance,
+            balance: solBalance,
             decimals: token.decimals
           })
           .where(eq(tokens.id, existingToken.id));
@@ -102,9 +102,8 @@ export async function updateWalletData(walletAddress: string) {
         // Create new token
         await db.insert(tokens)
           .values({
-            id: Number(crypto.randomUUID()),
             mintAddress: token.mint,
-            balance: token.balance,
+            balance: solBalance,
             decimals: token.decimals,
             walletId: wallet.id
           });

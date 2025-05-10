@@ -1,5 +1,5 @@
 import { relations } from 'drizzle-orm';
-import { pgTable, serial, text, integer, boolean, real } from 'drizzle-orm/pg-core';
+import { pgTable, date, serial, text, integer, boolean, real } from 'drizzle-orm/pg-core';
 import { finished } from 'stream';
 
 // User Schema
@@ -9,8 +9,8 @@ export const users = pgTable('users', {
   email: text('email').unique(),
   emailVerified: boolean('email_verified').default(false), // Using text for datetime
   image: text('image'),
-  createdAt: text('created_at').notNull().default('CURRENT_TIMESTAMP'),
-  updatedAt: text('updated_at').notNull().default('CURRENT_TIMESTAMP'),
+  createdAt: date('created_at').notNull().defaultNow(),
+  updatedAt: date('updated_at').notNull().defaultNow(),
 });
 
 export const usersRelation = relations(users, ({one, many}) => ({
@@ -32,8 +32,8 @@ export const wallets = pgTable('wallets', {
   publicKey: text('public_key').notNull().unique(),
   solanaBalance: real('solana_balance'),
   isMainWallet: boolean('is_main_wallet').notNull().default(false),
-  createdAt: text('created_at').notNull().default('CURRENT_TIMESTAMP'),
-  updatedAt: text('updated_at').notNull().default('CURRENT_TIMESTAMP'),
+  createdAt: date('created_at').notNull().defaultNow(),
+  updatedAt: date('updated_at').notNull().defaultNow(),
 });
 
 export const walletsRelations = relations(wallets, ({ one }) => ({
@@ -46,7 +46,7 @@ export const comments = pgTable('comments', {
   content: text('content').notNull(),
   userId: integer('user_id').references(() => users.id),
   hubId: integer('hub_id').references(() => hubs.id),
-    createdAt: text('created_at').notNull().default('CURRENT_TIMESTAMP'),
+    createdAt: date('created_at').notNull().defaultNow(),
 })
 
 export const commentsRelations = relations(comments, ({ one, many }) => ({
@@ -66,7 +66,7 @@ export const replies = pgTable('replies', {
   content: text('content').notNull(),
   commentId: integer('comment_id').references(() => comments.id),
   userId: integer('user_id').references(() => users.id),
-    createdAt: text('created_at').notNull().default('CURRENT_TIMESTAMP'),
+    createdAt: date('created_at').notNull().defaultNow(),
 })
 
 export const repliesRelations = relations(replies, ({ one }) => ({
@@ -84,8 +84,9 @@ export const hubs = pgTable('hubs', {
   id: serial('id').primaryKey(),
   name: text('name').notNull(),
   isGameFinished: boolean('is_game_finished').default(false),
-  createdAt: text('created_at').notNull().default('CURRENT_TIMESTAMP'),
-  updatedAt: text('updated_at').notNull().default('CURRENT_TIMESTAMP'),
+  isGameStarted: boolean('is_game_started').default(false),
+  createdAt: date('created_at').notNull().defaultNow(),
+  updatedAt: date('updated_at').notNull().defaultNow(),
 })
 
 export const hubsRelations = relations(hubs, ({one, many}) => ({
@@ -102,8 +103,10 @@ export const teams = pgTable('teams', {
   hubId: integer('hub_id').references(() => hubs.id),
   home: text('home').notNull(),
   away: text('away').notNull(),
+  homeScore: integer('home_score').default(0),
+  awayScore: integer('away_score').default(0),
   startTime: text('start_time').notNull(),
-  createdAt: text('created_at').notNull().default('CURRENT_TIMESTAMP'),
+  createdAt: date('created_at').notNull().defaultNow(),
 })
 
 export const teamsRelations = relations(teams, ({ one }) => ({
@@ -115,7 +118,7 @@ export const wagers = pgTable('wagers', {
   for: integer('for').references(() => users.id),
   against: integer('against').references(() => users.id),
   hubId: integer('hub_id').references(() => hubs.id),
-  createdAt: text('created_at').notNull().default('CURRENT_TIMESTAMP'),
+  createdAt: date('created_at').notNull().defaultNow(),
   isOpen: boolean('is_open').default(true),
   amount: integer('amount').notNull(),
   condition: text('condition').notNull(),
@@ -136,8 +139,8 @@ export const tokens = pgTable('tokens', {
   symbol: text('symbol'),
   balance: real('balance'),
   decimals: integer('decimals'),
-  createdAt: text('created_at').notNull().default('CURRENT_TIMESTAMP'),
-  updatedAt: text('updated_at').notNull().default('CURRENT_TIMESTAMP'),
+  createdAt: date('created_at').notNull().defaultNow(),
+  updatedAt: date('updated_at').notNull().defaultNow(),
 });
 
 export const tokensRelations = relations(tokens, ({one}) => ({

@@ -1,5 +1,5 @@
 {
-  "id": "13f7e57a-7873-4580-9ec4-487c14d9b1c0",
+  "id": "219ab95b-7713-4be1-bc6c-d481fed35881",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "7",
   "dialect": "postgresql",
@@ -34,10 +34,10 @@
         },
         "created_at": {
           "name": "created_at",
-          "type": "text",
+          "type": "date",
           "primaryKey": false,
           "notNull": true,
-          "default": "'CURRENT_TIMESTAMP'"
+          "default": "now()"
         }
       },
       "indexes": {},
@@ -98,19 +98,26 @@
           "notNull": false,
           "default": false
         },
+        "is_game_started": {
+          "name": "is_game_started",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": false,
+          "default": false
+        },
         "created_at": {
           "name": "created_at",
-          "type": "text",
+          "type": "date",
           "primaryKey": false,
           "notNull": true,
-          "default": "'CURRENT_TIMESTAMP'"
+          "default": "now()"
         },
         "updated_at": {
           "name": "updated_at",
-          "type": "text",
+          "type": "date",
           "primaryKey": false,
           "notNull": true,
-          "default": "'CURRENT_TIMESTAMP'"
+          "default": "now()"
         }
       },
       "indexes": {},
@@ -151,10 +158,10 @@
         },
         "created_at": {
           "name": "created_at",
-          "type": "text",
+          "type": "date",
           "primaryKey": false,
           "notNull": true,
-          "default": "'CURRENT_TIMESTAMP'"
+          "default": "now()"
         }
       },
       "indexes": {},
@@ -220,6 +227,20 @@
           "primaryKey": false,
           "notNull": true
         },
+        "home_score": {
+          "name": "home_score",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false,
+          "default": 0
+        },
+        "away_score": {
+          "name": "away_score",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false,
+          "default": 0
+        },
         "start_time": {
           "name": "start_time",
           "type": "text",
@@ -228,10 +249,10 @@
         },
         "created_at": {
           "name": "created_at",
-          "type": "text",
+          "type": "date",
           "primaryKey": false,
           "notNull": true,
-          "default": "'CURRENT_TIMESTAMP'"
+          "default": "now()"
         }
       },
       "indexes": {},
@@ -304,17 +325,17 @@
         },
         "created_at": {
           "name": "created_at",
-          "type": "text",
+          "type": "date",
           "primaryKey": false,
           "notNull": true,
-          "default": "'CURRENT_TIMESTAMP'"
+          "default": "now()"
         },
         "updated_at": {
           "name": "updated_at",
-          "type": "text",
+          "type": "date",
           "primaryKey": false,
           "notNull": true,
-          "default": "'CURRENT_TIMESTAMP'"
+          "default": "now()"
         }
       },
       "indexes": {},
@@ -376,17 +397,17 @@
         },
         "created_at": {
           "name": "created_at",
-          "type": "text",
+          "type": "date",
           "primaryKey": false,
           "notNull": true,
-          "default": "'CURRENT_TIMESTAMP'"
+          "default": "now()"
         },
         "updated_at": {
           "name": "updated_at",
-          "type": "text",
+          "type": "date",
           "primaryKey": false,
           "notNull": true,
-          "default": "'CURRENT_TIMESTAMP'"
+          "default": "now()"
         }
       },
       "indexes": {},
@@ -435,10 +456,10 @@
         },
         "created_at": {
           "name": "created_at",
-          "type": "text",
+          "type": "date",
           "primaryKey": false,
           "notNull": true,
-          "default": "'CURRENT_TIMESTAMP'"
+          "default": "now()"
         },
         "is_open": {
           "name": "is_open",
@@ -551,17 +572,17 @@
         },
         "created_at": {
           "name": "created_at",
-          "type": "text",
+          "type": "date",
           "primaryKey": false,
           "notNull": true,
-          "default": "'CURRENT_TIMESTAMP'"
+          "default": "now()"
         },
         "updated_at": {
           "name": "updated_at",
-          "type": "text",
+          "type": "date",
           "primaryKey": false,
           "notNull": true,
-          "default": "'CURRENT_TIMESTAMP'"
+          "default": "now()"
         }
       },
       "indexes": {},

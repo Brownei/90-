@@ -107,7 +107,6 @@ const ClientParticularGamePage = () => {
   const { game } = useParams<Params>()
   console.log({game})
   const {data: seletedGame, isLoading, error} = trpc.hubs.getAParticularHub.useQuery({name: game})
-  const {data: allComments, isLoading: isCommentsLoading, error: commentsError} = trpc.messages.getAllMessages.useQuery({hubName: game})
   // const [homeTeam, awayTeam] = reverseFormatString(game).split("Vs")
   // const seletedGame = games.find((g) => g.awayTeam === awayTeam?.trim() && g.homeTeam === homeTeam?.trim()) as Game
   const inputRef = React.useRef<HTMLDivElement>(null);
@@ -117,7 +116,7 @@ const ClientParticularGamePage = () => {
   const { messages, addMessage } = useMessageStore();
   const [messageCount, setMessageCount] = useState(0);
 
-  console.log({allComments, commentsError})
+  console.log({seletedGame})
 
   // Add sample messages on first load if needed
   useEffect(() => {

@@ -1,4 +1,4 @@
-import { Connection, PublicKey } from "@solana/web3.js";
+import { Connection, LAMPORTS_PER_SOL, PublicKey } from "@solana/web3.js";
 import { CustomChainConfig, IProvider } from "@web3auth/base";
 import { SolanaWallet } from "@web3auth/solana-provider";
 
@@ -27,7 +27,7 @@ export class PersonalWallet {
     const connection = new Connection(connectionConfig.rpcTarget);
     const balance = await connection.getBalance(new PublicKey(accounts[0]))
 
-    return balance;
+    return balance / LAMPORTS_PER_SOL;
   }
 
 

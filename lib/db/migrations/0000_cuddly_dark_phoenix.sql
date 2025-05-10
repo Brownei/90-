@@ -3,15 +3,16 @@ CREATE TABLE "comments" (
 	"content" text NOT NULL,
 	"user_id" integer,
 	"hub_id" integer,
-	"created_at" text DEFAULT 'CURRENT_TIMESTAMP' NOT NULL
+	"created_at" date DEFAULT now() NOT NULL
 );
 --> statement-breakpoint
 CREATE TABLE "hubs" (
 	"id" serial PRIMARY KEY NOT NULL,
 	"name" text NOT NULL,
 	"is_game_finished" boolean DEFAULT false,
-	"created_at" text DEFAULT 'CURRENT_TIMESTAMP' NOT NULL,
-	"updated_at" text DEFAULT 'CURRENT_TIMESTAMP' NOT NULL
+	"is_game_started" boolean DEFAULT false,
+	"created_at" date DEFAULT now() NOT NULL,
+	"updated_at" date DEFAULT now() NOT NULL
 );
 --> statement-breakpoint
 CREATE TABLE "replies" (
@@ -19,7 +20,7 @@ CREATE TABLE "replies" (
 	"content" text NOT NULL,
 	"comment_id" integer,
 	"user_id" integer,
-	"created_at" text DEFAULT 'CURRENT_TIMESTAMP' NOT NULL
+	"created_at" date DEFAULT now() NOT NULL
 );
 --> statement-breakpoint
 CREATE TABLE "teams" (
@@ -27,8 +28,10 @@ CREATE TABLE "teams" (
 	"hub_id" integer,
 	"home" text NOT NULL,
 	"away" text NOT NULL,
+	"home_score" integer DEFAULT 0,
+	"away_score" integer DEFAULT 0,
 	"start_time" text NOT NULL,
-	"created_at" text DEFAULT 'CURRENT_TIMESTAMP' NOT NULL
+	"created_at" date DEFAULT now() NOT NULL
 );
 --> statement-breakpoint
 CREATE TABLE "tokens" (
@@ -39,8 +42,8 @@ CREATE TABLE "tokens" (
 	"symbol" text,
 	"balance" real,
 	"decimals" integer,
-	"created_at" text DEFAULT 'CURRENT_TIMESTAMP' NOT NULL,
-	"updated_at" text DEFAULT 'CURRENT_TIMESTAMP' NOT NULL
+	"created_at" date DEFAULT now() NOT NULL,
+	"updated_at" date DEFAULT now() NOT NULL
 );
 --> statement-breakpoint
 CREATE TABLE "users" (
@@ -49,8 +52,8 @@ CREATE TABLE "users" (
 	"email" text,
 	"email_verified" boolean DEFAULT false,
 	"image" text,
-	"created_at" text DEFAULT 'CURRENT_TIMESTAMP' NOT NULL,
-	"updated_at" text DEFAULT 'CURRENT_TIMESTAMP' NOT NULL,
+	"created_at" date DEFAULT now() NOT NULL,
+	"updated_at" date DEFAULT now() NOT NULL,
 	CONSTRAINT "users_email_unique" UNIQUE("email")
 );
 --> statement-breakpoint
@@ -59,7 +62,7 @@ CREATE TABLE "wagers" (
 	"for" integer,
 	"against" integer,
 	"hub_id" integer,
-	"created_at" text DEFAULT 'CURRENT_TIMESTAMP' NOT NULL,
+	"created_at" date DEFAULT now() NOT NULL,
 	"is_open" boolean DEFAULT true,
 	"amount" integer NOT NULL,
 	"condition" text NOT NULL
@@ -72,8 +75,8 @@ CREATE TABLE "wallets" (
 	"public_key" text NOT NULL,
 	"solana_balance" real,
 	"is_main_wallet" boolean DEFAULT false NOT NULL,
-	"created_at" text DEFAULT 'CURRENT_TIMESTAMP' NOT NULL,
-	"updated_at" text DEFAULT 'CURRENT_TIMESTAMP' NOT NULL,
+	"created_at" date DEFAULT now() NOT NULL,
+	"updated_at" date DEFAULT now() NOT NULL,
 	CONSTRAINT "wallets_public_key_unique" UNIQUE("public_key")
 );
 --> statement-breakpoint

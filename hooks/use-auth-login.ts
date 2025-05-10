@@ -143,17 +143,14 @@ export const useAuthLogin = () => {
           const accounts = await userWallet.getAccount()
           const balance = await userWallet.getBalance()
           const encryptedProvider = encryptData(JSON.stringify(web3auth.provider))
-          const balanceString = String(balance)
-          // const tokenAccounts = await getTokenAccounts(accounts)
           const token = await loginMutation.mutateAsync({
             name: userInfo.name as string,
             email: userInfo.email as string,
             profileImage: userInfo.profileImage as string,
             email_verified: true,
-            publicKey: accounts[0],
+            publicKey: accounts,
             balance,
             encryptedProvider: encryptedProvider,
-            tokenAccounts: []
           })
 
           console.log(token)
@@ -163,8 +160,8 @@ export const useAuthLogin = () => {
               name: userInfo.name,
               profileImage: userInfo.profileImage,
               email: userInfo.email,
-              address: accounts[0],
-              balance: balanceString,
+              address: accounts,
+              balance: balance.toString(),
           })
 
           const sig = await airdropSol(accounts)

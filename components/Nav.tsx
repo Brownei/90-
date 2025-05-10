@@ -11,7 +11,7 @@ import { IProvider } from '@web3auth/base';
 import { Provider } from '@project-serum/anchor';
 import { trpc } from '@/trpc/client';
 import { decryptData } from '@/utils/utils';
-import { getSolanaBalance } from '@/utils/solanaHelpers';
+import { getSolanaBalance, updateWalletData } from '@/utils/solanaHelpers';
 
 
 const Nav = () => {
@@ -40,18 +40,20 @@ const Nav = () => {
   const [thisA, setThisA] = useState("")
 
   useEffect(() => {
-    async function getB() {
-      const userBalance = await getSolanaBalance(user?.address!)
+    if(user !== null) {
+      async function getB() {
+        const userBalance = await getSolanaBalance(user!.address!.toString())
 
-      setProvider(provider)
-      setBalance(userBalance)
-      // console.log({provider, balance})
+        setProvider(provider)
+        setBalance(userBalance)
+        await updateWalletData(user!.address!.toString())
     }
 
     getB()
-  }, [])
+    }
+  }, [user])
 
-  console.log({provider, balance, thisA, isWeb3AuthInitialized})
+  console.log({provider, balance, add: user?.address?.toString()})
 
   const handleAuthAction = async () => {
     if (loggedIn && user !== null) {

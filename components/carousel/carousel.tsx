@@ -29,7 +29,7 @@ const Carousel = ({
 
   const { login, loggedIn } = useAuthLogin();
 
-  async function launchNewHub(urlRoute: string, home: string, away: string, startTime: string) {
+  async function launchNewHub(urlRoute: string, home: string, away: string, startTime: string, awayScore: number, homeScore: number) {
     if (loggedIn) {
       toast.success("Joining the hub");
 
@@ -38,6 +38,8 @@ const Carousel = ({
         startTime,
         home,
         away,
+        awayScore,
+        homeScore,
       })
 
       router.push(`/comment-hub/${urlRoute}`);
@@ -119,7 +121,7 @@ const Carousel = ({
                 <div className="flex justify-center items-center">
                   <button
                     onClick={async () => {
-                        await launchNewHub(urlRoute, game.home.name, game.away.name, game.status.utcTime)        
+                        await launchNewHub(urlRoute, game.home.name, game.away.name, game.status.utcTime, game.away.score, game.home.score)        
                     }}
                     className="w-fit bg-darkGreen py-1 cursor-pointer px-6 text-white font-ABCDaitype font-extrabold rounded-xl"
                   >

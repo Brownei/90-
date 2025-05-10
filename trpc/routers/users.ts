@@ -4,6 +4,7 @@ import { db, tokens, users, wallets } from "@/lib/db";
 import { eq } from "drizzle-orm";
 import { encryptData } from "@/utils/utils";
 import { PublicKey } from "@solana/web3.js";
+import { getTokenAccounts } from "@/utils/solanaHelpers";
 
 export const usersRouter = createTRPCRouter({
   logout: baseProcedure
@@ -21,11 +22,10 @@ export const usersRouter = createTRPCRouter({
         publicKey: z.string(),
         profileImage: z.string(),
         email_verified: z.boolean(),
-        tokenAccounts: z.array(z.any())
       }),
     )
     .mutation(async ({input, ctx}) => {
-      const {email, email_verified, tokenAccounts, balance, name, encryptedProvider, publicKey, profileImage} = input
+      const {email, email_verified, balance, name, encryptedProvider, publicKey, profileImage} = input
 
       const existingUser = await db.select().from(users).where(eq(users.email, input.email)).leftJoin(wallets, eq(users.id, wallets.userId))
 
@@ -38,6 +38,7 @@ export const usersRouter = createTRPCRouter({
           publicKey: existingUser[0].wallets?.publicKey,
           balance: existingUser[0].wallets?.solanaBalance,
         }))
+
         await ctx.setCookie('session', token)
 
         return token
@@ -57,6 +58,8 @@ export const usersRouter = createTRPCRouter({
           solanaBalance: balance,
         }).returning({id: wallets.id, publicKey: wallets.publicKey, provider: wallets.provider, balance: wallets.solanaBalance})
 
+        const tokenAccounts = await getTokenAccounts(publicKey)
+
         for (const token of tokenAccounts) {
           await db.insert(tokens).values({
             walletId: newWallet[0].id,
@@ -64,7 +67,7 @@ export const usersRouter = createTRPCRouter({
             tokenName: "90plus",
             mintAddress: publicKey,
             decimals: token.decimals,
-        })
+          })
         }
 
         const token = encryptData(JSON.stringify({

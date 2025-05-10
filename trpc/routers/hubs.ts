@@ -11,11 +11,13 @@ export const hubsRouter = createTRPCRouter({
         name: z.string(),
         startTime: z.string(),
         home: z.string(),
-        away: z.string()
+        away: z.string(),
+        homeScore: z.number(),
+        awayScore: z.number(),
       })
     )
     .mutation(async ({input}) => {
-      const {name, home, startTime, away} = input
+      const {name, home, homeScore, awayScore, startTime, away} = input
       const existingHub = await db.select({id: hubs.id, isGameFinished: hubs.isGameFinished}).from(hubs).where(eq(hubs.name, name))
       if(!existingHub[0]) {
         const newHub = await db.insert(hubs).values({
@@ -26,6 +28,8 @@ export const hubsRouter = createTRPCRouter({
           away,
           home,
           startTime,
+          homeScore,
+          awayScore,
           hubId: newHub[0].id
         })
       }
