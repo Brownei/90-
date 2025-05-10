@@ -35,7 +35,7 @@ const HomeProvider = ({ children, token }: ProvidersProps) => {
         name: user.name,
         profileImage: user.profileImage,
         email: user.email,
-        address: new PublicKey(user.publicKey),
+        address: user.publicKey,
         balance: String(user.balance),
         id: user.id
       })
