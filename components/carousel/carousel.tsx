@@ -82,7 +82,7 @@ const Carousel = ({
                     className={`text-[0.65rem] text-[#FF0000] flex gap-1 items-center`}
                   >
                   </div>
-                  <p className="font-semibold text-[1rem]">Premier League</p>
+                  <p className="font-semibold text-[1rem]">Premier League</p>  
                   <CurvedArrow />
                 </div>
 
