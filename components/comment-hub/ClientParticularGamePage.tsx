@@ -1,21 +1,23 @@
-"use client";
-import { Game, games } from "@/data";
-import BackIcon from "@/public/icons/BackIcon";
-import CurvedArrow from "@/public/icons/CurvedArrow";
-import { reverseFormatString } from "@/utils/utils";
-import { useParams, useRouter } from "next/navigation";
-import React, { useState, useEffect, useRef } from "react";
-import MessagePopup from "./ui/message-popup";
-import MessageInput from "./ui/message-input";
-import gsap from "gsap";
-import StatsIcon from "@/public/icons/StatsIcon";
-import WagerModal from "./ui/WagerModal";
-import FundWagerModal from "./ui/FundWagerModal";
-import TransactionConfirmedModal from "./ui/TransactionConfirmedModal";
-import { Message, useMessageStore } from "@/stores/use-messages-store";
-import pusherClient from "@/lib/pusher/init";
-import { trpc } from "@/trpc/client";
-import LoadingIcon from "@/public/icons/LoadingIcon";
+"use client"
+import { Game, games } from '@/data'
+import BackIcon from '@/public/icons/BackIcon'
+import CurvedArrow from '@/public/icons/CurvedArrow'
+import { reverseFormatString } from '@/utils/utils'
+import { useParams, useRouter } from 'next/navigation'
+import React, { useState, useEffect, useRef } from 'react'
+import MessagePopup from './ui/message-popup'
+import MessageInput from './ui/message-input'
+import gsap from 'gsap'
+import StatsIcon from '@/public/icons/StatsIcon'
+import WagerModal from './ui/WagerModal'
+import FundWagerModal from './ui/FundWagerModal'
+import TransactionConfirmedModal from './ui/TransactionConfirmedModal'
+import { Message, useMessageStore } from '@/stores/use-messages-store'
+import pusherClient from '@/lib/pusher/init'
+import { trpc } from '@/trpc/client'
+import LoadingIcon from '@/public/icons/LoadingIcon'
+import { LAMPORTS_PER_SOL } from '@solana/web3.js'
+import { useAuthLogin } from '@/hooks/use-auth-login'
 
 // Add sample messages data if not already in the store
 
@@ -165,6 +167,7 @@ const ClientParticularGamePage = () => {
   };
 
   // Wager state
+  const {user} = useAuthLogin()
   const [isWagerModalOpen, setIsWagerModalOpen] = useState(false);
   const [isFundModalOpen, setIsFundModalOpen] = useState(false);
   const [isConfirmationModalOpen, setIsConfirmationModalOpen] = useState(false);
@@ -229,7 +232,7 @@ const ClientParticularGamePage = () => {
     setStakeAmount(stake);
 
     // For demo purposes, we're showing insufficient balance if stake > 5
-    if (stake > 5) {
+    if (stake < 0.5 || Number(user?.balance!) / LAMPORTS_PER_SOL < 0.5) {
       setInsufficientBalance(true);
     } else {
       setIsWagerModalOpen(false);

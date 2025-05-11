@@ -2,9 +2,10 @@ import { BettingClient } from '@/client/betting-client';
 import { Game } from '@/data';
 import { useAuthLogin } from '@/hooks/use-auth-login';
 import { bettingClientAtom } from '@/stores/navStore';
+import { trpc } from '@/trpc/client';
 import { Wallet } from '@project-serum/anchor';
 import { useWallet } from '@solana/wallet-adapter-react';
-import { Keypair } from '@solana/web3.js';
+import { Keypair, PublicKey } from '@solana/web3.js';
 import { useAtom } from 'jotai';
 import React, { useEffect, useState } from 'react';
 
@@ -27,10 +28,11 @@ const WagerModal: React.FC<WagerModalProps> = ({
 }) => {
   const [wagerCondition, setWagerCondition] = useState('');
   const {user} = useAuthLogin()
-  const bettingClient = new BettingClient(user?.address!)
+  const bettingClient = new BettingClient(new PublicKey(user?.address!))
   const [stakeAmount, setStakeAmount] = useState('');
   const [forUsername, setForUsername] = useState(username);
   const [againstUsername, setAgainstUsername] = useState('');
+  const wagerMutation = trpc.wagers.placeWager.useMutation();
   
   if (!isOpen) return null;
 
@@ -40,7 +42,18 @@ const WagerModal: React.FC<WagerModalProps> = ({
       const transaction = await bettingClient.initialize(2)
       // console.log(transaction)
 
-      const bet = await bettingClient.createMatch(home, away, String(hubId), startTime)
+      const newMatchTx = await bettingClient.createMatch(home, away, String(hubId), startTime)
+
+      const betTx = await bettingClient.placeBet(String(hubId), Number(stakeAmount), wagerCondition, new PublicKey(user?.address!), new PublicKey('welcome'))
+
+      await wagerMutation.mutateAsync({
+        condition: wagerCondition,
+        for: Number(user?.id!),
+        amount: Number(stakeAmount),
+        hubId,
+      })
+
+      console.log({newMatchTx, betTx})
     }
   };
 

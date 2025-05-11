@@ -32,7 +32,7 @@ const Carousel = ({
 
   async function launchNewHub(urlRoute: string, home: string, away: string, startTime: string, awayScore: number, homeScore: number) {
     if (loggedIn) {
-      toast.success("Joining the hub");
+      toast.success("Launching the hub");
 
       await launchNewHubMutation.mutateAsync({
         name: urlRoute,
@@ -58,7 +58,6 @@ const Carousel = ({
       toast.error("Please login to join the hub");
       login();
     }
-
   }
 
 
@@ -123,7 +122,11 @@ const Carousel = ({
                 <div className="flex justify-center items-center">
                   <button
                     onClick={async () => {
+                      if (hub?.hub.name !== urlRoute) {
                         await launchNewHub(urlRoute, game.home.name, game.away.name, game.status.utcTime, game.away.score, game.home.score)        
+                      } else {
+                        joinAHub(urlRoute)
+                      }
                     }}
                     className="w-fit bg-darkGreen py-1 cursor-pointer px-6 text-white font-ABCDaitype font-extrabold rounded-xl"
                   >
