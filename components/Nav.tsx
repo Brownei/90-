@@ -37,7 +37,6 @@ const Nav = () => {
   // console.log({ isAuthenticated, isLoading, logout, connected, connect, provider, loggedIn, web3auth, isWeb3AuthInitialized })
   // const {data: userProvider, isLoading: isUserProviderLoading, error: userProviderError} = trpc.users.getProvider.useQuery({email: user?.email!})
   const [balance, setBalance] = useState(0)
-  const [thisA, setThisA] = useState("")
   const {setSession} = useSessionStore()
 
   useEffect(() => {
@@ -50,11 +49,11 @@ const Nav = () => {
 
     if (!lastRun || now - lastRun > TWO_MINUTES) {
       const getB = async () => {
-        const userBalance = await getSolanaBalance(user!.address!.toString());
+        const userBalance = await getSolanaBalance(user?.address!);
 
         setProvider(provider);
         setBalance(userBalance);
-        await updateWalletData(user!.address!.toString());
+        await updateWalletData(user?.address!);
 
         setUser({
             ...user,
@@ -71,7 +70,7 @@ const Nav = () => {
 }, [user]);
 
 
-  console.log({provider, balance, add: user?.address?.toString()})
+  console.log({provider, balance, add: user?.address})
 
   const handleAuthAction = async () => {
     if (loggedIn && user !== null) {

@@ -24,8 +24,8 @@ const CommentHubPage = () => {
   const { data: liveGames, isLoading: isLiveMatchesLoading, error } = trpc.games.liveMatches.useQuery()
   const { data: fixturedGames, isLoading: isFixturedMatchesLoading, error: fixturedGamesError } = trpc.games.getAllFixtures.useQuery()
   const [query, setQuery] = React.useState("")
-  const [filteredGames, setFilteredGames] = React.useState<Game[]>(games)
-  const [filteredUpcomingGames, setFilteredUpcomingGames] = React.useState<UpcomingMatch[] | undefined>(!isFixturedMatchesLoading ? fixturedGames : [])
+  const [filteredGames, setFilteredGames] = React.useState(!isLiveMatchesLoading ? liveGames : [])
+  const [filteredUpcomingGames, setFilteredUpcomingGames] = React.useState(!isFixturedMatchesLoading ? fixturedGames : [])
 
   console.log({ liveGames, fixturedGames })
 
@@ -33,7 +33,8 @@ const CommentHubPage = () => {
     setIsLoading(true);
 
     const timeoutId = setTimeout(() => {
-      if (query !== "" && (!isLiveMatchesLoading && liveGames) && (!isFixturedMatchesLoading && fixturedGames)) {
+      const safeQuery = query.trim().toLowerCase();
+      if (safeQuery !== "" && (!isLiveMatchesLoading && liveGames) && (!isFixturedMatchesLoading && fixturedGames)) {
         const gamesFiltered = liveGames.filter((g: any) =>
           g.away.name.toLowerCase().includes(query.toLowerCase()) ||
           g.home.name.toLowerCase().includes(query.toLowerCase())
@@ -49,16 +50,13 @@ const CommentHubPage = () => {
       } else if((!isLiveMatchesLoading && liveGames) && (!isFixturedMatchesLoading && fixturedGames)) {
         setFilteredGames(liveGames);
         setFilteredUpcomingGames(fixturedGames);
-      } else {
-        setFilteredUpcomingGames([])
-        setFilteredGames([])
       }
 
       setIsLoading(false);
     }, 1000);
 
     return () => clearTimeout(timeoutId);
-  }, [query, games, fixturedGames]);
+  }, [query, liveGames, fixturedGames, isLiveMatchesLoading, isFixturedMatchesLoading]);
 
 
   return (

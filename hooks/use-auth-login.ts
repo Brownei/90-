@@ -185,13 +185,13 @@ export const useAuthLogin = () => {
         await web3auth.logout();
       }
 
+      router.push('/')
       setLoggedIn(false);
       setProvider(null);
       setIsAuthenticated(false)
       await logoutMutation.mutateAsync()
       setUser(null)
       setSession(null)
-      router.push('/')
     } catch (error) {
       console.error("Logout error:", error);
     }
