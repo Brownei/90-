@@ -351,7 +351,7 @@ const ClientParticularGamePage = () => {
               {/* Match overview section - using a green underline to make it stand out */}
               <div className="mt-3 mb-1">
                 <p className="font-ABCDaitype font-medium text-[0.7rem] md:text-[0.8rem] inline-block relative p-2">
-                  Match overview
+                  
                   <span className="absolute bottom-0 left-0 w-full h-1 bg-[#3E3D3D] rounded-full"></span>
                 </p>
               </div>
