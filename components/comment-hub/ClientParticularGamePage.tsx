@@ -60,18 +60,18 @@ const ClientParticularGamePage = () => {
     }
   }, [messages.length, messageCount]);
 
-  // useEffect(() => {
-  //   const channel = pusherClient.subscribe("comment-hub");
+  useEffect(() => {
+    const channel = pusherClient.subscribe("comment-hub");
 
-  //   channel.bind("new-message", (payload: Message) => {
-  //     console.log(payload, 'socket payload');
-  //     addMessage(payload);
-  //   });
+    channel.bind("new-message", (payload: Message) => {
+      console.log(payload, 'socket payload');
+      addMessage(payload);
+    });
 
-  //   return () => {
-  //     pusherClient.unsubscribe("comment-hub");
-  //   };
-  // }, []);
+    return () => {
+      pusherClient.unsubscribe("comment-hub");
+    };
+  }, []);
 
   const scrollToBottom = () => {
     if (messageAreaRef.current) {
