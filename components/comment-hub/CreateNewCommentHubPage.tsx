@@ -53,7 +53,7 @@ const CreateNewCommentHubPage = () => {
           <button onClick={() => router.back()} className='px-3 cursor-pointer absolute top-0 bottom-0'>
             <ChevronLeft color='black' fontSize={10} size={10} className='bg-[#D9D9D9] rounded-full size-[27px] lg:size-[31px] flex items-center justify-center' />
           </button>
-          <h1 className='font-specialGothic font-extrabold text-[1.1rem] text-center mb-[20px] uppercase'>Create live hub</h1>
+          <h1 className='font-extrabold text-[1.1rem] text-center mb-[20px] uppercase'>Create live hub</h1>
         </div>
 
         {seletedGame !== undefined ? (
@@ -76,7 +76,7 @@ const CreateNewCommentHubPage = () => {
                 ) : (
                   <div className='flex flex-col justify-center items-center mt-[50px]'>
                     <MessageIcon isInBackground={true} />
-                    <p className='text-black/24 font-dmSans w-[200px] lg:w-[400px] text-[0.9rem] text-center'>Start the Conversation for any live or upcoming Match.</p>
+                    <p className='text-black/24 w-[200px] lg:w-[400px] text-[0.9rem] text-center'>Start the Conversation for any live or upcoming Match.</p>
                   </div>
                 )}
               </div>
