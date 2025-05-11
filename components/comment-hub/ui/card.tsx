@@ -23,7 +23,7 @@ const Card = ({ game }: { game: Game }) => {
           </div>
 
           {alreadyAHub !== undefined ? (
-            <div className='flex items-center gap-1 font-dmSans font-bold'>
+            <div className='flex justify-between items-center gap-1 font-dmSans font-bold'>
               <p className='text-[#FF0000] text-[1.5rem] lg:text-[2rem]'>{game.homeScore}</p>
               <span className='text-[1.5rem] lg:text-[2rem]'>:</span>
               <p className='text-[#FF0000] text-[1.5rem] lg:text-[2rem]'>{game.awayScore}</p>
@@ -44,8 +44,8 @@ const Card = ({ game }: { game: Game }) => {
           </div>
         </div>
 
-        <div className='flex justify-center items-center'>
-          <button className='w-fit bg-darkGreen py-1 px-6 text-white font-dmSans font-extrabold rounded-xl'>
+        <div className='flex justify-between items-center'>
+          <button className='w-fit bg-darkGreen py-1 px-6 text-white font-dmSans font-extrabold rounded-l'>
             {alreadyAHub ? 'Join Hub' : 'Launch Hub'}
           </button>
         </div>

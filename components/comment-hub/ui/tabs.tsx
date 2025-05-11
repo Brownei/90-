@@ -22,7 +22,7 @@ const Tabs: React.FC<TabsProps> = ({ tabs, selected, onSelected }) => {
   }
 
   return (
-    <div className='grid grid-cols-3 grid-flow-row w-full lg:flex gap-4 lg:gap-2'>
+    <div className='grid grid-cols-4 grid-flow-row w-full lg:flex gap-4 lg:gap-2'>
       {tabs.map((tab, i) => {
         const url = formatString(tab)
         const decodeUrl = pathname.get("tabs") !== null ? reverseFormatString(pathname.get("tabs") as string) : ''
