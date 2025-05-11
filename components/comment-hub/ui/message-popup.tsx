@@ -16,178 +16,6 @@ import toast from "react-hot-toast";
 import { trpc } from "@/trpc/client";
 import { set } from "@project-serum/anchor/dist/cjs/utils/features";
 
-const RefereeAction = () => {
-  return (
-    <div className="border-b border-[#B7B7B7] py-4 font-ABCDaitype">
-      <div className="flex flex-col">
-        <div className="text-gray-500 text-xs mb-2">REFEREE</div>
-        <div className="flex gap-2">
-          <div className="rounded-full overflow-hidden w-6 h-6 flex items-center justify-center bg-gray-200 text-xs font-bold">
-            ⚽
-          </div>
-          <div className="flex-1">
-            <div className="text-gray-800 font-medium py-1">
-              <span className="mr-2">{"28'"}</span>
-              <span className="font-bold">GOAL!</span> - Pedri
-            </div>
-            <div className="text-sm">
-              Bullet Shot from Outside the box to give Barcelona the Lead in the
-              CDR Final. Assisted by Lamal
-            </div>
-            <div className="flex gap-2 mt-2">
-              <div className="rounded-full bg-gray-200 px-3 py-1 flex items-center gap-1">
-                <span>😂</span> <span className="text-sm">20</span>
-              </div>
-              <div className="rounded-full bg-gray-200 px-3 py-1 flex items-center gap-1">
-                <span>👏</span> <span className="text-sm">20</span>
-              </div>
-              <div className="rounded-full bg-gray-200 px-3 py-1 flex items-center gap-1">
-                <span>👎</span> <span className="text-sm">20</span>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-};
-
-// Define custom message type
-interface CustomMessage {
-  id: string;
-  avatarUrl: string;
-  username: string;
-  time: string;
-  content: string;
-  isRef: boolean;
-  reactions: string[];
-  actionNos: number;
-  replies: Reply[];
-}
-
-// Add custom soccer comment component to match the image
-const JosiahComment = ({
-  id = "josiah-1",
-  onShowReplies,
-  replies = [],
-}: {
-  id?: string;
-  onShowReplies?: (id: string) => void;
-  replies?: Reply[];
-}) => {
-  return (
-    <div className="border-b border-[#B7B7B7] py-4">
-      <div className="flex gap-2 items-start">
-        <div className="size-[50px] rounded-full bg-yellow-200 flex items-center justify-center font-bold text-xl">
-          🔥
-        </div>
-        <div className="grid gap-1 w-full font-ABCDaitype">
-          <p className="flex gap-1 items-center">
-            <span className="text-[#616061] text-[0.75rem] font-medium">
-              Josiah🔥
-            </span>
-            <span className="text-[0.5rem] text-[#808080]/55">9:16 AM</span>
-          </p>
-          <p className="flex gap-2 justify-between items-start">
-            <span className="text-[1rem] tracking-[0.2px] w-full">
-              Real Madrid playing with 13 men again — 11 on the pitch, 2 in VAR.{" "}
-              {"Nothing's"} changed
-            </span>
-            <span className="text-[#000]/50 text-[0.6rem]">1%</span>
-          </p>
-          <div className="text-[1rem] tracking-[0.2px] w-full flex justify-between items-center">
-            <button
-              className="text-[#000000] underline text-[0.7rem] hover:text-blue-600"
-              onClick={() => onShowReplies && onShowReplies(id)}
-            >
-              {replies.length > 0
-                ? `View ${replies.length} ${
-                    replies.length === 1 ? "reply" : "replies"
-                  }`
-                : "Reply"}
-            </button>
-            <div className="flex gap-2 items-center">
-              <div className="flex items-center gap-1">
-                <span>😂🔥👏</span>
-                <span className="text-[#000000]/43 text-[0.7rem]">+25</span>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-};
-
-const StrikeComment = () => {
-  return (
-    <div className="border-b border-[#B7B7B7] py-4">
-      <div className="flex gap-2 items-start">
-        <div className="size-[50px] rounded-full bg-yellow-200 flex items-center justify-center font-bold text-xl">
-          🔥
-        </div>
-        <div className="grid gap-1 w-full font-ABCDaitype">
-          <p className="flex gap-1 items-center">
-            <span className="text-[#616061] text-[0.75rem] font-medium">
-              Josiah🔥
-            </span>
-            <span className="text-[0.5rem] text-[#808080]/55">9:16 AM</span>
-          </p>
-          <p className="flex gap-2 justify-between items-start">
-            <span className="text-[1rem] tracking-[0.2px] w-full font-bold">
-              WHAT A STRIKEEE! {"That's"} world-class 🔥🔥
-            </span>
-          </p>
-        </div>
-      </div>
-    </div>
-  );
-};
-
-// Component to display replies to a message
-const Replies = ({
-  replies,
-  messageUsername,
-}: {
-  replies: Reply[];
-  messageUsername: string;
-}) => {
-  if (!replies || replies.length === 0) return null;
-
-  return (
-    <div className="ml-12 mt-3 border-l-2 border-gray-200 pl-4">
-      {replies.map((reply) => (
-        <div key={reply.id} className="mb-3">
-          <div className="flex gap-2 items-start">
-            <img
-              src={reply.author.profileImage}
-              alt={reply.author.name}
-              width={36}
-              height={36}
-              className="size-[36px] rounded-full"
-            />
-            <div className="grid gap-1 w-full font-ABCDaitype">
-              <p className="flex gap-1 items-center">
-                <span className="text-[#616061] text-[0.6rem] md:text-[0.7rem] font-medium">
-                  {reply.author.name}
-                </span>
-                <span className="text-[0.5rem] text-[#808080]/55">
-                  {reply.author.name}
-                </span>
-              </p>
-              <div className="bg-gray-50 rounded-lg px-3 py-2">
-                <p className="text-[0.9rem] tracking-[0.2px]">
-                  {reply.content}
-                </p>
-              </div>
-            </div>
-          </div>
-        </div>
-      ))}
-    </div>
-  );
-};
-
 const MessagePopup = ({ seletedGame }: { seletedGame: any }) => {
   const { messages, addReply, setMessages } = useMessageStore();
   const {
@@ -195,10 +23,7 @@ const MessagePopup = ({ seletedGame }: { seletedGame: any }) => {
     isLoading,
     error,
   } = trpc.messages.getAllMessages.useQuery({ hubName: seletedGame.hub.name });
-  if (allMessages) {
-    setMessages(allMessages);
-  }
-  // console.log({ allMessages, isLoading, error });
+  console.log({ allMessages, isLoading, error });
   const { user, isAuthenticated } = useAuth();
   // const {} =
   const [selectedMessage, setSelectedMessage] = useState<any>(null);
@@ -216,46 +41,11 @@ const MessagePopup = ({ seletedGame }: { seletedGame: any }) => {
 
   // console.log({allMessages, seletedGame})
 
-  // Custom message state for Josiah comments with proper typing
-  const [customMessages, setCustomMessages] = useState<
-    Record<string, CustomMessage>
-  >({
-    "josiah-1": {
-      id: "josiah-1",
-      avatarUrl: "https://via.placeholder.com/50?text=J",
-      username: "Josiah🔥",
-      time: "9:16 AM",
-      content:
-        "Real Madrid playing with 13 men again — 11 on the pitch, 2 in VAR. Nothing's changed",
-      isRef: false,
-      reactions: ["😂", "🔥", "👏"],
-      actionNos: 25,
-      replies: [],
-    },
-    "josiah-2": {
-      id: "josiah-2",
-      avatarUrl: "https://via.placeholder.com/50?text=J",
-      username: "Josiah🔥",
-      time: "9:16 AM",
-      content:
-        "Real Madrid playing with 13 men again — 11 on the pitch, 2 in VAR. Nothing's changed",
-      isRef: false,
-      reactions: ["😂", "🔥", "👏"],
-      actionNos: 25,
-      replies: [],
-    },
-    "josiah-3": {
-      id: "josiah-3",
-      avatarUrl: "https://via.placeholder.com/50?text=J",
-      username: "Josiah🔥",
-      time: "9:16 AM",
-      content: "WHAT A STRIKEEE! That's world-class 🔥🔥",
-      isRef: false,
-      reactions: ["😂", "🔥", "👏"],
-      actionNos: 15,
-      replies: [],
-    },
-  });
+  useEffect(() => {
+    if (allMessages) {
+      setMessages(allMessages);
+    }
+  }, [allMessages, setMessages]);
 
   // Add some initial replies for demonstration purposes only on first render
   const handleJosiahReplyToggle = (id: number) => {
