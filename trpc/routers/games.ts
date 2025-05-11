@@ -20,11 +20,26 @@ export const gameRouter = createTRPCRouter({
       return filteredGames;
     }),
 
+  getAllFixturesByName: baseProcedure
+    .input(z.object({
+      homeName: z.string(),
+      away: z.string()
+  }))
+    .query(async ({input}) => {
+      const {homeName, away} = input
+      const allowedLeagueIds = [47, 87, 42];
+      const allLiveGames = await externalFootballApi('football-current-live')
+      const filteredGames = allLiveGames.data.response.live.filter((game: any) => allowedLeagueIds.includes(game.leagueId)).filter((game: any) => game.home.name === homeName && game.home.name === away)
+
+      // return allLiveGames.data.response.live;
+      return filteredGames;
+  }),
+
   getAllFixtures: baseProcedure
     .query(async () => {
       const allFixtures = []
       const [premierLeagueGames, championsGames, laligaGames] = await Promise.all([
-         externalFootballApi('football-get-all-matches-by-league?leagueid=47'),
+        externalFootballApi('football-get-all-matches-by-league?leagueid=47'),
         externalFootballApi('football-get-all-matches-by-league?leagueid=42'),
         externalFootballApi('football-get-all-matches-by-league?leagueid=87')
       ])

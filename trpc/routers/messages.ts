@@ -61,7 +61,6 @@ export const messagesRouter = createTRPCRouter({
         .select({ id: hubs.id })
         .from(hubs)
         .where(eq(hubs.name, hubName))
-        .then(res => res[0]);
 
       if (!hub) throw new Error("Hub not found");
 
@@ -79,7 +78,7 @@ export const messagesRouter = createTRPCRouter({
         })
         .from(comments)
         .leftJoin(users, eq(comments.userId, users.id))
-        .where(eq(comments.hubId, hub.id));
+        .where(eq(comments.hubId, hub[0].id));
 
       const commentIds = rawComments.map(c => c.id);
 
