@@ -47,18 +47,6 @@ const MessagePopup = ({ seletedGame }: { seletedGame: any }) => {
     }
   }, [allMessages, setMessages]);
 
-  // Add some initial replies for demonstration purposes only on first render
-  const handleJosiahReplyToggle = (id: number) => {
-    setShowAllReplies((prev) => ({
-      ...prev,
-      [id]: !prev[id],
-    }));
-
-    // If there's no replying state for this message yet, also set it to replying
-    if (replyingTo !== id) {
-      setReplyingTo(id);
-    }
-  };
 
   const handleWagerClick = (message: any) => {
     setSelectedMessage(message);

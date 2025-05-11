@@ -19,83 +19,6 @@ import LoadingIcon from '@/public/icons/LoadingIcon'
 import { LAMPORTS_PER_SOL } from '@solana/web3.js'
 import { useAuthLogin } from '@/hooks/use-auth-login'
 
-// Add sample messages data if not already in the store
-
-const sampleMessages: Message[] = [
-  {
-    id: 1,
-    message: "What a game so far! That last play was incredible.",
-    hubId: 101,
-    userId: 1001,
-    author: {
-      id: 1001,
-      name: "FootballFan22",
-      profileImage: "https://randomuser.me/api/portraits/men/32.jpg",
-    },
-    time: "17:30",
-    replies: [
-      {
-        id: 11,
-        commentId: 1,
-        content: "Absolutely! The midfielder is on fire today!",
-        author: {
-          id: 1002,
-          name: "SoccerLover",
-          profileImage: "https://randomuser.me/api/portraits/women/22.jpg",
-        },
-      },
-    ],
-  },
-  {
-    id: 2,
-    message:
-      "The defense needs to tighten up in the second half. Too many opportunities for the opponent.",
-    hubId: 101,
-    userId: 1003,
-    author: {
-      id: 1003,
-      name: "SportAnalyst",
-      profileImage: "https://randomuser.me/api/portraits/women/45.jpg",
-    },
-    time: "17:35",
-    replies: [],
-  },
-  {
-    id: 3,
-    message:
-      "I bet we'll see a substitution in the next 10 minutes. The striker looks tired.",
-    hubId: 101,
-    userId: 1004,
-    author: {
-      id: 1004,
-      name: "GameChanger",
-      profileImage: "https://randomuser.me/api/portraits/men/67.jpg",
-    },
-    time: "17:40",
-    replies: [
-      {
-        id: 12,
-        commentId: 3,
-        content: "Good call! I think they should bring in the young forward.",
-        author: {
-          id: 1005,
-          name: "CoachMike",
-          profileImage: "https://randomuser.me/api/portraits/men/28.jpg",
-        },
-      },
-      {
-        id: 13,
-        commentId: 3,
-        content: "No way, they need to focus on defense first!",
-        author: {
-          id: 1006,
-          name: "TacticalGenius",
-          profileImage: "https://randomuser.me/api/portraits/women/36.jpg",
-        },
-      },
-    ],
-  },
-];
 type Params = {
   game: string;
 };
@@ -137,18 +60,18 @@ const ClientParticularGamePage = () => {
     }
   }, [messages.length, messageCount]);
 
-  useEffect(() => {
-    const channel = pusherClient.subscribe("comment-hub");
+  // useEffect(() => {
+  //   const channel = pusherClient.subscribe("comment-hub");
 
-    channel.bind("new-message", (payload: Message) => {
-      // console.log(payload)
-      addMessage(payload);
-    });
+  //   channel.bind("new-message", (payload: Message) => {
+  //     console.log(payload, 'socket payload');
+  //     addMessage(payload);
+  //   });
 
-    return () => {
-      pusherClient.unsubscribe("comment-hub");
-    };
-  }, []);
+  //   return () => {
+  //     pusherClient.unsubscribe("comment-hub");
+  //   };
+  // }, []);
 
   const scrollToBottom = () => {
     if (messageAreaRef.current) {
