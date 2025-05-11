@@ -105,7 +105,7 @@ const ClientParticularGamePage = () => {
   const hubId = 1
   const router = useRouter()
   const { game } = useParams<Params>()
-  console.log({game})
+  // console.log({game})
   const {data: seletedGame, isLoading, error} = trpc.hubs.getAParticularHub.useQuery({name: game})
   // const [homeTeam, awayTeam] = reverseFormatString(game).split("Vs")
   // const seletedGame = games.find((g) => g.awayTeam === awayTeam?.trim() && g.homeTeam === homeTeam?.trim()) as Game
@@ -116,16 +116,11 @@ const ClientParticularGamePage = () => {
   const { messages, addMessage } = useMessageStore();
   const [messageCount, setMessageCount] = useState(0);
 
-  console.log({seletedGame})
+  // console.log(seletedGame)
+  // console.log(JSON.stringify(seletedGame, null, 2))
 
   // Add sample messages on first load if needed
   useEffect(() => {
-    if (messages.length <= 2) {
-      sampleMessages.forEach(msg => {
-        addMessage(msg);
-      });
-    }
-
     // Set initial message count to track new messages
     setMessageCount(messages.length);
   }, [addMessage]);
@@ -142,7 +137,7 @@ const ClientParticularGamePage = () => {
     const channel = pusherClient.subscribe('comment-hub')
     
     channel.bind('new-message', (payload: Message) => {
-      console.log(payload)
+      // console.log(payload)
       addMessage(payload)
     })
 
@@ -303,21 +298,21 @@ const ClientParticularGamePage = () => {
               {/* Home team */}
               <div className='flex flex-col items-center'>
                 <img
-                  src={seletedGame?.hub.name}
-                  alt={seletedGame?.hub.name}
+                  src={seletedGame?.team?.home}
+                  alt={seletedGame?.team?.home}
                   width={100}
                   height={100}
                   className='w-[40px] md:w-[50px] lg:w-[60px] transition-transform hover:scale-105'
                 />
-                <p className='text-center text-[0.65rem] md:text-[0.7rem] lg:text-[0.8rem] font-ABCDaitype font-medium mt-1'>FC Barcelona</p>
+                <p className='text-center text-[0.65rem] md:text-[0.7rem] lg:text-[0.8rem] font-ABCDaitype font-medium mt-1'>{seletedGame?.team?.home}</p>
               </div>
 
               {/* Score or time */}
               <div className='grid place-items-center'>
                 <div className='flex items-center gap-2 leading-8 font-ABCDaitype font-bold'>
-                  <p className='text-[2rem] md:text-[2.2rem] lg:text-[2.5rem]'>4</p>
+                  <p className='text-[2rem] md:text-[2.2rem] lg:text-[2.5rem]'>{seletedGame?.team?.homeScore}</p>
                   <span className='text-[2rem] md:text-[2.2rem] lg:text-[2.5rem]'> - </span>
-                  <p className='text-[2rem] md:text-[2.2rem] lg:text-[2.5rem]'>1</p>
+                  <p className='text-[2rem] md:text-[2.2rem] lg:text-[2.5rem]'>{seletedGame?.team?.awayScore}</p>
                 </div>
                 <div className='font-ABCDaitype text-[0.65rem] md:text-[0.7rem] bg-[#ffffff20] px-3 py-0.5 rounded-full'>45 : 04</div>
               </div>
@@ -325,13 +320,13 @@ const ClientParticularGamePage = () => {
               {/* Away team */}
               <div className='flex flex-col items-center'>
                 <img
-                  src={seletedGame?.hub.name}
-                  alt="Real Madrid FC"
+                  src={seletedGame?.team?.away}
+                  alt={seletedGame?.team?.away}
                   width={100}
                   height={100}
                   className='w-[40px] md:w-[50px] lg:w-[60px] transition-transform hover:scale-105'
                 />
-                <p className='text-center text-[0.65rem] md:text-[0.7rem] lg:text-[0.8rem] font-ABCDaitype font-medium mt-1'>Real Madrid FC</p>
+                <p className='text-center text-[0.65rem] md:text-[0.7rem] lg:text-[0.8rem] font-ABCDaitype font-medium mt-1'>{seletedGame?.team?.away}</p>
               </div>
             </div>
 

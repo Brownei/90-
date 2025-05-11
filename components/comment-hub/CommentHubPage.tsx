@@ -27,7 +27,7 @@ const CommentHubPage = () => {
   const [filteredGames, setFilteredGames] = React.useState(!isLiveMatchesLoading ? liveGames : [])
   const [filteredUpcomingGames, setFilteredUpcomingGames] = React.useState(!isFixturedMatchesLoading ? fixturedGames : [])
 
-  console.log({ liveGames, fixturedGames })
+  // console.log({ liveGames, fixturedGames })
 
   React.useEffect(() => {
     setIsLoading(true);

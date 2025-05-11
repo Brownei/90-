@@ -29,6 +29,7 @@ export interface Reply {
 
 interface MessageStore {
   messages: Message[];
+  setMessages: (messages: Message[]) => void;
   addMessage: (message: Message) => void;
   // addReaction: (messageId: string, reaction: string) => void;
   addReply: (messageId: number, reply: Reply) => void;
@@ -39,7 +40,9 @@ interface MessageStore {
 export const useMessageStore = create<MessageStore>()(
   persist(
     (set) => ({
-      messages: defaultMessages,
+      messages: [],
+
+      setMessages: (messages) => set({ messages }),
 
       addMessage: (message) =>
         set((state) => ({

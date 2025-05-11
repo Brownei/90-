@@ -110,7 +110,7 @@ export const useAuthLogin = () => {
       return;
     }
     const user = await web3auth.getUserInfo();
-    console.log(user);
+    // console.log(user);
 
     return user;
   };
@@ -153,7 +153,7 @@ export const useAuthLogin = () => {
             encryptedProvider: encryptedProvider,
           })
 
-          console.log(token)
+          // console.log(token)
           setSession(token as string)
 
           setUser({

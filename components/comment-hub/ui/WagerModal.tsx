@@ -38,7 +38,7 @@ const WagerModal: React.FC<WagerModalProps> = ({
     if (wagerCondition && stakeAmount) {
       // onProceed(wagerCondition, parseFloat(stakeAmount));
       const transaction = await bettingClient.initialize(2)
-      console.log(transaction)
+      // console.log(transaction)
 
       const bet = await bettingClient.createMatch(home, away, String(hubId), startTime)
     }

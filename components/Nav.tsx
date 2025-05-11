@@ -70,7 +70,7 @@ const Nav = () => {
 }, [user]);
 
 
-  console.log({provider, balance, add: user?.address})
+  // console.log({provider, balance, add: user?.address})
 
   const handleAuthAction = async () => {
     if (loggedIn && user !== null) {
@@ -90,7 +90,7 @@ const Nav = () => {
     router.push('/wallet');
   };
 
-  console.log({ user })
+  // console.log({ user })
 
   return (
     <nav className={`${pathname !== '/' ? 'fixed top-0 left-0 z-50 right-0 px-3 lg:px-5 py-3 transition-colors duration-300 bg-[#ECF5F5] text-black ' : 'absolute z-50 w-full px-3 lg:px-5 py-3 bg-[#ECF5F5] text-black'}`}>
