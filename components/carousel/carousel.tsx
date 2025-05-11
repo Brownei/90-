@@ -77,7 +77,7 @@ const Carousel = ({
               key={i}
             >
               <div className="p-3 text-black">
-                <div className="flex justify-between items-center font-ABCDaitype">
+                <div className="flex justify-between items-center ">
                   <div
                     className={`text-[0.65rem] text-[#FF0000] flex gap-1 items-center`}
                   >
@@ -95,12 +95,12 @@ const Carousel = ({
                       height={100}
                       className="w-[50px] lg:w-[150px]"
                     />
-                    <p className="text-center text-[0.9rem] lg:text-[1rem] font-ABCDaitype text-black">
+                    <p className="text-center text-[0.9rem] lg:text-[1rem] text-black">
                       {game.home.name}
                     </p>
                   </div>
 
-                    <div className="font-ABCDaitype text-[1rem] lg:text-[1.1rem] flex flex-col gap-1 items-center">
+                    <div className="text-[1rem] lg:text-[1.1rem] flex flex-col gap-1 items-center">
                       <p>{date}</p>
                       <p>{time}</p>
                     </div>
@@ -113,7 +113,7 @@ const Carousel = ({
                       height={100}
                       className="w-[50px] lg:w-[150px]"
                     />
-                    <p className="text-center text-[0.9rem] lg:text-[1rem] font-ABCDaitype text-black">
+                    <p className="text-center text-[0.9rem] lg:text-[1rem] text-black">
                       {game.away.name}
                     </p>
                   </div>
@@ -128,7 +128,7 @@ const Carousel = ({
                         joinAHub(urlRoute)
                       }
                     }}
-                    className="w-fit bg-darkGreen py-1 cursor-pointer px-6 text-white font-ABCDaitype font-extrabold rounded-xl"
+                    className="w-fit bg-darkGreen py-1 cursor-pointer px-6 text-white font-extrabold rounded-xl"
                   >
                     {(!isLoading && hub?.hub.name === urlRoute) ? 'Join Hub': 'Launch Hub'}
                   </button>

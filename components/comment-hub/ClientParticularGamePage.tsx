@@ -233,14 +233,14 @@ const ClientParticularGamePage = () => {
                       className="w-[40px] md:w-[50px] lg:w-[60px] transition-transform hover:scale-105"
                     />
                   )}
-                  <p className="text-center text-[0.65rem] md:text-[0.7rem] lg:text-[0.8rem] font-ABCDaitype font-medium mt-1">
+                  <p className="text-center text-[0.65rem] md:text-[0.7rem] lg:text-[0.8rem] font-medium mt-1">
                     {seletedGame?.team?.home}
                   </p>
                 </div>
 
                 {/* Score or time */}
                 <div className="grid place-items-center">
-                  <div className="flex items-center gap-2 leading-8 font-ABCDaitype font-bold">
+                  <div className="flex items-center gap-2 leading-8 font-bold">
                     <p className="text-[2rem] md:text-[2.2rem] lg:text-[2.5rem]">
                       {seletedGame?.team?.homeScore}
                     </p>
@@ -252,7 +252,7 @@ const ClientParticularGamePage = () => {
                       {seletedGame?.team?.awayScore}
                     </p>
                   </div>
-                  <div className="font-ABCDaitype text-[0.65rem] md:text-[0.7rem] bg-[#ffffff20] px-3 py-0.5 rounded-full">
+                  <div className=" text-[0.65rem] md:text-[0.7rem] bg-[#ffffff20] px-3 py-0.5 rounded-full">
                     45 : 04
                   </div>
                 </div>
@@ -268,7 +268,7 @@ const ClientParticularGamePage = () => {
                       className="w-[40px] md:w-[50px] lg:w-[60px] transition-transform hover:scale-105"
                     />
                   )}
-                  <p className="text-center text-[0.65rem] md:text-[0.7rem] lg:text-[0.8rem] font-ABCDaitype font-medium mt-1">
+                  <p className="text-center text-[0.65rem] md:text-[0.7rem] lg:text-[0.8rem] font-medium mt-1">
                     {seletedGame?.team?.away}
                   </p>
                 </div>
@@ -276,7 +276,7 @@ const ClientParticularGamePage = () => {
 
               {/* Match overview section - using a green underline to make it stand out */}
               <div className="mt-3 mb-1">
-                <p className="font-ABCDaitype font-medium text-[0.7rem] md:text-[0.8rem] inline-block relative p-2">
+                <p className=" font-medium text-[0.7rem] md:text-[0.8rem] inline-block relative p-2">
                   
                   <span className="absolute bottom-0 left-0 w-full h-1 bg-[#3E3D3D] rounded-full"></span>
                 </p>

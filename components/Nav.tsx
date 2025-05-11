@@ -34,10 +34,33 @@ const Nav = () => {
     setIsAuthenticated
   } = useAuthLogin();
 
-  // console.log({ isAuthenticated, isLoading, logout, connected, connect, provider, loggedIn, web3auth, isWeb3AuthInitialized })
-  // const {data: userProvider, isLoading: isUserProviderLoading, error: userProviderError} = trpc.users.getProvider.useQuery({email: user?.email!})
+  // State to track scroll position
+  const [scrolled, setScrolled] = useState(false);
   const [balance, setBalance] = useState(0)
   const {setSession} = useSessionStore()
+
+  // Scroll event handler
+  useEffect(() => {
+    const handleScroll = () => {
+      const offset = window.scrollY;
+      if (offset > 10) {
+        setScrolled(true);
+      } else {
+        setScrolled(false);
+      }
+    };
+
+    // Add scroll event listener
+    window.addEventListener('scroll', handleScroll);
+    
+    // Initial check
+    handleScroll();
+    
+    // Clean up
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+    };
+  }, []);
 
   useEffect(() => {
   if (user !== null) {
@@ -70,8 +93,6 @@ const Nav = () => {
 }, [user]);
 
 
-  // console.log({provider, balance, add: user?.address})
-
   const handleAuthAction = async () => {
     if (loggedIn && user !== null) {
       await logout();
@@ -90,10 +111,13 @@ const Nav = () => {
     router.push('/wallet');
   };
 
-  // console.log({ user })
-
   return (
-    <nav className={`${pathname !== '/' ? 'fixed top-0 left-0 z-50 right-0 px-3 lg:px-5 py-3 transition-colors duration-300 bg-[#ECF5F5] text-black ' : 'absolute z-50 w-full px-3 lg:px-5 py-3 bg-[#ECF5F5] text-black'}`}>
+    <nav className={`
+      ${scrolled ? 'fixed shadow-md' : pathname !== '/' ? 'fixed' : 'absolute'} 
+      top-0 left-0 z-50 right-0 px-3 lg:px-5 py-3 transition-all duration-300 
+      ${scrolled ? 'bg-[#ECF5F5]/95 backdrop-blur-sm' : 'bg-[#ECF5F5]'} 
+      text-black w-full
+    `}>
       <div className='flex justify-between items-center'>
 
         <Link href={'/'}>
@@ -111,7 +135,7 @@ const Nav = () => {
           {(loggedIn && user !== null) && (
             <Link
               href={'/profile'}
-              className={`font-ABCDaitype font-semibold text-[0.8rem] cursor-pointer ${pathname !== '/' ? 'text-black' : 'text-white'}`}
+              className={` font-semibold text-[0.8rem] cursor-pointer ${pathname !== '/' ? 'text-black' : 'text-white'}`}
             >
             </Link>
           )}
@@ -120,7 +144,7 @@ const Nav = () => {
             <Link
               href={'/wallet'}
               onClick={navigateToWallet}
-              className={`font-ABCDaitype font-semibold text-[0.8rem] cursor-pointer ${pathname !== '/' ? 'text-black' : 'text-white'}`}
+              className={`font-semibold text-[0.8rem] cursor-pointer ${pathname !== '/' ? 'text-black' : 'text-white'}`}
             >
               Wallet
             </Link>
@@ -129,7 +153,7 @@ const Nav = () => {
           <button
             onClick={handleAuthAction}
             disabled={!isWeb3AuthInitialized}
-            className='bg-darkGreen flex items-center gap-3 py-2 px-3 rounded-2xl font-ABCDaitype font-semibold text-white text-[0.8rem] cursor-pointer'
+            className='bg-darkGreen flex items-center gap-3 py-2 px-3 rounded-full  font-semibold text-white text-[0.8rem] cursor-pointer'
           >
             {(!isWeb3AuthInitialized || isLoading) ? (
               <span className="flex gap-3 items-center">Loading...</span>

@@ -181,7 +181,7 @@ const MessagePopup = ({ seletedGame }: { seletedGame: any }) => {
                 className="size-[50px] rounded-full"
               />
 
-              <div className="grid gap-1 w-full font-ABCDaitype">
+              <div className="grid gap-1 w-full">
                 <p className="flex gap-1 items-center">
                   <span className="text-[#616061] text-[0.6rem] md:text-[0.75rem] font-medium">
                     {message.author?.name}

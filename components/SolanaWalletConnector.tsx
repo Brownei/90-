@@ -106,7 +106,7 @@ const SolanaWalletConnector: React.FC<SolanaWalletConnectorProps> = ({ className
   return (
     <div className={`flex flex-col items-center ${className}`}>
       <div className="mb-4">
-        <WalletMultiButton className='bg-darkGreen flex items-center gap-3 py-2 px-3 rounded-2xl font-ABCDaitype font-semibold text-white text-[0.8rem] cursor-pointer'/>
+        <WalletMultiButton className='bg-darkGreen flex items-center gap-3 py-2 px-3 rounded-2xl  font-semibold text-white text-[0.8rem] cursor-pointer'/>
       </div>
       
       {connected && publicKey && (

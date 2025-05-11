@@ -63,7 +63,7 @@ const CommentHubPage = () => {
   return (
     <main className="bg-[ECF5F5] min-h-screen">
       <div className="container mx-auto px-4">
-        <div className="flex items-center justify-center py-3 gap-10 font-ABCDaitype font-bold">
+        <div className="flex items-center justify-center py-3 gap-10 font-bold">
           <h2 className="text-gray-500">Community Hubs</h2>
           <h2 className="">Live Hubs</h2>
         </div>
@@ -78,8 +78,8 @@ const CommentHubPage = () => {
 
         <div className="mt-5">
           <div className="flex justify-between items-center mb-1">
-            <h3 className="font-ABCDaitype text-base">Live Hubs</h3>
-            <div className="flex items-center text-xs text-gray-500 font-ABCDaitype">
+            <h3 className="text-base">Live Hubs</h3>
+            <div className="flex items-center text-xs text-gray-500 ">
             </div>
           </div>
 
@@ -95,7 +95,7 @@ const CommentHubPage = () => {
         </div>
 
         <div className="mt-5">
-          <h3 className="font-ABCDaitype text-base mb-1">Upcoming Hubs</h3>
+          <h3 className="text-base mb-1">Upcoming Hubs</h3>
           <div className="bg-[ECF5F5] rounded-xl p-3">
             {(isLoading || isFixturedMatchesLoading) ? (
               <div className="flex justify-center py-4">

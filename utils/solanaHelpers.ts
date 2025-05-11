@@ -28,7 +28,7 @@ export async function getSolanaBalance(walletAddress: string): Promise<number> {
 export async function getTokenAccounts(walletAddress: string) {
   try {
     const connection = new Connection(DEFAULT_RPC_ENDPOINT, 'confirmed');
-    const publicKey = new PublicKey(walletAddress);
+    const publicKey =  new PublicKey(walletAddress);
     
     const tokenAccounts = await connection.getParsedTokenAccountsByOwner(
       publicKey,

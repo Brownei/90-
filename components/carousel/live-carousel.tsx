@@ -67,7 +67,7 @@ const LiveCarousel = ({
     <div className="overflow-hidden mt-[20px]" ref={emblaRef}>
       <div className="flex lg:gap-1 lg[touch-action:pan-y_pinch-zoom] lg:ml-[calc(1rem_*_ -1)]">
         {tabs?.length === 0 ? (
-          <p className="font-ABCDaitype text-[1.5rem] flex items-center justify-center text-center p-5">No live games currently</p>
+          <p className="text-[1.5rem] flex items-center justify-center text-center p-5">No live games currently</p>
         ) : (
           <>
             {tabs?.map((game, i) => {
@@ -80,7 +80,7 @@ const LiveCarousel = ({
                 key={i}
               >
                 <div className="p-3 text-black">
-                  <div className="flex justify-between items-center font-ABCDaitype">
+                  <div className="flex justify-between items-center">
                     <div
                       className={`text-[0.65rem] text-[#FF0000] flex gap-1 items-center`}
                     >
@@ -100,13 +100,13 @@ const LiveCarousel = ({
                         height={100}
                         className="w-[50px] lg:w-[150px]"
                       />
-                      <p className="text-center text-[0.9rem] lg:text-[1rem] font-ABCDaitype">
+                      <p className="text-center text-[0.9rem] lg:text-[1rem] ">
                         {game.home.name}
                       </p>
                     </div>
 
                     <div className="flex flex-col gap-2">
-                      <div className="flex items-center gap-1 font-ABCDaitype font-bold">
+                      <div className="flex items-center gap-1 font-bold">
                         <p className="text-[#FF0000] text-[1.5rem] lg:text-[2rem]">
                           {game.home.score}
                         </p>
@@ -127,7 +127,7 @@ const LiveCarousel = ({
                       height={100}
                       className="w-[50px] lg:w-[150px]"
                     />
-                    <p className="text-center text-[0.9rem] lg:text-[1rem] font-ABCDaitype">
+                    <p className="text-center text-[0.9rem] lg:text-[1rem]">
                       {game.away.name}
                     </p>
                   </div>
@@ -142,7 +142,7 @@ const LiveCarousel = ({
                           await launchNewHub(urlRoute, game.home.name, game.away.name, game.status.utcTime, game.home.score, game.away.score)
                         }
                     }}
-                    className="w-fit bg-darkGreen py-1 cursor-pointer px-6 text-white font-ABCDaitype font-extrabold rounded-xl"
+                    className="w-fit bg-darkGreen py-1 cursor-pointer px-6 text-white font-extrabold rounded-xl"
                   >
                     {(!isLoading && hub?.hub.name === urlRoute) ? 'Join Hub': 'Launch Hub'}
                   </button>

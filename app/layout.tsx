@@ -4,8 +4,15 @@ import Nav from "@/components/Nav";
 import { Providers } from "./providers";
 import { Toaster } from "react-hot-toast";
 import { cookies } from "next/headers";
-import { SessionProvider } from "next-auth/react";
+import { Inter } from 'next/font/google';
 
+// Initialize Inter font
+const inter = Inter({
+  subsets: ['latin'],
+  display: 'swap',
+  weight: ['300', '400', '500', '600', '700'],
+  variable: '--font-inter',
+});
 
 export const metadata: Metadata = {
   title: "90+: The Future of Live Football Engagement",
@@ -25,8 +32,8 @@ export default async function RootLayout({
 
   console.log({token})
   return (
-    <html lang="en">
-      <body>
+    <html lang="en" className={`${inter.variable}`}>
+      <body className="font-sans">
         <Providers token={token}>
           <Nav />
           <Toaster />
