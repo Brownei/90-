@@ -41,6 +41,7 @@ const Carousel = ({
         away,
         awayScore,
         homeScore,
+        isGameStarted: false
       })
 
       router.push(`/comment-hub/${urlRoute}`);

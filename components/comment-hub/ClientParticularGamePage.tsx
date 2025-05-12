@@ -1,8 +1,8 @@
 "use client"
-import { Game, } from '@/data'
+import { Game, teamLogos, } from '@/data'
 import BackIcon from '@/public/icons/BackIcon'
 import CurvedArrow from '@/public/icons/CurvedArrow'
-import { reverseFormatString } from '@/utils/utils'
+import { formatDateToBritish, reverseFormatString } from '@/utils/utils'
 import { useParams, useRouter } from 'next/navigation'
 import React, { useState, useEffect, useRef } from 'react'
 import MessagePopup from './ui/message-popup'
@@ -19,6 +19,7 @@ import LoadingIcon from '@/public/icons/LoadingIcon'
 import { LAMPORTS_PER_SOL } from '@solana/web3.js'
 import { useAuthLogin } from '@/hooks/use-auth-login'
 import { isPageStatic } from 'next/dist/build/utils'
+import Image from 'next/image'
 
 type Params = {
   game: string;
@@ -43,9 +44,15 @@ const ClientParticularGamePage = () => {
     data: particularGameLiveScores, 
     isLoading: isParticularGameLiveScoresLoading, 
     error: particularGameLiveScoresError
-  } = trpc.games.getParticularLiveMatches.useQuery({home: home.trim(), away: away.trim()}, {
-    enabled: !!seletedGame
-  })
+  } = trpc.games.getParticularLiveMatches.useQuery({home: home.trim().toLowerCase(), away: away.trim().toLowerCase()})
+              const homeMatchedKey = Object.keys(teamLogos).find((key) =>
+              key.toLowerCase().includes((!isLoading && seletedGame) ? seletedGame.team!.home.toLowerCase() : '')
+            );
+            const awayMatchedKey = Object.keys(teamLogos).find((key) =>
+              key.toLowerCase().includes((!isLoading && seletedGame) ? seletedGame.team!.away.toLowerCase() : '')
+            );
+            const logoHome = homeMatchedKey ? teamLogos[homeMatchedKey] : ''
+            const logoAway = awayMatchedKey ? teamLogos[awayMatchedKey] : ''
   console.log({particularGameLiveScores})
 
   console.log(seletedGame)
@@ -99,6 +106,7 @@ const ClientParticularGamePage = () => {
   const [wagerCondition, setWagerCondition] = useState("");
   const [stakeAmount, setStakeAmount] = useState(0);
   const [selectedMessage, setSelectedMessage] = useState<any | null>(null);
+          const {date, time} = formatDateToBritish((!isLoading && seletedGame) ? seletedGame.team!.startTime : '')
 
   const handleToggle = () => {
     if (!boxRef.current) return;
@@ -192,13 +200,13 @@ const ClientParticularGamePage = () => {
     }
   };
 
-  if (isLoading || isParticularGameLiveScoresLoading) {
+  if (isLoading || (seletedGame?.hub.isGameStarted === true && isParticularGameLiveScoresLoading)) {
     return (
       <div className="flex justify-center py-4">
         <LoadingIcon />
       </div>
     );
-  } else if (error || particularGameLiveScoresError) {
+  } else if (error || (seletedGame?.hub.isGameStarted === true && particularGameLiveScoresError)) {
     return (
       <div className="flex justify-center py-4">
         <p>Big Errror Occured</p>
@@ -226,8 +234,8 @@ const ClientParticularGamePage = () => {
                 {/* Home team */}
                 <div className="flex flex-col items-center">
                   {seletedGame?.team?.home && (
-                    <img
-                      src={seletedGame.team.home}
+                    <Image
+                      src={logoHome}
                       alt={seletedGame.team.home}
                       width={100}
                       height={100}
@@ -243,18 +251,18 @@ const ClientParticularGamePage = () => {
                 <div className="grid place-items-center">
                   <div className="flex items-center gap-2 leading-8 font-bold">
                     <p className="text-[2rem] md:text-[2.2rem] lg:text-[2.5rem]">
-                      {particularGameLiveScores.home.score}
+                      {seletedGame?.hub.isGameStarted === true ? particularGameLiveScores.home.score : seletedGame?.team?.homeScore}
                     </p>
                     <span className="text-[2rem] md:text-[2.2rem] lg:text-[2.5rem]">
                       {" "}
                       -{" "}
                     </span>
                     <p className="text-[2rem] md:text-[2.2rem] lg:text-[2.5rem]">
-                      {particularGameLiveScores.away.score}
+                      {seletedGame?.hub.isGameStarted === true ? particularGameLiveScores.away.score : seletedGame?.team?.awayScore}
                     </p>
                   </div>
                   <div className=" text-[0.65rem] md:text-[0.7rem] bg-[#ffffff20] px-3 py-0.5 rounded-full">
-                    {particularGameLiveScores.status.liveTime.long}
+                    {seletedGame?.hub.isGameStarted === true ? particularGameLiveScores.status.liveTime.long : time}
                     {/* 45 : 04 */}
                   </div>
                 </div>
@@ -262,8 +270,8 @@ const ClientParticularGamePage = () => {
                 {/* Away team */}
                 <div className="flex flex-col items-center">
                   {seletedGame?.team?.away && (
-                    <img
-                      src={seletedGame.team.away}
+                    <Image
+                      src={logoAway}
                       alt={seletedGame.team.away}
                       width={100}
                       height={100}

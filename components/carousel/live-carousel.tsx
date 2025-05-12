@@ -40,7 +40,8 @@ const LiveCarousel = ({
         home,
         away,
         awayScore,
-        homeScore
+        homeScore,
+        isGameStarted: true
       })
 
       router.push(`/comment-hub/${urlRoute}`);
