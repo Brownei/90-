@@ -41,7 +41,7 @@ const MessageInput = forwardRef<HTMLDivElement | null, MessageInputProps>(
       console.log("Sending message:", newMessage);
 
       // Add the message to the store
-      addMessage(newMessage);
+      // addMessage(newMessage);
 
       // Clear the input
       setMessage("");

@@ -38,6 +38,7 @@ const Nav = () => {
   const [scrolled, setScrolled] = useState(false);
   const [balance, setBalance] = useState(0)
   const {setSession} = useSessionStore()
+  console.log({user})
 
   // Scroll event handler
   useEffect(() => {
@@ -78,10 +79,10 @@ const Nav = () => {
         setBalance(userBalance);
         await updateWalletData(user?.address!);
 
-        setUser({
-            ...user,
+        setUser(prev => ({
+            ...prev,
             balance: userBalance.toString()
-        })
+        }))
         const token = encryptData(JSON.stringify(user))
         setSession(token)
         localStorage.setItem(lastRunKey, String(now));

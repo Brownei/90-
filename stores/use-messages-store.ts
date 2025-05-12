@@ -18,12 +18,12 @@ export interface Message {
 
 export interface Reply {
   id: number;
-  commentId: number;
+  commentId: number | null;
   content: string;
   author: {
-    id: number;
-    name: string;
-    profileImage: string
+    id: number | null;
+    name: string | null;
+    profileImage: string | null
   };
 }
 

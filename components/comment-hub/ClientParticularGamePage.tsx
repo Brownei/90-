@@ -43,7 +43,7 @@ const ClientParticularGamePage = () => {
   const { messages, addMessage } = useMessageStore();
   const [messageCount, setMessageCount] = useState(0);
 
-  // console.log(seletedGame)
+  console.log(seletedGame)
   // console.log(JSON.stringify(seletedGame, null, 2))
 
   // Add sample messages on first load if needed
@@ -71,7 +71,7 @@ const ClientParticularGamePage = () => {
     return () => {
       pusherClient.unsubscribe("comment-hub");
     };
-  }, []);
+  }, [pusherClient]);
 
   const scrollToBottom = () => {
     if (messageAreaRef.current) {
