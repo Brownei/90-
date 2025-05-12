@@ -1,5 +1,5 @@
 "use client"
-import { Game, games } from '@/data'
+import { Game, } from '@/data'
 import BackIcon from '@/public/icons/BackIcon'
 import CurvedArrow from '@/public/icons/CurvedArrow'
 import { reverseFormatString } from '@/utils/utils'
@@ -18,37 +18,38 @@ import { trpc } from '@/trpc/client'
 import LoadingIcon from '@/public/icons/LoadingIcon'
 import { LAMPORTS_PER_SOL } from '@solana/web3.js'
 import { useAuthLogin } from '@/hooks/use-auth-login'
+import { isPageStatic } from 'next/dist/build/utils'
 
 type Params = {
   game: string;
 };
 
 const ClientParticularGamePage = () => {
-  const isLive = true;
-  const hubId = 1;
   const router = useRouter();
   const { game } = useParams<Params>();
-  // console.log({game})
+  const [home, away] = reverseFormatString(game).split("Vs")
   const {
     data: seletedGame,
     isLoading,
     error,
   } = trpc.hubs.getAParticularHub.useQuery({ name: game });
-  // const [homeTeam, awayTeam] = reverseFormatString(game).split("Vs")
-  // const seletedGame = games.find((g) => g.awayTeam === awayTeam?.trim() && g.homeTeam === homeTeam?.trim()) as Game
   const inputRef = React.useRef<HTMLDivElement>(null);
   const boxRef = React.useRef<HTMLDivElement>(null);
   const messageAreaRef = useRef<HTMLDivElement>(null);
   const [isSlidOut, setIsSlidOut] = React.useState(false);
   const { messages, addMessage } = useMessageStore();
   const [messageCount, setMessageCount] = useState(0);
+  const {
+    data: particularGameLiveScores, 
+    isLoading: isParticularGameLiveScoresLoading, 
+    error: particularGameLiveScoresError
+  } = trpc.games.getParticularLiveMatches.useQuery({home: home.trim(), away: away.trim()}, {
+    enabled: !!seletedGame
+  })
+  console.log({particularGameLiveScores})
 
   console.log(seletedGame)
-  // console.log(JSON.stringify(seletedGame, null, 2))
-
-  // Add sample messages on first load if needed
   useEffect(() => {
-    // Set initial message count to track new messages
     setMessageCount(messages.length);
   }, [addMessage]);
 
@@ -191,13 +192,13 @@ const ClientParticularGamePage = () => {
     }
   };
 
-  if (isLoading) {
+  if (isLoading || isParticularGameLiveScoresLoading) {
     return (
       <div className="flex justify-center py-4">
         <LoadingIcon />
       </div>
     );
-  } else if (error) {
+  } else if (error || particularGameLiveScoresError) {
     return (
       <div className="flex justify-center py-4">
         <p>Big Errror Occured</p>
@@ -242,18 +243,19 @@ const ClientParticularGamePage = () => {
                 <div className="grid place-items-center">
                   <div className="flex items-center gap-2 leading-8 font-bold">
                     <p className="text-[2rem] md:text-[2.2rem] lg:text-[2.5rem]">
-                      {seletedGame?.team?.homeScore}
+                      {particularGameLiveScores.home.score}
                     </p>
                     <span className="text-[2rem] md:text-[2.2rem] lg:text-[2.5rem]">
                       {" "}
                       -{" "}
                     </span>
                     <p className="text-[2rem] md:text-[2.2rem] lg:text-[2.5rem]">
-                      {seletedGame?.team?.awayScore}
+                      {particularGameLiveScores.away.score}
                     </p>
                   </div>
                   <div className=" text-[0.65rem] md:text-[0.7rem] bg-[#ffffff20] px-3 py-0.5 rounded-full">
-                    45 : 04
+                    {particularGameLiveScores.status.liveTime.long}
+                    {/* 45 : 04 */}
                   </div>
                 </div>
 
@@ -322,7 +324,7 @@ const ClientParticularGamePage = () => {
 
           {/* Message input - always at bottom */}
           <MessageInput
-            hubId={hubId}
+            hubId={seletedGame?.hub.id!}
             ref={inputRef}
             onWagerClick={handleWagerClick}
           />

@@ -1,6 +1,8 @@
 import { z } from 'zod';
 import { baseProcedure, createTRPCRouter } from '../init';
-import { externalFootballApi, formatDate, getTomorrowDate } from '@/utils/utils';
+import { externalFootballApi, externalGetTeamInfoApi, formatDate, getTomorrowDate } from '@/utils/utils';
+import { AxiosError } from 'axios';
+import toast from 'react-hot-toast';
 // import { twitterRouter } from './twitter';
 
 export const gameRouter = createTRPCRouter({
@@ -8,6 +10,27 @@ export const gameRouter = createTRPCRouter({
     .query(async (opts) => {
       return await externalFootballApi('football-popular-leagues')
     }),
+
+  getTeamInfo: baseProcedure
+    .input(z.object({
+      name: z.string()
+  })).query(async ({input}) => {
+      try {
+      const {error, success, data} = await externalGetTeamInfoApi(input.name)
+      if (success === false) {
+        // return new Error(error)
+      } 
+
+      if (success === true){
+        return data
+      }
+    } catch(error) {
+      if (error instanceof AxiosError) {
+        console.log("Error from fetching the info")
+        toast("Error from fetching the info")
+      }
+    }
+  }),
 
   liveMatches: baseProcedure
     .query(async () => {
@@ -18,6 +41,23 @@ export const gameRouter = createTRPCRouter({
 
       // return allLiveGames.data.response.live;
       return filteredGames;
+    }),
+
+  getParticularLiveMatches: baseProcedure
+    .input(z.object({
+      home: z.string(),
+      away: z.string()
+    }))
+    .query(async ({input}) => {
+      const {home, away} = input
+      const allowedLeagueIds = [47, 87, 42];
+      const allLiveGames = await externalFootballApi('football-current-live')
+      console.log({allLiveGames})
+      const filteredGames = allLiveGames.data.response.live.filter((game: any) => allowedLeagueIds.includes(game.leagueId))
+      const particularGames = filteredGames.find((g: any) => g.home.name === home && g.away.name === away)
+
+      // return allLiveGames.data.response.live;
+      return particularGames;
     }),
 
   getAllFixturesByName: baseProcedure

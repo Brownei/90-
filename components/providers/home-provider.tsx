@@ -1,9 +1,8 @@
 "use client"
 import { useAuthLogin } from "@/hooks/use-auth-login";
 import { useSessionStore } from "@/stores/use-session-store";
-import { decryptData } from "@/utils/utils";
-import { PublicKey } from "@solana/web3.js";
-import { IProvider } from "@web3auth/base";
+import { getSolanaBalance, updateWalletData } from "@/utils/solanaHelpers";
+import { decryptData, encryptData } from "@/utils/utils";
 import { usePathname, useRouter } from "next/navigation";
 import React, { useEffect } from "react"
 
@@ -14,9 +13,10 @@ interface ProvidersProps {
 
 const HomeProvider = ({ children, token }: ProvidersProps) => {
     const pathname = usePathname()
-  const {session} = useSessionStore()
   const router = useRouter()
-  const {  setUser, user, setIsLoading, setLoggedIn } = useAuthLogin();
+  const {session, setSession} = useSessionStore()
+  const {  setUser, user, setLoggedIn, setIsLoading } = useAuthLogin();
+
   // useEffect(() => {
   //   if(pathname !== '/' && user === null) {
   //     router.push('/')
@@ -46,6 +46,34 @@ const HomeProvider = ({ children, token }: ProvidersProps) => {
       router.push('/')
     }
   }, [session, setUser, router, pathname]);
+
+//     useEffect(() => {
+//   if (user !== null) {
+//     const lastRunKey = 'last-balance-check';
+//     const now = Date.now();
+//     const lastRun = Number(localStorage.getItem(lastRunKey));
+//
+//     const TWO_MINUTES = 2 * 60 * 1000;
+//
+//     if (!lastRun || now - lastRun > TWO_MINUTES) {
+//       const getB = async () => {
+//         const userBalance = await getSolanaBalance(user?.address!);
+//
+//         await updateWalletData(user?.address!);
+//
+//         setUser(prev => ({
+//             ...prev,
+//             balance: userBalance.toString()
+//         }))
+//         const token = encryptData(JSON.stringify(user))
+//         setSession(token)
+//         localStorage.setItem(lastRunKey, String(now));
+//       };
+//
+//       getB();
+//     }
+//   }
+// }, [user]);
 
   return (
     <>

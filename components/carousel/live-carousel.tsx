@@ -2,7 +2,7 @@
 import React from "react";
 import useEmblaCarousel from "embla-carousel-react";
 import { DotButton, useDotButton } from "./carousel-buttons";
-import { Game } from "@/data";
+import { Game, teamLogos } from "@/data";
 import Image from "next/image";
 import CurvedArrow from "@/public/icons/CurvedArrow";
 import { formatDateToBritish, formatString } from "@/utils/utils";
@@ -73,6 +73,14 @@ const LiveCarousel = ({
             {tabs?.map((game, i) => {
             const urlRoute = formatString(`${game.home.name} vs ${game.away.name}`);
             const {data: hub, isLoading, error} = trpc.hubs.getAParticularHub.useQuery({name: urlRoute})
+            const homeMatchedKey = Object.keys(teamLogos).find((key) =>
+              key.toLowerCase().includes(game.home.name.toLowerCase())
+            );
+            const awayMatchedKey = Object.keys(teamLogos).find((key) =>
+              key.toLowerCase().includes(game.away.name.toLowerCase())
+            );
+            const logoHome = homeMatchedKey ? teamLogos[homeMatchedKey] : ''
+            const logoAway = awayMatchedKey ? teamLogos[awayMatchedKey] : ''
 
             return (
               <div
@@ -94,7 +102,7 @@ const LiveCarousel = ({
                   <div className="flex justify-between items-center p-4">
                     <div className="flex flex-col items-center">
                       <Image
-                        src={"https://upload.wikimedia.org/wikipedia/en/5/53/Arsenal_FC.svg"}
+                        src={logoHome}
                         alt={game.home.name}
                         width={100}
                         height={100}
@@ -121,7 +129,7 @@ const LiveCarousel = ({
 
                     <div className="flex flex-col items-center">
                     <Image
-                      src={"https://upload.wikimedia.org/wikipedia/en/5/53/Arsenal_FC.svg"}
+                      src={logoAway}
                       alt={game.away.name}
                       width={100}
                       height={100}

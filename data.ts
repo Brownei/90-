@@ -1,5 +1,3 @@
-import { Message } from "./stores/use-messages-store";
-
 export type Game = {
   homeTeam: string,
   awayTeam: string,
@@ -10,101 +8,50 @@ export type Game = {
   awayImage: string
 }
 
-export const defaultMessages: Message[] = [
-  {
-    id: "1",
-    avatarUrl: "https://randomuser.me/api/portraits/men/1.jpg",
-    username: "John Doe",
-    time: "9:00 AM",
-    content: "Hey everyone! 👋",
-    reactions: ["👋", "🔥"],
-    actionNos: 7000,
-    isRef: false,
-    replies: [
-      {
-        id: "1-1",
-        avatarUrl: "https://randomuser.me/api/portraits/women/2.jpg",
-        username: "Jane Smith",
-        time: "9:02 AM",
-        content: "Hey John! 😄",
-      }
-    ]
-  },
-  {
-    id: "2",
-    avatarUrl: "https://randomuser.me/api/portraits/men/3.jpg",
-    username: "Chris Evans",
-    isRef: false,
-    time: "9:10 AM",
-    content: "Did you guys watch the game last night?",
-    reactions: ["⚽", "👏"],
-    actionNos: 700
-  },
-  {
-    id: "3",
-    avatarUrl: "https://randomuser.me/api/portraits/women/4.jpg",
-    isRef: false,
-    username: "Emily Carter",
-    time: "9:15 AM",
-    content: "Wow, I still can't believe that final goal! 🤯 It was absolutely insane, the way everything came together in the last few seconds! The tension, the excitement, the sheer unpredictability – that moment was unforgettable! What a game!",
-    reactions: ["🤯", "🔥", "❤️"],
-    actionNos: 700
-  },
-  {
-    id: "4",
-    avatarUrl: "https://media.tenor.com/XPbK0iLSsIgAAAAm/touchdown-referee.webp",
-    username: "REF",
-    isRef: true,
-    time: "75'",
-    content: "🟥 76’ RED CARD! – Sergio Ramos Second yellow. PSG down to 10 men. Classic Ramos moment.",
-    reactions: ["🤯", "🔥", "❤️"],
-    actionNos: 700,
-    reactionsToRef: {
-        "laughing": 20,
-        "clapping": 10,
-        "thumbs-down": 5,
-      }
-  }
-];
 
+export const teamLogos: Record<string, string> = {
+  // Premier League
+  "Arsenal": "https://loodibee.com/wp-content/uploads/Arsenal-FC-logo.png",
+  "Aston Villa": "https://loodibee.com/wp-content/uploads/Aston-Villa-FC-logo.png",
+  "Bournemouth": "https://loodibee.com/wp-content/uploads/AFC-Bournemouth-logo.png",
+  "Brentford": "https://loodibee.com/wp-content/uploads/Brentford-FC-logo.png",
+  "Brighton": "https://loodibee.com/wp-content/uploads/Brighton-Hove-Albion-logo.png",
+  "Chelsea": "https://loodibee.com/wp-content/uploads/Chelsea-FC-logo.png",
+  "Crystal Palace": "https://loodibee.com/wp-content/uploads/Crystal-Palace-FC-logo.png",
+  "Everton": "https://loodibee.com/wp-content/uploads/Everton-FC-logo.png",
+  "Fulham": "https://loodibee.com/wp-content/uploads/Fulham-FC-logo.png",
+  "Ipswich": "https://loodibee.com/wp-content/uploads/Ipswich-Town-FC-logo.png",
+  "Leicester": "https://loodibee.com/wp-content/uploads/Leicester-City-FC-logo.png",
+  "Liverpool": "https://loodibee.com/wp-content/uploads/Liverpool-FC-logo.png",
+  "Man City": "https://loodibee.com/wp-content/uploads/Manchester-City-FC-logo.png",
+  "Man United": "https://loodibee.com/wp-content/uploads/Manchester-United-FC-logo.png",
+  "Newcastle": "https://loodibee.com/wp-content/uploads/Newcastle-United-logo.png",
+  "Nottm Forest": "https://loodibee.com/wp-content/uploads/Nottingham-Forest-FC-logo.png",
+  "Southampton": "https://loodibee.com/wp-content/uploads/Southampton-FC-logo.png",
+  "Tottenham": "https://loodibee.com/wp-content/uploads/Tottenham-Hotspur-logo.png",
+  "West Ham": "https://loodibee.com/wp-content/uploads/West-Ham-United-FC-logo.png",
+  "Wolves": "https://loodibee.com/wp-content/uploads/Wolverhampton-Wanderers-logo.png",
 
-export const games: Game[] = [
-  {
-    homeTeam: "Arsenal",
-    awayTeam: "Liverpool",
-    homeScore: 2,
-    awayScore: 1,
-    matchTime: "67'",
-    homeImage: "https://upload.wikimedia.org/wikipedia/en/5/53/Arsenal_FC.svg",
-    awayImage: "https://upload.wikimedia.org/wikipedia/en/0/0c/Liverpool_FC.svg"
-  },
-  {
-    homeTeam: "Barcelona",
-    awayTeam: "Real Madrid",
-    homeScore: 1,
-    awayScore: 1,
-    matchTime: "43'",
-    homeImage: "https://upload.wikimedia.org/wikipedia/en/4/47/FC_Barcelona_%28crest%29.svg",
-    awayImage: "https://upload.wikimedia.org/wikipedia/en/5/56/Real_Madrid_CF.svg"
-  },
-  {
-    homeTeam: "Bayern Munich",
-    awayTeam: "Borussia Dortmund",
-    homeScore: 3,
-    awayScore: 0,
-    matchTime: "82'",
-    homeImage: "https://upload.wikimedia.org/wikipedia/commons/1/1f/FC_Bayern_München_logo_%282017%29.svg",
-    awayImage: "https://upload.wikimedia.org/wikipedia/commons/6/67/Borussia_Dortmund_logo.svg"
-  },
-  {
-    homeTeam: "Inter Milan",
-    awayTeam: "AC Milan",
-    homeScore: 2,
-    awayScore: 2,
-    matchTime: "75'",
-    homeImage: "https://upload.wikimedia.org/wikipedia/en/0/05/Inter_Milan.svg",
-    awayImage: "https://upload.wikimedia.org/wikipedia/en/d/d0/AC_Milan_logo.svg"
-  }
-];
-
+ // La Ligs
+  "Athletic": "https://www.sportslogos.net/logos/130/Athletic_Bilbao/logo.png",
+  "Atletico": "https://www.sportslogos.net/logos/130/Atletico_Madrid/logo.png",
+  "Barcelona": "https://www.sportslogos.net/logos/130/Barcelona/logo.png",
+  "Betis": "https://www.sportslogos.net/logos/130/Real_Betis/logo.png",
+  "Celta": "https://www.sportslogos.net/logos/130/Celta_Vigo/logo.png",
+  "Espanyol": "https://www.sportslogos.net/logos/130/Espanyol/logo.png",
+  "Getafe": "https://www.sportslogos.net/logos/130/Getafe/logo.png",
+  "Girona": "https://www.sportslogos.net/logos/130/Girona/logo.png",
+  "Las Palmas": "https://www.sportslogos.net/logos/130/Las_Palmas/logo.png",
+  "Leganes": "https://www.sportslogos.net/logos/130/Leganes/logo.png",
+  "Mallorca": "https://www.sportslogos.net/logos/130/Mallorca/logo.png",
+  "Osasuna": "https://www.sportslogos.net/logos/130/Osasuna/logo.png",
+  "Rayo": "https://www.sportslogos.net/logos/130/Rayo_Vallecano/logo.png",
+  "Madrid": "https://www.sportslogos.net/logos/130/Real_Madrid/logo.png",
+  "Sociedad": "https://www.sportslogos.net/logos/130/Real_Sociedad/logo.png",
+  "Sevilla": "https://www.sportslogos.net/logos/130/Sevilla/logo.png",
+  "Valencia": "https://www.sportslogos.net/logos/130/Valencia/logo.png",
+  "Valladolid": "https://www.sportslogos.net/logos/130/Valladolid/logo.png",
+  "Villarreal": "https://www.sportslogos.net/logos/130/Villarreal/logo.png"
+};
+;
 

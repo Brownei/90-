@@ -4,7 +4,7 @@ import crypto from "crypto";
 export type APIResponse = {
   success: boolean;
   data?: LiveGame | any;
-  error?: string;
+  error?: unknown;
 };
 
 export type LiveGame = {
@@ -59,6 +59,54 @@ export function formatNumberInThousands(num: number): string {
   }
   return num.toString();
 };
+
+export async function externalGetTeamInfoApi(teamName: string): Promise<APIResponse> {
+  const apiKey = process.env.NEXT_PUBLIC_LIVE_FOOTBALL_KEY;
+  const apiHost = process.env.NEXT_PUBLIC_FOOTBALL_TEAM_INFO_HOST;
+
+  if (!apiKey || !apiHost) {
+    return {
+      success: false,
+      error: 'Missing API credentials in environment variables.'
+    };
+  }
+
+  const options: AxiosRequestConfig = {
+    method: 'GET',
+    url: `https://api-football-v1.p.rapidapi.com/v3/teams`,
+    params: {
+      name: teamName,
+      season: 2024,
+    },
+    headers: {
+      'x-rapidapi-key': apiKey,
+      'x-rapidapi-host': apiHost
+    }
+  };
+
+  try {
+    const { data, status } = await axios.request(options);
+
+    return {
+      success: status === 200,
+      data
+    };
+  } catch (err) {
+    if (err instanceof AxiosError) {
+      console.error('Axios error:', err.message);
+      return {
+        success: false,
+        error: err.message
+      };
+    }
+
+    console.error('Unknown error:', err);
+    return {
+      success: false,
+      error: err
+    };
+  }
+}
 
 export async function externalFootballApi(endpoint: string): Promise<APIResponse> {
   const apiKey = process.env.NEXT_PUBLIC_LIVE_FOOTBALL_KEY;
@@ -169,4 +217,10 @@ export function formatDateToBritish(rawDate: string): {date: string, time: strin
     date: formattedDate,
     time: formattedTime
   }
+}
+
+export function getTheLeagueId(game: any) {
+  const splitted = game.pageUrl.split('#')[1]
+
+  return splitted.slice(0, 2)
 }

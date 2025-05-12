@@ -2,10 +2,10 @@
 import React from "react";
 import useEmblaCarousel from "embla-carousel-react";
 import { DotButton, useDotButton } from "./carousel-buttons";
-import { Game } from "@/data";
+import { Game, teamLogos } from "@/data";
 import Image from "next/image";
 import CurvedArrow from "@/public/icons/CurvedArrow";
-import { formatDateToBritish, formatString } from "@/utils/utils";
+import { formatDateToBritish, formatString, getTheLeagueId } from "@/utils/utils";
 import { useRouter } from "next/navigation";
 import { useAuthLogin } from "@/hooks/use-auth-login";
 import { toast } from "react-hot-toast";
@@ -69,7 +69,17 @@ const Carousel = ({
           const urlRoute = formatString(`${game.home.name} vs ${game.away.name}`);
           const {date, time} = formatDateToBritish(game.status.utcTime)
           const {data: hub, isLoading, error} = trpc.hubs.getAParticularHub.useQuery({name: urlRoute})
-          {/* console.log(game.home.name) */}
+          const homeMatchedKey = Object.keys(teamLogos).find((key) =>
+            key.toLowerCase().includes(game.home.name.toLowerCase())
+          );
+          const awayMatchedKey = Object.keys(teamLogos).find((key) =>
+            key.toLowerCase().includes(game.away.name.toLowerCase())
+          );
+          const logoHome = homeMatchedKey ? teamLogos[homeMatchedKey] : ''
+          const logoAway = awayMatchedKey ? teamLogos[awayMatchedKey] : ''
+          {/* const {data: homeTeamInfo, isLoading: isHomeTeamInfoLoading, error: homeTeamInfoError} = trpc.games.getTeamInfo.useQuery({name: game.home.longName}) */}
+          {/* const {data: awayTeamInfo, isLoading: isAwayTeamInfoLoading, error: awayTeamInfoError} = trpc.games.getTeamInfo.useQuery({name: game.away.longName}) */}
+          const id = getTheLeagueId(game)
 
           return (
             <div
@@ -82,14 +92,14 @@ const Carousel = ({
                     className={`text-[0.65rem] text-[#FF0000] flex gap-1 items-center`}
                   >
                   </div>
-                  <p className="font-semibold text-[1rem]">Premier League</p>  
+                  <p className="font-semibold text-[1rem]">{id === 47 ? 'Premier League' : id === 42 ? 'UEFA Champions League' : id === 87 ? 'La Liga' : 'League'}</p>  
                   <CurvedArrow />
                 </div>
 
                 <div className="flex justify-between items-center p-4">
                   <div className="flex flex-col items-center">
                     <Image
-                      src={"https://upload.wikimedia.org/wikipedia/en/5/53/Arsenal_FC.svg"}
+                      src={logoHome}
                       alt={game.home.name}
                       width={100}
                       height={100}
@@ -107,7 +117,7 @@ const Carousel = ({
 
                   <div className="flex flex-col items-center">
                     <Image
-                      src={"https://upload.wikimedia.org/wikipedia/en/5/53/Arsenal_FC.svg"}
+                      src={logoAway}
                       alt={game?.away.name}
                       width={100}
                       height={100}

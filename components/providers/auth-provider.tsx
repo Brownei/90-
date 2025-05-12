@@ -1,22 +1,15 @@
 "use client"
 import { useAuthLogin } from "@/hooks/use-auth-login";
 import { useSessionStore } from "@/stores/use-session-store";
-import { decryptData } from "@/utils/utils";
-import { PublicKey } from "@solana/web3.js";
-import { IProvider } from "@web3auth/base";
+import { getSolanaBalance, updateWalletData } from "@/utils/solanaHelpers";
+import { decryptData, encryptData } from "@/utils/utils";
 import { useRouter } from "next/navigation";
-import React, { useEffect } from "react"
+import React, { useEffect, useState } from "react"
 
 const AuthProvider = ({ children, token }: { children: React.ReactNode, token: string }) => {
   const router = useRouter()
-  const {session} = useSessionStore()
+  const {session, setSession} = useSessionStore()
   const {  setUser, user, setLoggedIn, setIsLoading } = useAuthLogin();
-
-  // useEffect(() => {
-  //   if(user === null) {
-  //     router.push('/')
-  //   }
-  // }, [user, router])
 
   useEffect(() => {
      if(session !== null) {
@@ -41,6 +34,34 @@ const AuthProvider = ({ children, token }: { children: React.ReactNode, token: s
       router.push('/')
     }
   }, [session, setUser, router]);
+
+//   useEffect(() => {
+//   if (user !== null) {
+//     const lastRunKey = 'last-balance-check';
+//     const now = Date.now();
+//     const lastRun = Number(localStorage.getItem(lastRunKey));
+//
+//     const TWO_MINUTES = 2 * 60 * 1000;
+//
+//     if (!lastRun || now - lastRun > TWO_MINUTES) {
+//       const getB = async () => {
+//         const userBalance = await getSolanaBalance(user?.address!);
+//
+//         await updateWalletData(user?.address!);
+//
+//         setUser(prev => ({
+//             ...prev,
+//             balance: userBalance.toString()
+//         }))
+//         const token = encryptData(JSON.stringify(user))
+//         setSession(token)
+//         localStorage.setItem(lastRunKey, String(now));
+//       };
+//
+//       getB();
+//     }
+//   }
+// }, [user]);
 
   return (
     <>

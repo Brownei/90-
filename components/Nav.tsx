@@ -1,43 +1,25 @@
 "use client"
-import TwitterIcon from '@/public/icons/TwitterIcon'
 import React, { useEffect, useState } from 'react'
 import { usePathname, useRouter } from 'next/navigation';
 import Image from 'next/image';
-import { useAuthStore } from '@/stores/authStore';
 import Link from 'next/link';
 import { useAuthLogin } from '@/hooks/use-auth-login';
-import { PersonalWallet } from '@/helpers/wallet';
-import { IProvider } from '@web3auth/base';
-import { Provider } from '@project-serum/anchor';
-import { trpc } from '@/trpc/client';
-import { decryptData, encryptData } from '@/utils/utils';
-import { getSolanaBalance, updateWalletData } from '@/utils/solanaHelpers';
-import { useSessionStore } from '@/stores/use-session-store';
-
 
 const Nav = () => {
   const pathname = usePathname()
   const router = useRouter();
   const {
-    isAuthenticated,
     isLoading,
     logout,
     connected,
-    provider,
-    setProvider,
     user,
     loggedIn,
-    setUser,
-    web3auth,
     isWeb3AuthInitialized,
     login,
-    setIsAuthenticated
   } = useAuthLogin();
 
   // State to track scroll position
   const [scrolled, setScrolled] = useState(false);
-  const [balance, setBalance] = useState(0)
-  const {setSession} = useSessionStore()
   console.log({user})
 
   // Scroll event handler
@@ -62,36 +44,6 @@ const Nav = () => {
       window.removeEventListener('scroll', handleScroll);
     };
   }, []);
-
-  useEffect(() => {
-  if (user !== null) {
-    const lastRunKey = 'last-balance-check';
-    const now = Date.now();
-    const lastRun = Number(localStorage.getItem(lastRunKey));
-
-    const TWO_MINUTES = 2 * 60 * 1000;
-
-    if (!lastRun || now - lastRun > TWO_MINUTES) {
-      const getB = async () => {
-        const userBalance = await getSolanaBalance(user?.address!);
-
-        setProvider(provider);
-        setBalance(userBalance);
-        await updateWalletData(user?.address!);
-
-        setUser(prev => ({
-            ...prev,
-            balance: userBalance.toString()
-        }))
-        const token = encryptData(JSON.stringify(user))
-        setSession(token)
-        localStorage.setItem(lastRunKey, String(now));
-      };
-
-      getB();
-    }
-  }
-}, [user]);
 
 
   const handleAuthAction = async () => {
