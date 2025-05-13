@@ -12,6 +12,13 @@ export const usersRouter = createTRPCRouter({
       await ctx.deleteCookie('session')
   }),
 
+  getEscrowAccount: baseProcedure
+    .query(async () => {
+      const escrowAccount = await db.select({address: wallets.publicKey}).from(users).where(eq(users.email, 'building90plus@gmail.com')).innerJoin(wallets, eq(wallets.userId, users.id))
+
+      return escrowAccount
+  }),
+
   getCurrentUser: baseProcedure
     .input(
       z.object({

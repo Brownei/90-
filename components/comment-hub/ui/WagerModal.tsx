@@ -30,18 +30,17 @@ const WagerModal: React.FC<WagerModalProps> = ({
   const [forUsername, setForUsername] = useState(username);
   const [againstUsername, setAgainstUsername] = useState('');
   const wagerMutation = trpc.wagers.placeWager.useMutation();
+  const {data: escrowAccount, isLoading, error} = trpc.users.getEscrowAccount.useQuery()
   
   if (!isOpen) return null;
 
   const handleProceed = async (home: string, away: string, hubId: number, startTime: number) => {
-    if (wagerCondition && stakeAmount) {
+    if (wagerCondition && stakeAmount && !isLoading && escrowAccount) {
       // onProceed(wagerCondition, parseFloat(stakeAmount));
       const transaction = await bettingClient.initialize(2)
       // console.log(transaction)
-      const escrowAccount = await db.select({address: wallets.publicKey}).from(users).where(eq(users.email, 'building90plus@gmail.com')).innerJoin(wallets, eq(wallets.userId, users.id))
 
       const newMatchTx = await bettingClient.createMatch(home, away, String(hubId), startTime)
-
       const betTx = await bettingClient.placeBet(
         String(hubId), 
         Number(stakeAmount), 
