@@ -98,9 +98,9 @@ const MessageInput = forwardRef<HTMLDivElement | null, MessageInputProps>(
         <div className="flex gap-2 items-center max-w-2xl mx-auto">
           <button
             onClick={onWagerClick}
-            className="bg-yellow-400 hover:bg-yellow-500 rounded-full py-2 px-6 text-yellow-900 text-sm font-medium flex items-center gap-1 transition-colors flex-shrink-0"
+            className="bg-[#0A6B41] hover:bg-[#0A6B41] rounded-full py-2 px-6 text-white text-sm font-medium flex items-center gap-1 transition-colors flex-shrink-0"
           >
-            <span className="text-lg">⚽</span>
+            <span className="text-lg"></span>
             <span>Wager</span>
           </button>
 

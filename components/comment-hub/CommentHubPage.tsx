@@ -64,7 +64,7 @@ const CommentHubPage = () => {
     <main className="bg-[ECF5F5] min-h-screen">
       <div className="container mx-auto px-4">
         <div className="flex items-center justify-center py-3 gap-10 font-bold">
-          <h2 className="text-gray-500">Community Hubs</h2>
+          <h2 className="text-gray-500">In-Play Wagers</h2>
           <h2 className="">Live Hubs</h2>
         </div>
 

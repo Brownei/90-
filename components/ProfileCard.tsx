@@ -59,24 +59,7 @@ const ProfileCard: React.FC<ProfileCardProps> = ({ className = '' }) => {
 
         <h2 className="text-xl font-bold mb-1">{user?.name || 'User'}</h2>
 
-        {/* {isLoadingTwitterInfo ? (
-          <p className="text-gray-500 text-sm mb-4">Loading Twitter info...</p>
-        ) : twitterUserInfo ? (
-          <>
-            <p className="text-gray-500 text-sm mb-4">@{twitterUserInfo.username}</p>
-            {twitterUserInfo.description && (
-              <p className="text-gray-700 text-center mb-4">{twitterUserInfo.description}</p>
-            )}
-            {twitterUserInfo.verified && (
-              <div className="mb-4 px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-xs">
-                Verified
-              </div>
-            )}
-          </>
-        ) : (
-          <p className="text-gray-500 text-sm mb-4">@{user.username || user.name}</p>
-        )}
-         */}
+       
         <button
           onClick={logout}
           className="bg-red-600 text-white px-4 py-2 rounded-md text-sm hover:bg-red-700 transition"

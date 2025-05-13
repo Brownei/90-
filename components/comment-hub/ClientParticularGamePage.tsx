@@ -209,7 +209,7 @@ const ClientParticularGamePage = () => {
   } else if (error || (seletedGame?.hub.isGameStarted === true && particularGameLiveScoresError)) {
     return (
       <div className="flex justify-center py-4">
-        <p>Big Errror Occured</p>
+        <p>Big Error Occurred</p>
       </div>
     );
   } else {
@@ -288,7 +288,7 @@ const ClientParticularGamePage = () => {
               <div className="mt-3 mb-1">
                 <p className=" font-medium text-[0.7rem] md:text-[0.8rem] inline-block relative p-2">
                   
-                  <span className="absolute bottom-0 left-0 w-full h-1 bg-[#3E3D3D] rounded-full"></span>
+                  
                 </p>
               </div>
             </div>
@@ -310,13 +310,13 @@ const ClientParticularGamePage = () => {
             {/* Scroll to Bottom button - shows only when not at bottom */}
             <button
               onClick={handleScrollToBottom}
-              className="fixed bottom-24 right-4 bg-blue-500 hover:bg-blue-600 text-white rounded-full p-3 shadow-lg transition-colors z-50"
+              className="fixed bottom-24 right-4 text-black rounded-full p-3 transition-colors z-50"
               aria-label="Scroll to bottom"
             >
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 className="h-6 w-6"
-                fill="none"
+                fill="black"
                 viewBox="0 0 24 24"
                 stroke="currentColor"
               >

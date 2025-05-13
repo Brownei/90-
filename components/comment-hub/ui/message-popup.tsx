@@ -181,7 +181,7 @@ const MessagePopup = ({ seletedGame }: { seletedGame: any }) => {
 
               <div className="grid gap-1 w-full">
                 <p className="flex gap-1 items-center">
-                  <span className="text-[#616061] text-[0.6rem] md:text-[0.75rem] font-medium">
+                  <span className="text-[#616061] text-[1rem] md:text-[0.75rem] font-medium">
                     {message.author?.name}
                   </span>
                   <span className="text-[0.5rem] lg:text-[0.5rem] text-[#808080]/55">
@@ -216,7 +216,7 @@ const MessagePopup = ({ seletedGame }: { seletedGame: any }) => {
                           }`}
                     </button>
                   ) : (
-                    <button className="text-[#000000]/60 text-[0.7rem] lg:text-[0.75rem] hover:text-black">
+                    <button className="text-[#ECF5F5]/60 text-[0.7rem] lg:text-[0.75rem] hover:text-[#ECF5F5]">
                       {`Reply to ${message.author?.name}`}
                     </button>
                   )}
