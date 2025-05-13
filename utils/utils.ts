@@ -224,3 +224,26 @@ export function getTheLeagueId(game: any) {
 
   return splitted.slice(0, 2)
 }
+
+const premierLeagueTeams = new Set([
+  "Arsenal", "Aston Villa", "Bournemouth", "Brentford", "Brighton", "Chelsea",
+  "Crystal Palace", "Everton", "Fulham", "Ipswich", "Leicester City", "Liverpool",
+  "Man City", "Man United", "Newcastle", "Nottm Forest", "Southampton", "Tottenham",
+  "West Ham", "Wolves"
+]);
+
+const laLigaTeams = new Set([
+  "Athletic", "Atlético", "Barcelona", "Betis", "Celta",
+  "Espanyol", "Getafe", "Girona", "Las Palmas", "Leganés", "Mallorca", "Osasuna",
+  "Rayo", "Madrid", "Sociedad", "Sevilla", "Valencia",
+  "Valladolid", "Villarreal"
+]);
+
+export function getLeague(teamA: string, teamB: string): "Premier League" | "La Liga" | "Champions League" {
+  const inPremier = premierLeagueTeams.has(teamA) && premierLeagueTeams.has(teamB);
+  const inLaLiga = laLigaTeams.has(teamA) && laLigaTeams.has(teamB);
+
+  if (inPremier) return "Premier League";
+  if (inLaLiga) return "La Liga";
+  return "Champions League";
+}

@@ -90,6 +90,7 @@ const Nav = () => {
               href={'/profile'}
               className={` font-semibold text-[0.8rem] cursor-pointer ${pathname !== '/' ? 'text-black' : 'text-white'}`}
             >
+              Profile
             </Link>
           )}
 
@@ -104,7 +105,7 @@ const Nav = () => {
           )}
 
           <button
-            onClick={handleAuthAction}
+            // onClick={handleAuthAction}
             disabled={!isWeb3AuthInitialized}
             className='bg-darkGreen flex items-center gap-3 py-2 px-3 rounded-full  font-semibold text-white text-[0.8rem] cursor-pointer'
           >

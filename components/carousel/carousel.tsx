@@ -5,7 +5,7 @@ import { DotButton, useDotButton } from "./carousel-buttons";
 import { Game, teamLogos } from "@/data";
 import Image from "next/image";
 import CurvedArrow from "@/public/icons/CurvedArrow";
-import { formatDateToBritish, formatString, getTheLeagueId } from "@/utils/utils";
+import { formatDateToBritish, formatString, getLeague, getTheLeagueId } from "@/utils/utils";
 import { useRouter } from "next/navigation";
 import { useAuthLogin } from "@/hooks/use-auth-login";
 import { toast } from "react-hot-toast";
@@ -93,7 +93,7 @@ const Carousel = ({
                     className={`text-[0.65rem] text-[#FF0000] flex gap-1 items-center`}
                   >
                   </div>
-                  <p className="font-semibold text-[1rem]">{id === 47 ? 'Premier League' : id === 42 ? 'UEFA Champions League' : id === 87 ? 'La Liga' : 'League'}</p>  
+                  <p className="font-semibold text-[1rem]">{getLeague(game.home.name, game.away.name)}</p>  
                   <CurvedArrow />
                 </div>
 

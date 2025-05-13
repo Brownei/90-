@@ -1,13 +1,10 @@
 import { BettingClient } from '@/client/betting-client';
-import { Game } from '@/data';
 import { useAuthLogin } from '@/hooks/use-auth-login';
-import { bettingClientAtom } from '@/stores/navStore';
+import { db, users, wallets } from '@/lib/db';
 import { trpc } from '@/trpc/client';
-import { Wallet } from '@project-serum/anchor';
-import { useWallet } from '@solana/wallet-adapter-react';
-import { Keypair, PublicKey } from '@solana/web3.js';
-import { useAtom } from 'jotai';
-import React, { useEffect, useState } from 'react';
+import {  PublicKey } from '@solana/web3.js';
+import { eq } from 'drizzle-orm';
+import React, {  useState } from 'react';
 
 interface WagerModalProps {
   isOpen: boolean;
@@ -41,10 +38,17 @@ const WagerModal: React.FC<WagerModalProps> = ({
       // onProceed(wagerCondition, parseFloat(stakeAmount));
       const transaction = await bettingClient.initialize(2)
       // console.log(transaction)
+      const escrowAccount = await db.select({address: wallets.publicKey}).from(users).where(eq(users.email, 'building90plus@gmail.com')).innerJoin(wallets, eq(wallets.userId, users.id))
 
       const newMatchTx = await bettingClient.createMatch(home, away, String(hubId), startTime)
 
-      const betTx = await bettingClient.placeBet(String(hubId), Number(stakeAmount), wagerCondition, new PublicKey(user?.address!), new PublicKey('welcome'))
+      const betTx = await bettingClient.placeBet(
+        String(hubId), 
+        Number(stakeAmount), 
+        wagerCondition, 
+        new PublicKey(user?.address!), 
+        new PublicKey(escrowAccount[0].address)
+      )
 
       await wagerMutation.mutateAsync({
         condition: wagerCondition,
@@ -53,7 +57,7 @@ const WagerModal: React.FC<WagerModalProps> = ({
         hubId,
       })
 
-      console.log({newMatchTx, betTx})
+      console.log({newMatchTx, betTx, transaction})
     }
   };
 

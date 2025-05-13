@@ -69,15 +69,15 @@ const ClientParticularGamePage = () => {
   }, [messages.length, messageCount]);
 
   useEffect(() => {
-    const channel = pusherClient.subscribe("comment-hub");
+    const channel = pusherClient.subscribe(String(seletedGame?.hub!.id));
 
-    channel.bind("new-message", (payload: Message) => {
-      console.log(payload, 'socket payload');
+    channel.bind("new-message", (payload: any) => {
+      console.log({payload});
       addMessage(payload);
     });
 
     return () => {
-      pusherClient.unsubscribe("comment-hub");
+      pusherClient.unsubscribe(String(seletedGame?.hub!.id));
     };
   }, [pusherClient]);
 
@@ -261,9 +261,9 @@ const ClientParticularGamePage = () => {
                       {seletedGame?.hub.isGameStarted === true ? particularGameLiveScores.away.score : seletedGame?.team?.awayScore}
                     </p>
                   </div>
-                  <div className=" text-[0.65rem] md:text-[0.7rem] bg-[#ffffff20] px-3 py-0.5 rounded-full">
+                  <div className=" text-[0.65rem] md:text-[0.7rem] flex gap-1 items-center bg-[#ffffff20] px-3 py-0.5 rounded-full">
                     {seletedGame?.hub.isGameStarted === true ? particularGameLiveScores.status.liveTime.long : time}
-                    {/* 45 : 04 */}
+                    {seletedGame?.hub.isGameStarted === false && date}
                   </div>
                 </div>
 

@@ -1,8 +1,7 @@
 "use client";
-import { defaultMessages } from "@/data";
 import { useMessageStore, Reply } from "@/stores/use-messages-store";
 import React, { useState, useEffect } from "react";
-import { formatNumberInThousands } from "@/utils/utils";
+import { formatDateToBritish, formatNumberInThousands } from "@/utils/utils";
 import ReactionsIcon from "@/public/icons/ReactionsIcon";
 import ShareIcon from "@/public/icons/ShareIcon";
 import WagerModal from "./WagerModal";
@@ -24,8 +23,6 @@ const MessagePopup = ({ seletedGame }: { seletedGame: any }) => {
     error,
   } = trpc.messages.getAllMessages.useQuery({ hubName: seletedGame.hub.name });
   console.log({ allMessages, isLoading, error });
-  const { user, isAuthenticated } = useAuth();
-  // const {} =
   const [selectedMessage, setSelectedMessage] = useState<any>(null);
   const [isWagerModalOpen, setIsWagerModalOpen] = useState(false);
   const [isFundModalOpen, setIsFundModalOpen] = useState(false);
@@ -58,7 +55,7 @@ const MessagePopup = ({ seletedGame }: { seletedGame: any }) => {
     setStakeAmount(stake);
 
     // For demo purposes, we're showing insufficient balance if stake > 5
-    if (stake > 5) {
+    if (stake < 0.1) {
       setInsufficientBalance(true);
     } else {
       setIsWagerModalOpen(false);
@@ -155,21 +152,21 @@ const MessagePopup = ({ seletedGame }: { seletedGame: any }) => {
   // }
 
   // Enhanced messages for demo
-  const enhancedMessages = [...messages];
-
   return (
     <section className="overflow-auto h-full pt-2">
       {/* Original messages */}
-      {enhancedMessages.length === 0 ? (
+      {messages.length === 0 ? (
         <p className="text-center text-gray-500 py-8">
           No messages in the hub.
         </p>
       ) : (
-        enhancedMessages.map((message, i) => (
+        messages.map((message, i) => {
+            const {date, time} = formatDateToBritish(message.time!)
+          return (
           <div
             key={message.id}
             className={`${
-              i !== enhancedMessages.length - 1 && "border-b border-[#B7B7B7] "
+              i !== messages.length - 1 && "border-b border-[#B7B7B7] "
             } py-4`}
           >
             <div className="flex gap-2 items-start">
@@ -187,7 +184,7 @@ const MessagePopup = ({ seletedGame }: { seletedGame: any }) => {
                     {message.author?.name}
                   </span>
                   <span className="text-[0.5rem] lg:text-[0.5rem] text-[#808080]/55">
-                    {message.time}
+                    {time}
                   </span>
                 </p>
                 <p className="flex gap-2 justify-between items-start">
@@ -283,7 +280,8 @@ const MessagePopup = ({ seletedGame }: { seletedGame: any }) => {
               </div>
             </div>
           </div>
-        ))
+        ) 
+        })
       )}
 
       {/* Wager Modals */}

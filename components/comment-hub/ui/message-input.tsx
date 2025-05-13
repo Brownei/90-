@@ -14,41 +14,19 @@ const MessageInput = forwardRef<HTMLDivElement | null, MessageInputProps>(
   ({ onWagerClick, hubId }, ref) => {
     const { user } = useAuthLogin();
     const [message, setMessage] = useState("");
-    const { addMessage, messages } = useMessageStore();
     const messagesMutation = trpc.messages.sendMessages.useMutation();
 
     const handleSendMessage = async () => {
       if (!message.trim()) return;
 
-      const newMessage: Message = {
-        message: message.trim(),
-        hubId,
-        replies: [],
-        userId: Number(user?.id),
-        author: {
-          id: Number(user?.id),
-          name: user?.name || "user",
-          profileImage:
-            user?.profileImage ||
-            "https://www.gravatar.com/avatar/2c7d99fe281ecd3bcd65ab915bac6dd5?s=250",
-        },
-        time: new Date().toLocaleTimeString([], {
-          hour: "2-digit",
-          minute: "2-digit",
-        }),
-      };
-
-      console.log("Sending message:", newMessage);
-
-      // Clear the input
-      setMessage("");
-
       messagesMutation.mutateAsync({
         hubId,
-        content: newMessage.message,
+        content: message.trim(),
         userId: Number(user?.id),
       });
 
+      // Clear the input
+      setMessage("");
     };
 
     // Handle enter key press
@@ -56,16 +34,6 @@ const MessageInput = forwardRef<HTMLDivElement | null, MessageInputProps>(
       if (e.key === "Enter" && !e.shiftKey) {
         e.preventDefault();
         handleSendMessage();
-
-        // Keep focus on input after sending
-        // const inputField = document.querySelector(
-        //   ".message-input"
-        // ) as HTMLInputElement;
-        // if (inputField) {
-        //   setTimeout(() => {
-        //     inputField.focus();
-        //   }, 10);
-        // }
       }
     };
 
