@@ -12,7 +12,7 @@ export interface Message {
     profileImage: string
   },
   time?: string
-  replies: Reply[]
+  replies?: Reply[]
 }
 
 export interface Reply {
@@ -28,8 +28,8 @@ export interface Reply {
 
 interface MessageStore {
   messages: Message[];
-  setMessages: (messages: Message[]) => void;
-  addMessage: (message: Message) => void;
+  setMessages: (messages: any[]) => void;
+  addMessage: (message: any) => void;
   // addReaction: (messageId: string, reaction: string) => void;
   addReply: (messageId: number, reply: Reply) => void;
   // addActionNos: (messageId: string, emoji: number) => void;

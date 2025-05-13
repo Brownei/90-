@@ -16,7 +16,8 @@ import { trpc } from "@/trpc/client";
 import { set } from "@project-serum/anchor/dist/cjs/utils/features";
 
 const MessagePopup = ({ seletedGame }: { seletedGame: any }) => {
-  const { messages, addReply, setMessages } = useMessageStore();
+  // const { messages, setMessages } = useMessageStore();
+  const [messages, setMessages] = useState<any[]>([])
   const {
     data: allMessages,
     isLoading,
@@ -39,10 +40,10 @@ const MessagePopup = ({ seletedGame }: { seletedGame: any }) => {
   // console.log({allMessages, seletedGame})
 
   useEffect(() => {
-    if (allMessages) {
+    if (!isLoading && allMessages) {
       setMessages(allMessages);
     }
-  }, [allMessages, setMessages]);
+  }, [allMessages]);
 
 
   const handleWagerClick = (message: any) => {

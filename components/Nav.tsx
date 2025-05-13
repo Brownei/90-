@@ -48,7 +48,7 @@ const Nav = () => {
 
   const handleAuthAction = async () => {
     if (loggedIn && user !== null) {
-      await logout();
+      // await logout();
     } else if (isWeb3AuthInitialized && !loggedIn) {
       try {
         await login();
@@ -88,7 +88,7 @@ const Nav = () => {
           {(loggedIn && user !== null) && (
             <Link
               href={'/profile'}
-              className={` font-semibold text-[0.8rem] cursor-pointer ${pathname !== '/' ? 'text-black' : 'text-white'}`}
+              className={` font-semibold text-[0.8rem] cursor-pointer text-black`}
             >
               Profile
             </Link>
@@ -105,7 +105,7 @@ const Nav = () => {
           )}
 
           <button
-            // onClick={handleAuthAction}
+            onClick={handleAuthAction}
             disabled={!isWeb3AuthInitialized}
             className='bg-darkGreen flex items-center gap-3 py-2 px-3 rounded-full  font-semibold text-white text-[0.8rem] cursor-pointer'
           >

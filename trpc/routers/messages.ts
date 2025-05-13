@@ -79,6 +79,7 @@ export const messagesRouter = createTRPCRouter({
         })
         .from(comments)
         .leftJoin(users, eq(comments.userId, users.id))
+        .orderBy(comments.id)
         .where(eq(comments.hubId, hub[0].id));
 
       const commentIds = rawComments.map(c => c.id);
@@ -132,7 +133,7 @@ export const messagesRouter = createTRPCRouter({
         
       }));
 
-      return messages;
+      return messages.sort((a, b) => new Date(a.time!).getTime() - new Date(b.time!).getTime());
     }),
 });
   

@@ -261,9 +261,9 @@ const ClientParticularGamePage = () => {
                       {seletedGame?.hub.isGameStarted === true ? particularGameLiveScores.away.score : seletedGame?.team?.awayScore}
                     </p>
                   </div>
-                  <div className=" text-[0.65rem] md:text-[0.7rem] flex gap-1 items-center bg-[#ffffff20] px-3 py-0.5 rounded-full">
-                    {seletedGame?.hub.isGameStarted === true ? particularGameLiveScores.status.liveTime.long : time}
-                    {seletedGame?.hub.isGameStarted === false && date}
+                  <div className=" text-[0.65rem] md:text-[0.7rem] flex flex-col gap-1 items-center bg-[#ffffff20] px-3 py-0.5 rounded-full">
+                    <span>{seletedGame?.hub.isGameStarted === true && particularGameLiveScores.status.liveTime.long}</span>
+                    <span>{seletedGame?.hub.isGameStarted === false && date}</span>
                   </div>
                 </div>
 
@@ -332,6 +332,7 @@ const ClientParticularGamePage = () => {
 
           {/* Message input - always at bottom */}
           <MessageInput
+            hubName={seletedGame?.hub.name!}
             hubId={seletedGame?.hub.id!}
             ref={inputRef}
             onWagerClick={handleWagerClick}
