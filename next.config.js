@@ -2,7 +2,7 @@
 const nextConfig = {
   reactStrictMode: true,
   images: {
-    domains: ['pbs.twimg.com', 'lh3.googleusercontent.com', 'abs.twimg.com', 'images.unsplash.com', 'randomuser.me', 'loodibee.com'],
+    domains: ['pbs.twimg.com', 'lh3.googleusercontent.com', 'abs.twimg.com', 'images.unsplash.com', 'randomuser.me', 'loodibee.com', 'www.sportslogos.net'],
   },
   // Use webpack fallbacks for browser compatibility
   webpack: (config, { isServer }) => {
