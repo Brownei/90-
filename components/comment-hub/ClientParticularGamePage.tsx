@@ -1,64 +1,50 @@
 "use client"
-import { Game, teamLogos, } from '@/data'
+import {  teamLogos, } from '@/data'
 import BackIcon from '@/public/icons/BackIcon'
 import CurvedArrow from '@/public/icons/CurvedArrow'
-import { formatDateToBritish, reverseFormatString } from '@/utils/utils'
-import { useParams, useRouter } from 'next/navigation'
-import React, { useState, useEffect, useRef } from 'react'
+import { formatDateToBritish} from '@/utils/utils'
+import {  useRouter } from 'next/navigation'
+import React, { useState, useEffect, useRef, FC } from 'react'
 import MessagePopup from './ui/message-popup'
 import MessageInput from './ui/message-input'
 import gsap from 'gsap'
-import StatsIcon from '@/public/icons/StatsIcon'
 import WagerModal from './ui/WagerModal'
 import FundWagerModal from './ui/FundWagerModal'
 import TransactionConfirmedModal from './ui/TransactionConfirmedModal'
-import { Message, useMessageStore } from '@/stores/use-messages-store'
+import {  Message, useMessageStore } from '@/stores/use-messages-store'
 import pusherClient from '@/lib/pusher/init'
-import { trpc } from '@/trpc/client'
-import LoadingIcon from '@/public/icons/LoadingIcon'
-import { LAMPORTS_PER_SOL } from '@solana/web3.js'
+import { LAMPORTS_PER_SOL} from '@solana/web3.js'
 import { useAuthLogin } from '@/hooks/use-auth-login'
-import { isPageStatic } from 'next/dist/build/utils'
 import Image from 'next/image'
+import { useAtom } from 'jotai'
+import { allMessagesAtom } from '@/stores/navStore'
+import { getSolanaBalance } from '@/utils/solanaHelpers'
 
-type Params = {
-  game: string;
+type ClientParticularGamePageProps  = {
+  seletedGame: any
+  particularGameLiveScores: any
 };
 
-const ClientParticularGamePage = () => {
+const ClientParticularGamePage: FC<ClientParticularGamePageProps> = ({seletedGame, particularGameLiveScores}) => {
   const router = useRouter();
-  const { game } = useParams<Params>();
-  const [home, away] = reverseFormatString(game).split("Vs")
-  const {
-    data: seletedGame,
-    isLoading,
-    error,
-  } = trpc.hubs.getAParticularHub.useQuery({ name: game });
   const inputRef = React.useRef<HTMLDivElement>(null);
   const boxRef = React.useRef<HTMLDivElement>(null);
   const messageAreaRef = useRef<HTMLDivElement>(null);
   const [isSlidOut, setIsSlidOut] = React.useState(false);
-  const { messages, addMessage } = useMessageStore();
+  const [messages, setMessages] = useAtom(allMessagesAtom)
   const [messageCount, setMessageCount] = useState(0);
-  const {
-    data: particularGameLiveScores, 
-    isLoading: isParticularGameLiveScoresLoading, 
-    error: particularGameLiveScoresError
-  } = trpc.games.getParticularLiveMatches.useQuery({home: home.trim().toLowerCase(), away: away.trim().toLowerCase()})
               const homeMatchedKey = Object.keys(teamLogos).find((key) =>
-              key.toLowerCase().includes((!isLoading && seletedGame) ? seletedGame.team!.home.toLowerCase() : '')
+              key.toLowerCase().includes(seletedGame ? seletedGame.team!.home.toLowerCase() : '')
             );
             const awayMatchedKey = Object.keys(teamLogos).find((key) =>
-              key.toLowerCase().includes((!isLoading && seletedGame) ? seletedGame.team!.away.toLowerCase() : '')
+              key.toLowerCase().includes(seletedGame ? seletedGame.team!.away.toLowerCase() : '')
             );
             const logoHome = homeMatchedKey ? teamLogos[homeMatchedKey] : ''
             const logoAway = awayMatchedKey ? teamLogos[awayMatchedKey] : ''
-  console.log({particularGameLiveScores})
 
-  console.log(seletedGame)
   useEffect(() => {
     setMessageCount(messages.length);
-  }, [addMessage]);
+  }, [messages]);
 
   // Track message changes and scroll to bottom when new messages are added
   useEffect(() => {
@@ -71,9 +57,34 @@ const ClientParticularGamePage = () => {
   useEffect(() => {
     const channel = pusherClient.subscribe(String(seletedGame?.hub!.id));
 
+    // channel.bind("new-message", (payload: any) => {
+    //   console.log({payload});
+    //   setMessages(prev => [
+    //     ...prev,
+    //     payload
+    //   ]);
+    // });
+
     channel.bind("new-message", (payload: any) => {
-      console.log({payload});
-      addMessage(payload);
+    setMessages(prev => {
+      // Remove optimistic message (match by message content or negative temp ID logic)
+      const filtered = prev.filter(msg => {
+        // Option 1: Remove messages with same content and temp ID (if used)
+        const isDuplicate =
+          msg.message === payload.message &&
+          msg.userId === payload.userId &&
+          new Date(msg.time).getTime() === new Date(payload.time!).getTime();
+
+        // Option 2: Remove negative ID (if optimistic messages use tempId = -Date.now())
+        const isTemp = typeof msg.id === 'number' && msg.id < 0;
+
+        return !isDuplicate && !isTemp;
+      });
+
+      return [...filtered, payload].sort((a, b) =>
+        new Date(a.time).getTime() - new Date(b.time).getTime()
+      );
+    });
     });
 
     return () => {
@@ -106,7 +117,33 @@ const ClientParticularGamePage = () => {
   const [wagerCondition, setWagerCondition] = useState("");
   const [stakeAmount, setStakeAmount] = useState(0);
   const [selectedMessage, setSelectedMessage] = useState<any | null>(null);
-          const {date, time} = formatDateToBritish((!isLoading && seletedGame) ? seletedGame.team!.startTime : '')
+  const {date, time} = formatDateToBritish(seletedGame ? seletedGame.team!.startTime : '')
+  const [newBalance, setNewBalance] = useState(0)
+
+
+  
+    useEffect(() => {
+  if (user !== null) {
+    const lastRunKey = 'last-balance-check';
+    const now = Date.now();
+    const lastRun = Number(localStorage.getItem(lastRunKey));
+
+    const TWO_MINUTES = 2 * 60 * 1000;
+
+    if (!lastRun || now - lastRun > TWO_MINUTES) {
+      const getB = async () => {
+        const userBalance = await getSolanaBalance(user?.address!);
+
+        // await updateWalletData(user?.address!);
+        setNewBalance(userBalance)
+        localStorage.setItem(lastRunKey, String(now));
+      };
+
+      getB();
+    }
+  }
+}, [user]);
+
 
   const handleToggle = () => {
     if (!boxRef.current) return;
@@ -164,7 +201,7 @@ const ClientParticularGamePage = () => {
     setStakeAmount(stake);
 
     // For demo purposes, we're showing insufficient balance if stake > 5
-    if (stake < 0.5 || Number(user?.balance!) / LAMPORTS_PER_SOL < 0.5) {
+    if (stake < 0.5 || newBalance < 0.5) {
       setInsufficientBalance(true);
     } else {
       setIsWagerModalOpen(false);
@@ -200,21 +237,8 @@ const ClientParticularGamePage = () => {
     }
   };
 
-  if (isLoading || (seletedGame?.hub.isGameStarted === true && isParticularGameLiveScoresLoading)) {
     return (
-      <div className="flex justify-center py-4">
-        <LoadingIcon />
-      </div>
-    );
-  } else if (error || (seletedGame?.hub.isGameStarted === true && particularGameLiveScoresError)) {
-    return (
-      <div className="flex justify-center py-4">
-        <p>Big Error Occurred</p>
-      </div>
-    );
-  } else {
-    return (
-      <main className=" overflow-hidden min-h-screen flex flex-col">
+      <main className="min-h-screen flex flex-col">
         <div className="overflow-visible text-white z-30 shadow-md pb-3 bg-gradient-to-b from-gradientDarkGreen to-gradientLightGreen">
           <div className="container mx-auto px-4 md:px-6 pt-2 pb-2">
             {/* Navigation bar */}
@@ -348,7 +372,7 @@ const ClientParticularGamePage = () => {
           }}
           onProceed={handleWagerProceed}
           selectedGame={seletedGame}
-          username={selectedMessage?.username || "Pkay"}
+          username={user?.name || "Pkay"}
           insufficientBalance={insufficientBalance}
         />
 
@@ -365,7 +389,7 @@ const ClientParticularGamePage = () => {
         />
       </main>
     );
-  }
+
 };
 
 export default ClientParticularGamePage;

@@ -247,3 +247,10 @@ export function getLeague(teamA: string, teamB: string): "Premier League" | "La 
   if (inLaLiga) return "La Liga";
   return "Champions League";
 }
+
+let temp = 0
+
+export function generateNumber(): number {
+  temp += 1
+  return 100 + temp;
+}

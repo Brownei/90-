@@ -14,7 +14,7 @@ interface ProvidersProps {
 const HomeProvider = ({ children, token }: ProvidersProps) => {
     const pathname = usePathname()
   const router = useRouter()
-  const {session, setSession} = useSessionStore()
+  const {session} = useSessionStore()
   const {  setUser, user, setLoggedIn, setIsLoading } = useAuthLogin();
 
   // useEffect(() => {
@@ -45,7 +45,7 @@ const HomeProvider = ({ children, token }: ProvidersProps) => {
     } else if (pathname !== '/' && session === null) {
       router.push('/')
     }
-  }, [session, setUser, router, pathname]);
+  }, [session, pathname]);
 
 //     useEffect(() => {
 //   if (user !== null) {

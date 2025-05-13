@@ -14,16 +14,17 @@ import { useAuth } from "@/utils/useAuth";
 import toast from "react-hot-toast";
 import { trpc } from "@/trpc/client";
 import { set } from "@project-serum/anchor/dist/cjs/utils/features";
+import { useAtom } from "jotai";
+import { allMessagesAtom } from "@/stores/navStore";
+import LoadingIcon from "@/public/icons/LoadingIcon";
 
 const MessagePopup = ({ seletedGame }: { seletedGame: any }) => {
-  // const { messages, setMessages } = useMessageStore();
-  const [messages, setMessages] = useState<any[]>([])
+  const [messages, setMessages] = useAtom(allMessagesAtom)
   const {
     data: allMessages,
     isLoading,
     error,
   } = trpc.messages.getAllMessages.useQuery({ hubName: seletedGame.hub.name });
-  console.log({ allMessages, isLoading, error });
   const [selectedMessage, setSelectedMessage] = useState<any>(null);
   const [isWagerModalOpen, setIsWagerModalOpen] = useState(false);
   const [isFundModalOpen, setIsFundModalOpen] = useState(false);
@@ -153,7 +154,14 @@ const MessagePopup = ({ seletedGame }: { seletedGame: any }) => {
   // }
 
   // Enhanced messages for demo
-  return (
+  if(isLoading) {
+    return (
+    <div className="flex justify-center py-4">
+      <LoadingIcon />
+    </div>
+    )
+  } else {
+    return (
     <section className="overflow-auto h-full pt-2">
       {/* Original messages */}
       {messages.length === 0 ? (
@@ -311,6 +319,7 @@ const MessagePopup = ({ seletedGame }: { seletedGame: any }) => {
       />
     </section>
   );
+  }
 };
 
 export default MessagePopup;

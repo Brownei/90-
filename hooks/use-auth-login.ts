@@ -110,7 +110,6 @@ export const useAuthLogin = () => {
       return;
     }
     const user = await web3auth.getUserInfo();
-    // console.log(user);
 
     return user;
   };
@@ -153,7 +152,6 @@ export const useAuthLogin = () => {
             encryptedProvider: encryptedProvider,
           })
 
-          // console.log(token)
           setSession(token as string)
 
           setUser({
@@ -166,7 +164,6 @@ export const useAuthLogin = () => {
 
           // if (balance === 0) {
           //   const sig = await airdropSol(accounts)
-          //   console.log(sig)
           // }
         } catch (error) {
           console.error("Failed to get or store user info:", error);

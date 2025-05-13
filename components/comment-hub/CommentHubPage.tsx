@@ -1,16 +1,18 @@
 "use client"
-import React, { Suspense } from 'react'
+import React, { FC, Suspense } from 'react'
 import Tabs from './ui/tabs'
 import { useTabsStore } from '@/stores/use-tabs-store'
 import SearchComponent from './ui/search-component'
 import Carousel from '../carousel/carousel'
-import { Game, games } from '@/data'
 import { PlusIcon } from 'lucide-react'
-// import PlusIcon from '@/public/icons/PlusIcon'
 import LoadingIcon from '@/public/icons/LoadingIcon'
 import Link from 'next/link'
-import { trpc } from '@/trpc/client'
 import LiveCarousel from '../carousel/live-carousel'
+
+type CommentHubPageProps = {
+  fixturedGames: any[]
+  liveGames: any[]
+}
 
 const tabs = [
   "All",
@@ -19,14 +21,12 @@ const tabs = [
   "La Liga"
 ]
 
-const CommentHubPage = () => {
+const CommentHubPage: FC<CommentHubPageProps> = ({fixturedGames, liveGames}) => {
   const { selected, setSelected } = useTabsStore()
   const [isLoading, setIsLoading] = React.useState(false)
-  const { data: liveGames, isLoading: isLiveMatchesLoading, error } = trpc.games.liveMatches.useQuery()
-  const { data: fixturedGames, isLoading: isFixturedMatchesLoading, error: fixturedGamesError } = trpc.games.getAllFixtures.useQuery()
   const [query, setQuery] = React.useState("")
-  const [filteredGames, setFilteredGames] = React.useState(!isLiveMatchesLoading ? liveGames : [])
-  const [filteredUpcomingGames, setFilteredUpcomingGames] = React.useState(!isFixturedMatchesLoading ? fixturedGames : [])
+  const [filteredGames, setFilteredGames] = React.useState(liveGames)
+  const [filteredUpcomingGames, setFilteredUpcomingGames] = React.useState(fixturedGames)
 
   // console.log({ liveGames, fixturedGames })
 
@@ -35,7 +35,7 @@ const CommentHubPage = () => {
 
     const timeoutId = setTimeout(() => {
       const safeQuery = query.trim().toLowerCase();
-      if (safeQuery !== "" && (!isLiveMatchesLoading && liveGames) && (!isFixturedMatchesLoading && fixturedGames)) {
+      if (safeQuery !== "" && liveGames && fixturedGames) {
         const gamesFiltered = liveGames.filter((g: any) =>
           g.away.name.toLowerCase().includes(query.toLowerCase()) ||
           g.home.name.toLowerCase().includes(query.toLowerCase())
@@ -48,7 +48,7 @@ const CommentHubPage = () => {
 
         setFilteredGames(gamesFiltered);
         setFilteredUpcomingGames(upcomingGamesFilter);
-      } else if((!isLiveMatchesLoading && liveGames) && (!isFixturedMatchesLoading && fixturedGames)) {
+      } else if(liveGames && fixturedGames) {
         setFilteredGames(liveGames);
         setFilteredUpcomingGames(fixturedGames);
       }
@@ -57,7 +57,7 @@ const CommentHubPage = () => {
     }, 1000);
 
     return () => clearTimeout(timeoutId);
-  }, [query, liveGames, fixturedGames, isLiveMatchesLoading, isFixturedMatchesLoading]);
+  }, [query, liveGames, fixturedGames]);
 
 
   return (
@@ -84,7 +84,7 @@ const CommentHubPage = () => {
           </div>
 
           <div className="bg-[ECF5F5] rounded-xl p-3 ">
-            {(isLoading || isLiveMatchesLoading) ? (
+            {(isLoading) ? (
               <div className="flex justify-center py-4">
                 <LoadingIcon />
               </div>
@@ -97,7 +97,7 @@ const CommentHubPage = () => {
         <div className="mt-5">
           <h3 className="text-base mb-1">Upcoming Hubs</h3>
           <div className="bg-[ECF5F5] rounded-xl p-3">
-            {(isLoading || isFixturedMatchesLoading) ? (
+            {(isLoading) ? (
               <div className="flex justify-center py-4">
                 <LoadingIcon />
               </div>

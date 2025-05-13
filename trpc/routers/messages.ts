@@ -2,7 +2,7 @@ import { z } from "zod";
 import { baseProcedure, createTRPCRouter } from "../init";
 import { db, users, comments, replies, hubs, wagers } from "@/lib/db";
 import { eq, inArray } from "drizzle-orm";
-import { encryptData } from "@/utils/utils";
+import { encryptData, generateNumber } from "@/utils/utils";
 import { pusherServer } from "@/lib/pusher/server";
 import { Message, Reply } from "@/stores/use-messages-store";
 
@@ -22,7 +22,7 @@ export const messagesRouter = createTRPCRouter({
         const {name, profileImage, id} = getAuthor[0]
 
         const payload = {
-          id: 1,
+          id: generateNumber(),
           message: content,
           hubId: hubId,
           userId: id,
@@ -34,9 +34,7 @@ export const messagesRouter = createTRPCRouter({
           time: new Date(),
         }
 
-        await pusherServer.trigger(String(hubId), 'new-message', {
-          payload,
-        })
+        await pusherServer.trigger(String(hubId), 'new-message', payload)
 
         await db.insert(comments).values({
           hubId,

@@ -30,12 +30,10 @@ export default async function RootLayout({
   const serverCookies = await cookies()
   const token = serverCookies.get("session")?.value as string
 
-  console.log({token})
   return (
     <html lang="en" className={`${inter.variable}`}>
       <body className="font-sans">
         <Providers token={token}>
-          <Nav />
           <Toaster />
           {children}
         </Providers>

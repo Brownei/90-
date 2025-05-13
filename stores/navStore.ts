@@ -21,3 +21,4 @@ export const loggedInAtom = atom<boolean>(false);
 export const web3authAtom = atom<Web3Auth | null>(null);
 export const isWeb3AuthInitializedAtom = atom<boolean>(false); 
 export const bettingClientAtom = atom<BettingClient | null>(null)
+export const allMessagesAtom = atom<any[]>([])

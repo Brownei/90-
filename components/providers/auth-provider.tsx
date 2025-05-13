@@ -8,7 +8,7 @@ import React, { useEffect, useState } from "react"
 
 const AuthProvider = ({ children, token }: { children: React.ReactNode, token: string }) => {
   const router = useRouter()
-  const {session, setSession} = useSessionStore()
+  const {session} = useSessionStore()
   const {  setUser, user, setLoggedIn, setIsLoading } = useAuthLogin();
 
   useEffect(() => {
@@ -33,7 +33,7 @@ const AuthProvider = ({ children, token }: { children: React.ReactNode, token: s
     } else {
       router.push('/')
     }
-  }, [session, setUser, router]);
+  }, [session]);
 
 //   useEffect(() => {
 //   if (user !== null) {

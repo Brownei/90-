@@ -21,7 +21,7 @@ const WagerModal: React.FC<WagerModalProps> = ({
   selectedGame,
   onProceed, 
   username = '', 
-  insufficientBalance = false 
+  insufficientBalance
 }) => {
   const [wagerCondition, setWagerCondition] = useState('');
   const {user} = useAuthLogin()
@@ -31,6 +31,7 @@ const WagerModal: React.FC<WagerModalProps> = ({
   const [againstUsername, setAgainstUsername] = useState('');
   const wagerMutation = trpc.wagers.placeWager.useMutation();
   const {data: escrowAccount, isLoading, error} = trpc.users.getEscrowAccount.useQuery()
+  console.log({insufficientBalance})
   
   if (!isOpen) return null;
 

@@ -1,8 +1,8 @@
 "use client"
-import React, { useState } from 'react'
+import React, { FC, useState } from 'react'
 import SearchComponent from './ui/search-component'
 import MessageIcon from '@/public/icons/MessageIcon'
-import { Game, games } from '@/data'
+import { Game} from '@/data'
 import LoadingIcon from '@/public/icons/LoadingIcon'
 import Card from './ui/card'
 import ArrowRightIcon from '@/public/icons/ArrowRightIcon'
@@ -10,24 +10,28 @@ import { useRouter, useSearchParams } from 'next/navigation'
 import { formatString, reverseFormatString } from '@/utils/utils'
 import { ChevronLeft } from 'lucide-react'
 
-const CreateNewCommentHubPage = () => {
+type CreateNewCommentHubPageProps = {
+  allGames: any[]
+}
+
+const CreateNewCommentHubPage: FC<CreateNewCommentHubPageProps> = ({allGames}) => {
   const router = useRouter()
   const [selectedMatchesToCreated, setSelectedMatchesToCreated] = React.useState<Game | null>(null)
   const [isLoading, setIsLoading] = React.useState(false)
-  const [searchedGames, setSearchedGames] = useState<Game[]>([])
+  const [searchedGames, setSearchedGames] = useState<any[]>([])
   const [query, setQuery] = React.useState("")
   const pathname = useSearchParams()
   const [homeTeam, awayTeam] = pathname.get("new-game") !== null ? reverseFormatString(pathname.get("new-game") as string).split("Vs") : ""
-  const seletedGame = games.find((g) => g.awayTeam === awayTeam?.trim() && g.homeTeam === homeTeam?.trim())
+  const seletedGame = allGames.find((g) => g.away.name === awayTeam?.trim() && g.away.name === homeTeam?.trim())
 
   React.useEffect(() => {
     setIsLoading(true);
 
     const timeoutId = setTimeout(() => {
       if (query !== "") {
-        const gamesFiltered = games.filter((g) =>
-          g.awayTeam.toLowerCase().includes(query.toLowerCase()) ||
-          g.homeTeam.toLowerCase().includes(query.toLowerCase())
+        const gamesFiltered = allGames.filter((g) =>
+          g.away.name.toLowerCase().includes(query.toLowerCase()) ||
+          g.home.away.toLowerCase().includes(query.toLowerCase())
         );
         setSearchedGames(gamesFiltered);
       } else {
@@ -38,7 +42,7 @@ const CreateNewCommentHubPage = () => {
     }, 1000);
 
     return () => clearTimeout(timeoutId);
-  }, [query, games]);
+  }, [query, allGames]);
 
   React.useEffect(() => {
     if (seletedGame !== undefined) {
@@ -66,10 +70,10 @@ const CreateNewCommentHubPage = () => {
                 {searchedGames.length > 0 ? (
                   <div className='grid'>
                     {searchedGames.map((sg, i) => {
-                      const urlRoute = formatString(`${sg.homeTeam} vs ${sg.awayTeam}`)
+                      const urlRoute = formatString(`${sg.home.name} vs ${sg.away.name}`)
 
                       return (
-                        <button key={i} onClick={() => router.push(`/comment-hub/create-new-hub/?new-game=${urlRoute}`)} className='font-dmSans text-start text-[1rem] cursor-pointer leading-[140%] border-b border-black/24 px-3 py-3 lg:py-6 hover:bg-black/24'>{sg.homeTeam} vs {sg.awayTeam} - 20:00 (Premier League)</button>
+                        <button key={i} onClick={() => router.push(`/comment-hub/create-new-hub/?new-game=${urlRoute}`)} className='font-dmSans text-start text-[1rem] cursor-pointer leading-[140%] border-b border-black/24 px-3 py-3 lg:py-6 hover:bg-black/24'>{sg.home.name} vs {sg.away.name} - 20:00 (Premier League)</button>
                       )
                     })}
                   </div>

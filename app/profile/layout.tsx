@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import AuthProvider from "@/components/providers/auth-provider";
 import { cookies } from "next/headers";
+import Nav from "@/components/Nav";
 
 export const metadata: Metadata = {
   title: "90+: Profile",
@@ -17,6 +18,7 @@ export default async function ProfileLayout({
 
   return (
     <AuthProvider token={token}>
+      <Nav />
       {children}
     </AuthProvider>
   );
