@@ -7,6 +7,7 @@ import FooterLogo from '@/public/icons/FooterLogo';
 import Link from 'next/link';
 import { ArrowRight, } from 'lucide-react';
 import { useAuthLogin } from '@/hooks/use-auth-login';
+import { Keypair } from '@solana/web3.js';
 
 const Homepage = () => {
   const { loggedIn, user } = useAuthLogin()
@@ -17,6 +18,8 @@ const Homepage = () => {
   //
   //   router.push('/comment-hub')
   // }
+  const keypair = Keypair.generate()
+  console.log({keypair})
 
   return (
     <main>

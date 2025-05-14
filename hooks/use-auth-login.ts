@@ -172,6 +172,7 @@ useEffect(() => {
           const userWallet = new PersonalWallet(web3auth.provider!)
           const userInfo = await web3auth.getUserInfo();
           const keypair = Keypair.generate()
+  
           const balance = await getSolanaBalance(keypair.publicKey)
           const encryptedProvider = encryptData(JSON.stringify(keypair))
           const token = await loginMutation.mutateAsync({
