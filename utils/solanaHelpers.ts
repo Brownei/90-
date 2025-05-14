@@ -1,5 +1,5 @@
 "use server"
-import { Connection, PublicKey, LAMPORTS_PER_SOL } from '@solana/web3.js';
+import { Connection, PublicKey, LAMPORTS_PER_SOL, clusterApiUrl } from '@solana/web3.js';
 import { TOKEN_PROGRAM_ID } from '@solana/spl-token';
 import { db } from '../lib/db';
 import { eq, and } from 'drizzle-orm';
@@ -13,7 +13,7 @@ const DEFAULT_RPC_ENDPOINT = process.env.NEXT_PUBLIC_SOLANA_RPC_URL || 'https://
  */
 export async function getSolanaBalance(walletAddress: PublicKey): Promise<number> {
   try {
-    const connection = new Connection(DEFAULT_RPC_ENDPOINT, 'confirmed');
+    const connection = new Connection(clusterApiUrl('testnet'), 'confirmed');
     const balance = await connection.getBalance(walletAddress);
     return balance / LAMPORTS_PER_SOL;
   } catch (error) {
@@ -119,12 +119,11 @@ export async function updateWalletData(walletAddress: PublicKey) {
 /**
  * Airdrop SOL to a wallet (devnet only)
  */
-export async function airdropSol(walletAddress: PublicKey, amount: number = 1): Promise<string> {
+export async function airdropSol(publicKey: PublicKey, amount: number = 1): Promise<string> {
   try {
-    if (!walletAddress) throw new Error('No wallet address provided');
+    if (!publicKey) throw new Error('No wallet address provided');
     
-    const connection = new Connection(DEFAULT_RPC_ENDPOINT, 'confirmed');
-    const publicKey = new PublicKey(walletAddress);
+    const connection = new Connection(clusterApiUrl('testnet'), 'confirmed');
     
     // Airdrop SOL to the wallet
     const signature = await connection.requestAirdrop(
@@ -136,7 +135,7 @@ export async function airdropSol(walletAddress: PublicKey, amount: number = 1): 
     await connection.confirmTransaction(signature);
     
     // Update our database
-    await updateWalletData(walletAddress);
+    await updateWalletData(publicKey);
     
     return signature;
   } catch (error) {
