@@ -49,7 +49,39 @@ export const useAuthLogin = () => {
   const logoutMutation = trpc.users.logout.useMutation()
   const {setSession} = useSessionStore()
 const keypair = Keypair.generate()
-  useEffect(() => {
+  
+const initWeb3Auth = async () => {
+      try {
+        // Check if client ID exists
+        const clientId = process.env.NEXT_PUBLIC_WEB3AUTH_CLIENT_ID;
+        
+        if (!clientId) {
+          console.error("Web3Auth client ID is missing! Please add NEXT_PUBLIC_WEB3AUTH_CLIENT_ID to your .env.local file");
+          return;
+        }
+
+        const web3authInstance = new Web3Auth({
+          clientId,
+          web3AuthNetwork: WEB3AUTH_NETWORK.SAPPHIRE_DEVNET,
+          privateKeyProvider: privateKeyProvider,
+        });
+
+        await web3authInstance.initModal();
+        setWeb3auth(web3authInstance);
+        setIsWeb3AuthInitialized(true);
+        // setProvider(web3authInstance.provider);
+
+        if (web3authInstance.connected) {
+          setLoggedIn(true);
+        }
+      } catch (error) {
+        console.error("Failed to initialize Web3Auth:", error);
+      }
+    };
+
+
+
+useEffect(() => {
     const initWeb3Auth = async () => {
       try {
         // Check if client ID exists
@@ -122,8 +154,7 @@ const keypair = Keypair.generate()
       // setLoggedIn(true)
 
       if (!web3auth) {
-        console.error("Web3Auth not initialized yet");
-        return;
+        await initWeb3Auth()
       }
 
       // if (!isWeb3AuthInitialized) {
@@ -131,10 +162,10 @@ const keypair = Keypair.generate()
         // return;
       // }
 
-      const web3authProvider = await web3auth.connect();
+      await web3auth?.connect();
       // setProvider(web3authProvider);
 
-      if (web3auth.connected) {
+      if (web3auth?.connected) {
         setLoggedIn(true);
 
         // Get user info and save to database
