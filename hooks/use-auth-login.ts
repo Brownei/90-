@@ -48,7 +48,6 @@ export const useAuthLogin = () => {
   const loginMutation = trpc.users.login.useMutation()
   const logoutMutation = trpc.users.logout.useMutation()
   const {setSession} = useSessionStore()
-const keypair = Keypair.generate()
   
 const initWeb3Auth = async () => {
       try {
@@ -172,7 +171,7 @@ useEffect(() => {
         try {
           const userWallet = new PersonalWallet(web3auth.provider!)
           const userInfo = await web3auth.getUserInfo();
-          
+          const keypair = Keypair.generate()
           const balance = await getSolanaBalance(keypair.publicKey)
           const encryptedProvider = encryptData(JSON.stringify(keypair))
           const token = await loginMutation.mutateAsync({
