@@ -85,7 +85,7 @@ const keypair = Keypair.generate()
     return () => {
       // Add any cleanup if needed
     };
-  }, [web3auth, isWeb3AuthInitialized]);
+  }, []);
 
 
   useEffect(() => {
@@ -126,10 +126,10 @@ const keypair = Keypair.generate()
         return;
       }
 
-      if (!isWeb3AuthInitialized) {
-        console.error("Web3Auth modal not initialized yet");
-        return;
-      }
+      // if (!isWeb3AuthInitialized) {
+       // console.error("Web3Auth modal not initialized yet");
+        // return;
+      // }
 
       const web3authProvider = await web3auth.connect();
       // setProvider(web3authProvider);
