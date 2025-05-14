@@ -50,6 +50,7 @@ export const useAuthLogin = () => {
   const {setSession} = useSessionStore()
   
 const initWeb3Auth = async () => {
+      setIsLoading(true)
       try {
         // Check if client ID exists
         const clientId = process.env.NEXT_PUBLIC_WEB3AUTH_CLIENT_ID;
@@ -75,6 +76,8 @@ const initWeb3Auth = async () => {
         }
       } catch (error) {
         console.error("Failed to initialize Web3Auth:", error);
+      } finally {
+        setIsLoading(false)
       }
     };
 
@@ -154,17 +157,11 @@ useEffect(() => {
 
       if (!web3auth) {
         await initWeb3Auth()
-      }
-
-      // if (!isWeb3AuthInitialized) {
-       // console.error("Web3Auth modal not initialized yet");
-        // return;
-      // }
-
-      await web3auth?.connect();
+      } else {
+        await web3auth.connect();
       // setProvider(web3authProvider);
 
-      if (web3auth?.connected) {
+      if (web3auth.connected) {
         setLoggedIn(true);
 
         // Get user info and save to database
@@ -203,6 +200,12 @@ useEffect(() => {
           console.error("Failed to get or store user info:", error);
         }
       }
+      }
+
+      // if (!isWeb3AuthInitialized) {
+       // console.error("Web3Auth modal not initialized yet");
+        // return;
+      // 
 
     } catch (error) {
       console.error("Login error:", error);
