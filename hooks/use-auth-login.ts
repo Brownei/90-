@@ -85,7 +85,7 @@ const keypair = Keypair.generate()
     return () => {
       // Add any cleanup if needed
     };
-  }, []);
+  }, [web3auth, isWeb3AuthInitialized]);
 
 
   useEffect(() => {
