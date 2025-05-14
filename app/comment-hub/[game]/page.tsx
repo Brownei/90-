@@ -3,6 +3,7 @@ import React from 'react'
 import { Metadata } from 'next'
 import { trpc } from '@/trpc/server';
 import { reverseFormatString } from '@/utils/utils';
+import AuthProvider from '@/components/providers/auth-provider';
 
 // Generate metadata for SEO
 export const metadata: Metadata = {
@@ -17,10 +18,18 @@ async function ParticularGamePage({params}: {
   const selectedGame = await trpc.hubs.getAParticularHub({name: game})
   const [home, away] = reverseFormatString(game).split("Vs")
   const particularGameLiveScores = await trpc.games.getParticularLiveMatches({home: home.trim().toLowerCase(), away: away.trim().toLowerCase()})
+  const escrowAccount = await trpc.users.getEscrowAccount()
+  
 
   return (
     <main className=' overflow-hidden '>
-      <ClientParticularGamePage seletedGame={selectedGame} particularGameLiveScores={particularGameLiveScores}/>
+      <AuthProvider>
+      <ClientParticularGamePage 
+        seletedGame={selectedGame} 
+        particularGameLiveScores={particularGameLiveScores}
+        escrowAccount={escrowAccount[0].address}
+      />
+      </AuthProvider>
     </main>
   )
 }

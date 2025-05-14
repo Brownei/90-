@@ -14,6 +14,7 @@ import { encryptData } from '@/utils/utils';
 import { useSessionStore } from '@/stores/use-session-store';
 import { PersonalWallet } from '@/helpers/wallet';
 import { airdropSol, getTokenAccounts } from '@/utils/solanaHelpers';
+import { useProviderStore } from '@/stores/use-provider-store';
 
 const chainConfig = {
   chainNamespace: CHAIN_NAMESPACES.SOLANA,
@@ -36,7 +37,7 @@ export const useAuthLogin = () => {
     isAuthenticated,
   } = useAuthStore();
   const { connected, connect } = useWallet();
-  const [provider, setProvider] = useAtom(providerAtom);
+  const {provider, setProvider} = useProviderStore();
   const [isLoading, setIsLoading] = useState(false);
   const [user, setUser] = useAtom(userAtom);
   const [loggedIn, setLoggedIn] = useAtom(loggedInAtom);
@@ -137,7 +138,7 @@ export const useAuthLogin = () => {
 
         // Get user info and save to database
         try {
-          const userWallet = new PersonalWallet(provider!)
+          const userWallet = new PersonalWallet(web3auth.provider!)
           const userInfo = await web3auth.getUserInfo();
           const accounts = await userWallet.getAccount()
           const balance = await userWallet.getBalance()
@@ -162,6 +163,7 @@ export const useAuthLogin = () => {
               balance: balance.toString(),
           })
 
+          setProvider(web3auth.provider);
           // if (balance === 0) {
           //   const sig = await airdropSol(accounts)
           // }

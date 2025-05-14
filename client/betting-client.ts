@@ -1,5 +1,5 @@
-import { Connection, PublicKey } from '@solana/web3.js';
-import { Program, Provider, web3, BN } from '@project-serum/anchor';
+import { Connection, Keypair, PublicKey } from '@solana/web3.js';
+import { Program, Provider, web3, BN, AnchorProvider, Wallet } from '@project-serum/anchor';
 import { TOKEN_PROGRAM_ID } from '@solana/spl-token';
 // @ts-ignore
 import BettingIDL from './betting.json';
@@ -28,6 +28,7 @@ export class BettingClient {
 
   constructor(
     address: PublicKey,
+    privateKey: string,
     network: Network = 'testnet',
     customRpcUrl?: string
   ) {
@@ -35,16 +36,26 @@ export class BettingClient {
     const rpcUrl = customRpcUrl || RPC_ENDPOINTS[network];
     this.connection = new Connection(rpcUrl, 'confirmed');
     this.address = address;
-    const revisedProvider: Provider = {
-      publicKey: this.address,
-      connection: this.connection
-    }
+
+
+    const secretKey = Uint8Array.from([privateKey]);
+    const keypair = Keypair.fromSecretKey(secretKey);
+    const wallet = {
+      publicKey: keypair.publicKey,
+      signAllTransactions: async (txs) => txs.map(tx => { tx.sign(keypair); return tx; }),
+      signTransaction: async (tx) => { tx.sign(keypair); return tx; },
+      payer: keypair
+    } satisfies Wallet;
+
+    const provider = new AnchorProvider(this.connection, wallet, {
+      preflightCommitment: 'processed',
+    });
     
     // Get program ID for the selected network
     this.programId = new PublicKey(PROGRAM_IDS[network]);
     
     // Set up provider
-    this.provider = revisedProvider
+    this.provider = provider
     
     // Initialize program with IDL
     this.program = new Program(

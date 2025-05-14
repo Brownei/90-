@@ -6,7 +6,7 @@ import { decryptData, encryptData } from "@/utils/utils";
 import { useRouter } from "next/navigation";
 import React, { useEffect, useState } from "react"
 
-const AuthProvider = ({ children, token }: { children: React.ReactNode, token: string }) => {
+const AuthProvider = ({ children, token }: { children: React.ReactNode, token?: string }) => {
   const router = useRouter()
   const {session} = useSessionStore()
   const {  setUser, user, setLoggedIn, setIsLoading } = useAuthLogin();

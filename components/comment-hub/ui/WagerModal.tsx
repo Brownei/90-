@@ -1,9 +1,12 @@
 import { BettingClient } from '@/client/betting-client';
 import { useAuthLogin } from '@/hooks/use-auth-login';
 import { db, users, wallets } from '@/lib/db';
+import { web3authAtom } from '@/stores/navStore';
 import { trpc } from '@/trpc/client';
+import { useAuth } from '@/utils/useAuth';
 import {  PublicKey } from '@solana/web3.js';
 import { eq } from 'drizzle-orm';
+import { useAtom } from 'jotai';
 import React, {  useState } from 'react';
 
 interface WagerModalProps {
@@ -13,6 +16,8 @@ interface WagerModalProps {
   selectedGame: any
   username?: string;
   insufficientBalance?: boolean;
+  escrowAccount: string
+  privateKey: string
 }
 
 const WagerModal: React.FC<WagerModalProps> = ({ 
@@ -21,22 +26,26 @@ const WagerModal: React.FC<WagerModalProps> = ({
   selectedGame,
   onProceed, 
   username = '', 
-  insufficientBalance
+  escrowAccount,
+  insufficientBalance,
+  privateKey
 }) => {
   const [wagerCondition, setWagerCondition] = useState('');
+  const {provider} = useAuthLogin()
+  console.log({})
   const {user} = useAuthLogin()
-  const bettingClient = new BettingClient(new PublicKey(user?.address!))
+  const bettingClient = new BettingClient(new PublicKey(user?.address!), privateKey)
   const [stakeAmount, setStakeAmount] = useState('');
   const [forUsername, setForUsername] = useState(username);
   const [againstUsername, setAgainstUsername] = useState('');
   const wagerMutation = trpc.wagers.placeWager.useMutation();
-  const {data: escrowAccount, isLoading, error} = trpc.users.getEscrowAccount.useQuery()
-  console.log({insufficientBalance})
+  // const {data: escrowAccount, isLoading, error} = trpc.users.getEscrowAccount.useQuery()
   
+  console.log(user?.address, privateKey)
   if (!isOpen) return null;
 
   const handleProceed = async (home: string, away: string, hubId: number, startTime: number) => {
-    if (wagerCondition && stakeAmount && !isLoading && escrowAccount) {
+    if (wagerCondition && stakeAmount && escrowAccount) {
       // onProceed(wagerCondition, parseFloat(stakeAmount));
       const transaction = await bettingClient.initialize(2)
       // console.log(transaction)
@@ -47,7 +56,7 @@ const WagerModal: React.FC<WagerModalProps> = ({
         Number(stakeAmount), 
         wagerCondition, 
         new PublicKey(user?.address!), 
-        new PublicKey(escrowAccount[0].address)
+        new PublicKey(escrowAccount)
       )
 
       await wagerMutation.mutateAsync({
@@ -134,7 +143,7 @@ const WagerModal: React.FC<WagerModalProps> = ({
 
         <div className="flex justify-end">
           <button 
-            className="bg-green-700 text-white px-4 py-2 rounded"
+            className="bg-green-700 disabled:bg-gray-700 text-white px-4 py-2 rounded cursor-pointer"
             onClick={
               async () => await handleProceed(
                 selectedGame.team.home,

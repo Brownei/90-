@@ -19,13 +19,17 @@ import Image from 'next/image'
 import { useAtom } from 'jotai'
 import { allMessagesAtom } from '@/stores/navStore'
 import { getSolanaBalance } from '@/utils/solanaHelpers'
+import { trpc } from '@/trpc/client'
+import { useProviderStore } from '@/stores/use-provider-store'
+import SolanaRpc from '@/client/solana-rpc'
 
 type ClientParticularGamePageProps  = {
   seletedGame: any
   particularGameLiveScores: any
+  escrowAccount: string
 };
 
-const ClientParticularGamePage: FC<ClientParticularGamePageProps> = ({seletedGame, particularGameLiveScores}) => {
+const ClientParticularGamePage: FC<ClientParticularGamePageProps> = ({seletedGame,  escrowAccount, particularGameLiveScores}) => {
   const router = useRouter();
   const inputRef = React.useRef<HTMLDivElement>(null);
   const boxRef = React.useRef<HTMLDivElement>(null);
@@ -55,7 +59,7 @@ const ClientParticularGamePage: FC<ClientParticularGamePageProps> = ({seletedGam
   }, [messages.length, messageCount]);
 
   useEffect(() => {
-    const channel = pusherClient.subscribe(String(seletedGame?.hub!.id));
+    const channel = pusherClient.subscribe(String(seletedGame.hub!.id));
 
     // channel.bind("new-message", (payload: any) => {
     //   console.log({payload});
@@ -88,7 +92,7 @@ const ClientParticularGamePage: FC<ClientParticularGamePageProps> = ({seletedGam
     });
 
     return () => {
-      pusherClient.unsubscribe(String(seletedGame?.hub!.id));
+      pusherClient.unsubscribe(String(seletedGame.hub!.id));
     };
   }, [pusherClient]);
 
@@ -119,8 +123,23 @@ const ClientParticularGamePage: FC<ClientParticularGamePageProps> = ({seletedGam
   const [selectedMessage, setSelectedMessage] = useState<any | null>(null);
   const {date, time} = formatDateToBritish(seletedGame ? seletedGame.team!.startTime : '')
   const [newBalance, setNewBalance] = useState(0)
+  const {provider} = useProviderStore()
+  const RPC = new SolanaRpc(provider!)
+  const [privateKey, setPrivateKey] = useState("")
+  // const {data: privateKey, isLoading, error} = trpc.users.getPrivateKey.useQuery({email: user?.email!, provider: provider})
 
+  console.log({privateKey, provider: provider, user})
 
+  useEffect(() => {
+    if(provider !== null) {
+      async function getKey() {
+        const key = await RPC.getPrivateKey()
+        setPrivateKey(key)
+      }
+
+      getKey()
+    }
+  }, [provider])
   
     useEffect(() => {
   if (user !== null) {
@@ -257,7 +276,7 @@ const ClientParticularGamePage: FC<ClientParticularGamePageProps> = ({seletedGam
               <div className="flex w-full md:w-[90%] max-w-2xl pt-1 justify-between items-center">
                 {/* Home team */}
                 <div className="flex flex-col items-center">
-                  {seletedGame?.team?.home && (
+                  {seletedGame.team.home && (
                     <Image
                       src={logoHome}
                       alt={seletedGame.team.home}
@@ -267,7 +286,7 @@ const ClientParticularGamePage: FC<ClientParticularGamePageProps> = ({seletedGam
                     />
                   )}
                   <p className="text-center text-[0.65rem] md:text-[0.7rem] lg:text-[0.8rem] font-medium mt-1">
-                    {seletedGame?.team?.home}
+                    {seletedGame.team.home}
                   </p>
                 </div>
 
@@ -275,25 +294,25 @@ const ClientParticularGamePage: FC<ClientParticularGamePageProps> = ({seletedGam
                 <div className="grid place-items-center">
                   <div className="flex items-center gap-2 leading-8 font-bold">
                     <p className="text-[2rem] md:text-[2.2rem] lg:text-[2.5rem]">
-                      {seletedGame?.hub.isGameStarted === true ? particularGameLiveScores.home.score : seletedGame?.team?.homeScore}
+                      {seletedGame.hub.isGameStarted === true ? particularGameLiveScores.home.score : seletedGame.team.homeScore}
                     </p>
                     <span className="text-[2rem] md:text-[2.2rem] lg:text-[2.5rem]">
                       {" "}
                       -{" "}
                     </span>
                     <p className="text-[2rem] md:text-[2.2rem] lg:text-[2.5rem]">
-                      {seletedGame?.hub.isGameStarted === true ? particularGameLiveScores.away.score : seletedGame?.team?.awayScore}
+                      {seletedGame.hub.isGameStarted === true ? particularGameLiveScores.away.score : seletedGame.team?.awayScore}
                     </p>
                   </div>
                   <div className=" text-[0.65rem] md:text-[0.7rem] flex flex-col gap-1 items-center bg-[#ffffff20] px-3 py-0.5 rounded-full">
-                    <span>{seletedGame?.hub.isGameStarted === true && particularGameLiveScores.status.liveTime.long}</span>
-                    <span>{seletedGame?.hub.isGameStarted === false && date}</span>
+                    <span>{seletedGame.hub.isGameStarted === true && particularGameLiveScores.status.liveTime.long}</span>
+                    <span>{seletedGame.hub.isGameStarted === false && date}</span>
                   </div>
                 </div>
 
                 {/* Away team */}
                 <div className="flex flex-col items-center">
-                  {seletedGame?.team?.away && (
+                  {seletedGame.team.away && (
                     <Image
                       src={logoAway}
                       alt={seletedGame.team.away}
@@ -303,7 +322,7 @@ const ClientParticularGamePage: FC<ClientParticularGamePageProps> = ({seletedGam
                     />
                   )}
                   <p className="text-center text-[0.65rem] md:text-[0.7rem] lg:text-[0.8rem] font-medium mt-1">
-                    {seletedGame?.team?.away}
+                    {seletedGame.team.away}
                   </p>
                 </div>
               </div>
@@ -356,8 +375,8 @@ const ClientParticularGamePage: FC<ClientParticularGamePageProps> = ({seletedGam
 
           {/* Message input - always at bottom */}
           <MessageInput
-            hubName={seletedGame?.hub.name!}
-            hubId={seletedGame?.hub.id!}
+            hubName={seletedGame.hub.name!}
+            hubId={seletedGame.hub.id!}
             ref={inputRef}
             onWagerClick={handleWagerClick}
           />
@@ -372,6 +391,8 @@ const ClientParticularGamePage: FC<ClientParticularGamePageProps> = ({seletedGam
           }}
           onProceed={handleWagerProceed}
           selectedGame={seletedGame}
+          escrowAccount={escrowAccount}
+          privateKey={privateKey}
           username={user?.name || "Pkay"}
           insufficientBalance={insufficientBalance}
         />

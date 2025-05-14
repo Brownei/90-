@@ -2,9 +2,11 @@ import { z } from "zod";
 import { baseProcedure, createTRPCRouter } from "../init";
 import { db, tokens, users, wallets } from "@/lib/db";
 import { eq } from "drizzle-orm";
-import { encryptData } from "@/utils/utils";
+import { decryptData, encryptData } from "@/utils/utils";
 import { PublicKey } from "@solana/web3.js";
 import { getTokenAccounts } from "@/utils/solanaHelpers";
+import { IProvider } from "@web3auth/base";
+import { real } from "drizzle-orm/gel-core";
 
 export const usersRouter = createTRPCRouter({
   logout: baseProcedure
@@ -104,18 +106,30 @@ export const usersRouter = createTRPCRouter({
       }
     }),
 
-    getProvider: baseProcedure
-      .input(
-        z.object({
-          email: z.string()
-        })
-      )
-      .query(async ({input}) => {
-        const existingUser = await db.select({id: users.id, email: users.email}).from(users).where(eq(users.email, input.email))
-        
-        const wallet = await db.select({provider: wallets.provider}).from(wallets).where(eq(wallets.userId, existingUser[0].id))
+  getPrivateKey: baseProcedure
+  .input(
+    z.object({
+      email: z.string(),
+      provider: z.any()
+    })
+  )
+  .query(async ({ input }) => {
+    const {provider} = input
+    // 4. Try to extract the private key
+    if (typeof provider.request !== "function") {
+      throw new Error("Provider does not support request method");
+    }
 
-        return wallet[0].provider;
-      })
+    const privateKey = await provider.request({
+      method: "solanaPrivateKey"
+    });
+
+    if (!privateKey || typeof privateKey !== "string") {
+      throw new Error("Private key not available");
+    }
+
+    return privateKey;
+  })
+
 });
 

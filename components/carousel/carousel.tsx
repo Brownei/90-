@@ -80,7 +80,6 @@ const Carousel = ({
           const logoAway = awayMatchedKey ? teamLogos[awayMatchedKey] : ''
           {/* const {data: homeTeamInfo, isLoading: isHomeTeamInfoLoading, error: homeTeamInfoError} = trpc.games.getTeamInfo.useQuery({name: game.home.longName}) */}
           {/* const {data: awayTeamInfo, isLoading: isAwayTeamInfoLoading, error: awayTeamInfoError} = trpc.games.getTeamInfo.useQuery({name: game.away.longName}) */}
-          const id = getTheLeagueId(game)
 
           return (
             <div

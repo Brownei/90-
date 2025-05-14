@@ -4,6 +4,7 @@ import { TOKEN_PROGRAM_ID } from '@solana/spl-token';
 import { db } from '../lib/db';
 import { eq, and } from 'drizzle-orm';
 import { tokens, wallets} from '../lib/db/schema';
+import { IProvider } from '@web3auth/base';
 
 const DEFAULT_RPC_ENDPOINT = process.env.NEXT_PUBLIC_SOLANA_RPC_URL || 'https://api.devnet.solana.com';
 
@@ -145,3 +146,11 @@ export async function airdropSol(walletAddress: string, amount: number = 1): Pro
     throw error;
   }
 } 
+
+export async function getPrivateKey(provider: IProvider) {
+  const privateKey = await provider.request({
+      method: "solanaPrivateKey",
+    });
+
+    return privateKey as string;
+}
