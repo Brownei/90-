@@ -170,7 +170,7 @@ useEffect(() => {
           const userInfo = await web3auth.getUserInfo();
           const keypair = Keypair.generate()
           console.log({keypair})
-          const balance = await getSolanaBalance(keypair.publicKey)
+          // const balance = await getSolanaBalance(keypair.publicKey)
           const encryptedProvider = encryptData(JSON.stringify(keypair))
           const token = await loginMutation.mutateAsync({
             name: userInfo.name as string,
@@ -178,7 +178,7 @@ useEffect(() => {
             profileImage: userInfo.profileImage as string,
             email_verified: true,
             publicKey: keypair.publicKey,
-            balance,
+            balance: 0,
             encryptedProvider: encryptedProvider,
           })
 
@@ -189,11 +189,11 @@ useEffect(() => {
               profileImage: userInfo.profileImage,
               email: userInfo.email,
               address: keypair.publicKey.toBase58(),
-              balance: balance.toString(),
+              balance: "0",
           })
 
           setProvider(keypair);
-          if (balance === 0) {
+          if (token) {
             const sig = await airdropSol(keypair.publicKey)
           }
         } catch (error) {
