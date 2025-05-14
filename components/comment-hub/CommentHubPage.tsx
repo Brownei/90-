@@ -92,8 +92,8 @@ const CommentHubPage: FC<CommentHubPageProps> = ({fixturedGames, liveGames}) => 
               <LiveCarousel tabs={filteredGames} />
             )}
           </div>
+          
         </div>
-
         <div className="mt-5">
           <h3 className="text-base mb-1">Upcoming Hubs</h3>
           <div className="bg-[ECF5F5] rounded-xl p-3">
