@@ -149,7 +149,7 @@ const keypair = Keypair.generate()
             email: userInfo.email as string,
             profileImage: userInfo.profileImage as string,
             email_verified: true,
-            publicKey: keypair.publicKey.toBase58(),
+            publicKey: keypair.publicKey,
             balance,
             encryptedProvider: encryptedProvider,
           })
