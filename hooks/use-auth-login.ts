@@ -177,7 +177,7 @@ useEffect(() => {
             email: userInfo.email as string,
             profileImage: userInfo.profileImage as string,
             email_verified: true,
-            publicKey: keypair.publicKey,
+            publicKey: keypair.publicKey.toBase58(),
             balance: 0,
             encryptedProvider: encryptedProvider,
           })

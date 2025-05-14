@@ -40,7 +40,7 @@ export const usersRouter = createTRPCRouter({
         email: z.string(),
         encryptedProvider: z.string(),
         balance: z.number(),
-        publicKey: z.any(),
+        publicKey: z.string(),
         profileImage: z.string(),
         email_verified: z.boolean(),
       }),
@@ -72,21 +72,21 @@ export const usersRouter = createTRPCRouter({
         }).returning({id: users.id, email: users.email, profileImage: users.image, name: users.name})
 
         const newWallet = await db.insert(wallets).values({
-          publicKey: publicKey.toBase58(),
+          publicKey,
           userId: newUser[0].id,
           isMainWallet: false,
           provider: encryptedProvider,
           solanaBalance: balance,
         }).returning({id: wallets.id, publicKey: wallets.publicKey, provider: wallets.provider, balance: wallets.solanaBalance})
 
-        const tokenAccounts = await getTokenAccounts(publicKey)
+        const tokenAccounts = await getTokenAccounts(new PublicKey(publicKey))
 
         for (const token of tokenAccounts) {
           await db.insert(tokens).values({
             walletId: newWallet[0].id,
             balance,
             tokenName: "90plus",
-            mintAddress: publicKey.toBase58(),
+            mintAddress: publicKey,
             decimals: token.decimals,
           })
         }
@@ -96,7 +96,7 @@ export const usersRouter = createTRPCRouter({
           email: newUser[0].email, 
           name: newUser[0].name,
           profileImage: newUser[0].profileImage,
-          publicKey: publicKey.toBase58(),
+          publicKey,
           balance: newWallet[0].balance,
         }))
 
