@@ -124,22 +124,9 @@ const ClientParticularGamePage: FC<ClientParticularGamePageProps> = ({seletedGam
   const {date, time} = formatDateToBritish(seletedGame ? seletedGame.team!.startTime : '')
   const [newBalance, setNewBalance] = useState(0)
   const {provider} = useProviderStore()
-  const RPC = new SolanaRpc(provider!)
-  const [privateKey, setPrivateKey] = useState("")
   // const {data: privateKey, isLoading, error} = trpc.users.getPrivateKey.useQuery({email: user?.email!, provider: provider})
 
-  console.log({privateKey, provider: provider, user})
-
-  useEffect(() => {
-    if(provider !== null) {
-      async function getKey() {
-        const key = await RPC.getPrivateKey()
-        setPrivateKey(key)
-      }
-
-      getKey()
-    }
-  }, [provider])
+  console.log({provider: provider, user})
   
     useEffect(() => {
   if (user !== null) {
@@ -151,7 +138,7 @@ const ClientParticularGamePage: FC<ClientParticularGamePageProps> = ({seletedGam
 
     if (!lastRun || now - lastRun > TWO_MINUTES) {
       const getB = async () => {
-        const userBalance = await getSolanaBalance(user?.address!);
+        const userBalance = await getSolanaBalance(provider?.publicKey!);
 
         // await updateWalletData(user?.address!);
         setNewBalance(userBalance)
@@ -392,7 +379,7 @@ const ClientParticularGamePage: FC<ClientParticularGamePageProps> = ({seletedGam
           onProceed={handleWagerProceed}
           selectedGame={seletedGame}
           escrowAccount={escrowAccount}
-          privateKey={privateKey}
+          provider={provider}
           username={user?.name || "Pkay"}
           insufficientBalance={insufficientBalance}
         />

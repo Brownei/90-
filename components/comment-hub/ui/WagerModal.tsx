@@ -4,7 +4,7 @@ import { db, users, wallets } from '@/lib/db';
 import { web3authAtom } from '@/stores/navStore';
 import { trpc } from '@/trpc/client';
 import { useAuth } from '@/utils/useAuth';
-import {  PublicKey } from '@solana/web3.js';
+import {  Keypair, PublicKey } from '@solana/web3.js';
 import { eq } from 'drizzle-orm';
 import { useAtom } from 'jotai';
 import React, {  useState } from 'react';
@@ -17,7 +17,7 @@ interface WagerModalProps {
   username?: string;
   insufficientBalance?: boolean;
   escrowAccount: string
-  privateKey: string
+  provider: Keypair
 }
 
 const WagerModal: React.FC<WagerModalProps> = ({ 
@@ -28,20 +28,19 @@ const WagerModal: React.FC<WagerModalProps> = ({
   username = '', 
   escrowAccount,
   insufficientBalance,
-  privateKey
+  provider
 }) => {
   const [wagerCondition, setWagerCondition] = useState('');
-  const {provider} = useAuthLogin()
   console.log({})
   const {user} = useAuthLogin()
-  const bettingClient = new BettingClient(new PublicKey(user?.address!), privateKey)
+  const bettingClient = new BettingClient(provider.publicKey, provider)
   const [stakeAmount, setStakeAmount] = useState('');
   const [forUsername, setForUsername] = useState(username);
   const [againstUsername, setAgainstUsername] = useState('');
   const wagerMutation = trpc.wagers.placeWager.useMutation();
   // const {data: escrowAccount, isLoading, error} = trpc.users.getEscrowAccount.useQuery()
   
-  console.log(user?.address, privateKey)
+  console.log(user?.address, provider)
   if (!isOpen) return null;
 
   const handleProceed = async (home: string, away: string, hubId: number, startTime: number) => {

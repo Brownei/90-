@@ -11,11 +11,10 @@ const DEFAULT_RPC_ENDPOINT = process.env.NEXT_PUBLIC_SOLANA_RPC_URL || 'https://
 /**
  * Gets the SOL balance for a wallet
  */
-export async function getSolanaBalance(walletAddress: string): Promise<number> {
+export async function getSolanaBalance(walletAddress: PublicKey): Promise<number> {
   try {
     const connection = new Connection(DEFAULT_RPC_ENDPOINT, 'confirmed');
-    const publicKey = new PublicKey(walletAddress);
-    const balance = await connection.getBalance(publicKey);
+    const balance = await connection.getBalance(walletAddress);
     return balance / LAMPORTS_PER_SOL;
   } catch (error) {
     console.error('Error fetching Solana balance:', error);
@@ -26,10 +25,9 @@ export async function getSolanaBalance(walletAddress: string): Promise<number> {
 /**
  * Get token accounts for a wallet
  */
-export async function getTokenAccounts(walletAddress: string) {
+export async function getTokenAccounts(publicKey: PublicKey) {
   try {
     const connection = new Connection(DEFAULT_RPC_ENDPOINT, 'confirmed');
-    const publicKey =  new PublicKey(walletAddress);
     
     const tokenAccounts = await connection.getParsedTokenAccountsByOwner(
       publicKey,
@@ -59,7 +57,7 @@ export async function getTokenAccounts(walletAddress: string) {
 /**
  * Update wallet data in database
  */
-export async function updateWalletData(walletAddress: string) {
+export async function updateWalletData(walletAddress: PublicKey) {
   try {
     // Get SOL balance
     const solBalance = await getSolanaBalance(walletAddress);
@@ -67,7 +65,7 @@ export async function updateWalletData(walletAddress: string) {
     // Update in database
     await db.update(wallets)
       .set({ solanaBalance: solBalance })
-      .where(eq(wallets.publicKey, walletAddress));
+      .where(eq(wallets.publicKey, walletAddress.toBase58()));
     
     // Get token accounts
     const tokenAccounts = await getTokenAccounts(walletAddress);
@@ -75,7 +73,7 @@ export async function updateWalletData(walletAddress: string) {
     // Get wallet from DB
     const [wallet] = await db.select()
       .from(wallets)
-      .where(eq(wallets.publicKey, walletAddress));
+      .where(eq(wallets.publicKey, walletAddress.toBase58()));
     
     if (!wallet) return;
     
@@ -121,7 +119,7 @@ export async function updateWalletData(walletAddress: string) {
 /**
  * Airdrop SOL to a wallet (devnet only)
  */
-export async function airdropSol(walletAddress: string, amount: number = 1): Promise<string> {
+export async function airdropSol(walletAddress: PublicKey, amount: number = 1): Promise<string> {
   try {
     if (!walletAddress) throw new Error('No wallet address provided');
     

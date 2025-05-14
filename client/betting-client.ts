@@ -28,7 +28,7 @@ export class BettingClient {
 
   constructor(
     address: PublicKey,
-    privateKey: string,
+    keypair: Keypair,
     network: Network = 'testnet',
     customRpcUrl?: string
   ) {
@@ -38,8 +38,6 @@ export class BettingClient {
     this.address = address;
 
 
-    const secretKey = Uint8Array.from([privateKey]);
-    const keypair = Keypair.fromSecretKey(secretKey);
     const wallet = {
       publicKey: keypair.publicKey,
       signAllTransactions: async (txs) => txs.map(tx => { tx.sign(keypair); return tx; }),

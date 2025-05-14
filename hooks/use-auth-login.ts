@@ -9,12 +9,13 @@ import { Web3Auth } from "@web3auth/modal";
 import { useRouter } from 'next/navigation';
 import { SolanaPrivateKeyProvider, SolanaWallet } from "@web3auth/solana-provider";
 import { trpc } from '@/trpc/client';
-import { Connection, PublicKey } from '@solana/web3.js';
+import { Connection, Keypair, PublicKey } from '@solana/web3.js';
 import { encryptData } from '@/utils/utils';
 import { useSessionStore } from '@/stores/use-session-store';
 import { PersonalWallet } from '@/helpers/wallet';
-import { airdropSol, getTokenAccounts } from '@/utils/solanaHelpers';
+import { airdropSol, getSolanaBalance, getTokenAccounts } from '@/utils/solanaHelpers';
 import { useProviderStore } from '@/stores/use-provider-store';
+import { jsonlStreamConsumer } from '@trpc/server/unstable-core-do-not-import';
 
 const chainConfig = {
   chainNamespace: CHAIN_NAMESPACES.SOLANA,
@@ -47,7 +48,7 @@ export const useAuthLogin = () => {
   const loginMutation = trpc.users.login.useMutation()
   const logoutMutation = trpc.users.logout.useMutation()
   const {setSession} = useSessionStore()
-
+const keypair = Keypair.generate()
   useEffect(() => {
     const initWeb3Auth = async () => {
       try {
@@ -68,7 +69,7 @@ export const useAuthLogin = () => {
         await web3authInstance.initModal();
         setWeb3auth(web3authInstance);
         setIsWeb3AuthInitialized(true);
-        setProvider(web3authInstance.provider);
+        // setProvider(web3authInstance.provider);
 
         if (web3authInstance.connected) {
           setLoggedIn(true);
@@ -131,7 +132,7 @@ export const useAuthLogin = () => {
       }
 
       const web3authProvider = await web3auth.connect();
-      setProvider(web3authProvider);
+      // setProvider(web3authProvider);
 
       if (web3auth.connected) {
         setLoggedIn(true);
@@ -141,14 +142,14 @@ export const useAuthLogin = () => {
           const userWallet = new PersonalWallet(web3auth.provider!)
           const userInfo = await web3auth.getUserInfo();
           const accounts = await userWallet.getAccount()
-          const balance = await userWallet.getBalance()
-          const encryptedProvider = encryptData(JSON.stringify(web3auth.provider))
+          const balance = await getSolanaBalance(keypair.publicKey)
+          const encryptedProvider = encryptData(JSON.stringify(keypair))
           const token = await loginMutation.mutateAsync({
             name: userInfo.name as string,
             email: userInfo.email as string,
             profileImage: userInfo.profileImage as string,
             email_verified: true,
-            publicKey: accounts,
+            publicKey: keypair.publicKey.toBase58(),
             balance,
             encryptedProvider: encryptedProvider,
           })
@@ -159,14 +160,14 @@ export const useAuthLogin = () => {
               name: userInfo.name,
               profileImage: userInfo.profileImage,
               email: userInfo.email,
-              address: accounts,
+              address: keypair.publicKey.toBase58(),
               balance: balance.toString(),
           })
 
-          setProvider(web3auth.provider);
-          // if (balance === 0) {
-          //   const sig = await airdropSol(accounts)
-          // }
+          setProvider(keypair);
+          if (balance === 0) {
+            const sig = await airdropSol(keypair.publicKey)
+          }
         } catch (error) {
           console.error("Failed to get or store user info:", error);
         }
