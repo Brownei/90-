@@ -379,7 +379,7 @@ const ClientParticularGamePage: FC<ClientParticularGamePageProps> = ({seletedGam
           onProceed={handleWagerProceed}
           selectedGame={seletedGame}
           escrowAccount={escrowAccount}
-          provider={provider}
+          provider={provider!}
           username={user?.name || "Pkay"}
           insufficientBalance={insufficientBalance}
         />
