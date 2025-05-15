@@ -6,6 +6,8 @@ import Link from 'next/link';
 import { useAuthLogin } from '@/hooks/use-auth-login';
 import { useSession } from 'next-auth/react';
 import { useWallet } from '@solana/wallet-adapter-react';
+import { trpc } from '@/trpc/client';
+import { getSolanaBalance } from '@/utils/solanaHelpers';
 
 const Nav = () => {
   const pathname = usePathname()
@@ -13,6 +15,7 @@ const Nav = () => {
   const user = data?.user
   const router = useRouter();
   const {connect, connected, connecting, publicKey} = useWallet()
+  const walletMutation = trpc.wallets.createANewWallet.useMutation()
   const {
     isLoading,
     logout,
@@ -53,6 +56,13 @@ const Nav = () => {
       // await logout();
       if (!connected) {
         await connectToWallet()
+        const balance = await getSolanaBalance(publicKey!)
+        walletMutation.mutateAsync({
+          email: user.email!,
+          balance,
+          publicKey: publicKey?.toBase58() as string,
+          address: publicKey?.toBase58() as string,
+        })
       }
     } else {
       try {
@@ -61,10 +71,6 @@ const Nav = () => {
         console.error("Authentication error:", error);
       }
     } 
-  };
-
-  const navigateToWallet = () => {
-    router.push('/wallet');
   };
 
   return (
@@ -129,7 +135,7 @@ const Nav = () => {
                   </div>
                 ) : null}
                 <span className='hidden'>{user?.name || 'User'}</span>
-                <span>{connected ? `${publicKey.toBase58().slice(0, 5) + '...'}`: connecting ? 'Connecting...' : 'Connect to Wallet'}</span>
+                <span>{connected ? `${publicKey?.toBase58().slice(0, 5) + '...'}`: connecting ? 'Connecting...' : 'Connect to Wallet'}</span>
               </span>
             ) : (
               <>

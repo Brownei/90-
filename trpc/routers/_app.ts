@@ -4,6 +4,7 @@ import { usersRouter } from './users';
 import { messagesRouter } from './messages';
 import { hubsRouter } from './hubs';
 import { wagersRouter } from './wagers';
+import { walletsRouter } from './wallets';
 
 export const appRouter = createTRPCRouter({
   messages: messagesRouter,
@@ -11,6 +12,7 @@ export const appRouter = createTRPCRouter({
   games: gameRouter,
   hubs: hubsRouter,
   wagers: wagersRouter,
+  wallets: walletsRouter
 });
 // export type definition of API
 export type AppRouter = typeof appRouter;

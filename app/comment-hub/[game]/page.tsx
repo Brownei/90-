@@ -3,7 +3,6 @@ import React from 'react'
 import { Metadata } from 'next'
 import { trpc } from '@/trpc/server';
 import { reverseFormatString } from '@/utils/utils';
-import AuthProvider from '@/components/providers/auth-provider';
 
 // Generate metadata for SEO
 export const metadata: Metadata = {
@@ -23,13 +22,11 @@ async function ParticularGamePage({params}: {
 
   return (
     <main className=' overflow-hidden '>
-      <AuthProvider>
       <ClientParticularGamePage 
         seletedGame={selectedGame} 
         particularGameLiveScores={particularGameLiveScores}
         escrowAccount={escrowAccount[0].address}
       />
-      </AuthProvider>
     </main>
   )
 }
