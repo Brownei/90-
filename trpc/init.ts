@@ -5,24 +5,6 @@ import { cache } from 'react';
 
 export const createTRPCContext = cache(async ({ req }: FetchCreateContextFnOptions) => {
   return {
-    req,
-    // 👇 you can return res-like helpers here
-    setCookie: async (name: string, value: string) => {
-      const session = await cookies()
-      session.set(name, value, {
-        httpOnly: true,
-        sameSite: 'lax',
-        secure: process.env.NODE_ENV === 'production',
-        expires: 60 * 60 * 24 * 7, // 7 days
-      });
-    },
-    deleteCookie: async (name: string) => {
-      const session = await cookies()
-      const currentSession = session.get(name)?.value as string
-      if(currentSession !== undefined) {
-        session.delete(name)
-      }
-    },
   }
 });
 // Avoid exporting the entire t-object

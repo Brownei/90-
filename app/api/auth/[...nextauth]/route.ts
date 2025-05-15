@@ -1,5 +1,9 @@
+import { db, users, wallets } from "@/lib/db";
+import { encryptData } from "@/utils/utils";
+import { eq } from "drizzle-orm";
 import NextAuth, { AuthOptions } from "next-auth";
 import TwitterProvider from "next-auth/providers/twitter";
+import {  cookies } from "next/headers";
 
 // Configure one or more authentication providers
 export const OPTIONS: AuthOptions = {
@@ -13,7 +17,25 @@ export const OPTIONS: AuthOptions = {
   callbacks: {
     async jwt({ token, account, profile }) {
       // Persist the OAuth access_token to the token right after sign in
+      if(profile) {
+        const existingUser = await db.select().from(users).where(eq(users.email, token.email!)).leftJoin(wallets, eq(users.id, wallets.userId))
+        const cookiesStore = await cookies()
+
+        if (existingUser) {
+          cookiesStore.set("session", token.email!)
+        } else {
+          await db.insert(users).values({
+            email: token.email,
+            name: token.name,
+            emailVerified: true,
+            image: token.picture,
+          }).returning({id: users.id, email: users.email, profileImage: users.image, name: users.name})
+
+          cookiesStore.set("session", token.email!)
+        }
+      }
       if (account) {
+        console.log({account})
         token.accessToken = account.access_token;
         token.twitterId = account.providerAccountId;
       }
@@ -21,6 +43,12 @@ export const OPTIONS: AuthOptions = {
     },
     async session({ session, token }) {
       // Send properties to the client
+      session.user = {
+        email: token.email,
+        name: token.name,
+        image: token.picture,
+        twitterId: token.twitterId
+      }
       session.accessToken = token.accessToken as string;
       session.user.twitterId = token.twitterId as string;
       return session;

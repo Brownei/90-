@@ -17,7 +17,7 @@ export default async function ProfileLayout({
   const token = serverCookies.get("session")?.value as string
 
   return (
-    <AuthProvider token={token}>
+    <AuthProvider >
       <Nav />
       {children}
     </AuthProvider>

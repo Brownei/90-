@@ -3,22 +3,15 @@ import { useAtom } from 'jotai';
 import { useAuthStore } from '@/stores/authStore';
 import { CHAIN_NAMESPACES, CustomChainConfig, IProvider, WEB3AUTH_NETWORK, } from "@web3auth/base";
 import { useEffect, useState, } from 'react'
-import { scrolledAtom, providerAtom, loggedInAtom, web3authAtom, isWeb3AuthInitializedAtom, userAtom } from '@/stores/navStore';
+import { scrolledAtom,  loggedInAtom, web3authAtom, isWeb3AuthInitializedAtom, userAtom } from '@/stores/navStore';
 import { useWallet, } from '@solana/wallet-adapter-react';
-import { Web3Auth } from "@web3auth/modal";
 import { useRouter } from 'next/navigation';
 import { SolanaPrivateKeyProvider, SolanaWallet } from "@web3auth/solana-provider";
 import { trpc } from '@/trpc/client';
-import { Connection, Keypair, PublicKey } from '@solana/web3.js';
-import { encryptData } from '@/utils/utils';
 import { useSessionStore } from '@/stores/use-session-store';
-import { PersonalWallet } from '@/helpers/wallet';
-import { airdropSol, getSolanaBalance, getTokenAccounts } from '@/utils/solanaHelpers';
 import { useProviderStore } from '@/stores/use-provider-store';
-import { jsonlStreamConsumer } from '@trpc/server/unstable-core-do-not-import';
-import {useLoginWithEmail, Wallet} from '@privy-io/react-auth';
-import { useLoginWithOAuth } from '@privy-io/react-auth';
-import {useSolanaWallets} from '@privy-io/react-auth/solana';
+import { signIn, useSession } from 'next-auth/react';
+import { WalletConnectWalletName, PhantomWalletName } from '@solana/wallet-adapter-wallets';
 
 const chainConfig = {
   chainNamespace: CHAIN_NAMESPACES.SOLANA,
@@ -40,7 +33,8 @@ export const useAuthLogin = () => {
     setIsAuthenticated,
     isAuthenticated,
   } = useAuthStore();
-  const { connected, connect } = useWallet();
+  const {data} = useSession()
+  const { connected, connect, select, wallet, wallets, publicKey } = useWallet();
   const {provider, setProvider} = useProviderStore();
   const [isLoading, setIsLoading] = useState(false);
   const [user, setUser] = useAtom(userAtom);
@@ -51,55 +45,29 @@ export const useAuthLogin = () => {
   const loginMutation = trpc.users.login.useMutation()
   const logoutMutation = trpc.users.logout.useMutation()
   const {setSession} = useSessionStore()
-  const {sendCode, loginWithCode} = useLoginWithEmail();
-  const {createWallet} = useSolanaWallets();
-
-  const { initOAuth } = useLoginWithOAuth({
-    onComplete: async ({ user, isNewUser  }) => {
-        console.log('User logged in successfully', user);
-        user.google?.name
-        if (user) {
-        console.log(user)
-        const keypair = user.wallet as Wallet
-        keypair.address
-        // const balance = await getSolanaBalance(keypair.publicKey)
-        const encryptedProvider = encryptData(JSON.stringify(keypair))
-        const token = await loginMutation.mutateAsync({
-          name: user.google?.name as string,
-          email: user.google?.email as string,
-          profileImage: user.google?.subject as string,
-          email_verified: true,
-          publicKey: keypair.address,
-          balance: 0,
-          encryptedProvider: encryptedProvider,
-        })
-
-        setSession(token as string)
-
-        setUser({
-            name: user.google?.name as string,
-            email: user.google?.email as string,
-            profileImage: user.google?.subject as string,
-            address: keypair.address,
-            balance: "0",
-        })
-
-        //setProvider(keypair);
-        if (token) {
-          const sig = await airdropSol(keypair.address)
-        } // Perform actions for new users
-        }
-    },
-    onError: (error) => {
-        console.error('Login failed', error);
-    }
-});
-
 
   async function login () {
-    await initOAuth({provider:'google'})
+    if(data?.user === undefined) {
+      setIsLoading(true)
+      try {
+        await signIn('twitter')
+      } catch (error) {
+        console.error(error)
+      } finally {
+        setIsLoading(false)
+        setLoggedIn(true)
+      }
+    } 
   }
 
+  async function connectToWallet() {
+    if(!wallet) {
+      select(PhantomWalletName)
+    }
+
+    await connect()
+    return publicKey?.toBase58()
+  }
 
   useEffect(() => {
     const handleScroll = () => {
@@ -165,6 +133,7 @@ export const useAuthLogin = () => {
     setIsAuthenticated,
     setIsLoading,
     setUser,
-    getUserInfo
+    getUserInfo,
+    connectToWallet,
   }
 }

@@ -5,19 +5,20 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { useAuthLogin } from '@/hooks/use-auth-login';
 import { usePrivy } from '@privy-io/react-auth';
+import { useSession } from 'next-auth/react';
+import { useWallet } from '@solana/wallet-adapter-react';
 
 const Nav = () => {
   const pathname = usePathname()
-  const {ready} = usePrivy()
+  const {data} = useSession()
+  const user = data?.user
   const router = useRouter();
+  const {connect, connected, connecting, publicKey} = useWallet()
   const {
     isLoading,
     logout,
-    connected,
-    user,
-    loggedIn,
-    isWeb3AuthInitialized,
     login,
+    connectToWallet
   } = useAuthLogin();
 
   // State to track scroll position
@@ -49,17 +50,18 @@ const Nav = () => {
 
 
   const handleAuthAction = async () => {
-    if (loggedIn && user !== null) {
+    if (user !== undefined) {
       // await logout();
-    } else if (ready && !loggedIn) {
+      if (!connected) {
+        await connectToWallet()
+      }
+    } else {
       try {
         await login();
       } catch (error) {
         console.error("Authentication error:", error);
       }
-    } else {
-      console.error("Web3Auth is not initialized yet");
-    }
+    } 
   };
 
   const navigateToWallet = () => {
@@ -87,7 +89,7 @@ const Nav = () => {
         </Link>
 
         <div className="flex items-center gap-3">
-          {(loggedIn && user !== null) && (
+          {(user !== undefined) && (
             <Link
               href={'/profile'}
               className={` font-semibold text-[0.8rem] cursor-pointer text-black`}
@@ -96,29 +98,29 @@ const Nav = () => {
             </Link>
           )}
 
-          {(loggedIn && user !== null && connected) && (
-            <Link
-              href={'/wallet'}
-              onClick={navigateToWallet}
-              className={`font-semibold text-[0.8rem] cursor-pointer ${pathname !== '/' ? 'text-black' : 'text-white'}`}
-            >
-              Wallet
-            </Link>
-          )}
+          {/* {(user !== undefined) && ( */}
+          {/*   <button */}
+          {/*     // href={'/wallet'} */}
+          {/*     onClick={async () => await connectToWallet()} */}
+          {/*     className={` font-semibold border border-darkGreen py-2 px-3 rounded-full text-[0.8rem] cursor-pointer text-black`} */}
+          {/*   > */}
+          {/*     {connected ? `${publicKey.toBase58().slice(0, 8) + '...'}`: connecting ? 'Connecting...' : 'Connect to Wallet'} */}
+          {/*   </button> */}
+          {/* )} */}
 
           <button
             onClick={handleAuthAction}
-            disabled={!ready}
+            disabled={isLoading}
             className='bg-darkGreen flex items-center gap-3 py-2 px-3 rounded-full  font-semibold text-white text-[0.8rem] cursor-pointer'
           >
-            {(!ready || isLoading) ? (
+            {(isLoading) ? (
               <span className="flex gap-3 items-center">Loading...</span>
-            ) : (loggedIn && user !== null) ? (
+            ) : (user !== undefined) ? (
               <span className="flex gap-3 items-center">
-                {user?.profileImage ? (
+                {user?.image ? (
                   <div className="h-5 w-5 rounded-full overflow-hidden">
                     <Image
-                      src={user.profileImage}
+                      src={user.image}
                       alt={user.name || 'User'}
                       width={500}
                       height={500}
@@ -127,8 +129,8 @@ const Nav = () => {
                     />
                   </div>
                 ) : null}
-                <span className='hidden lg:inline'>{user?.name || 'User'}</span>
-                <span className='lg:hidden'></span>
+                <span className='hidden'>{user?.name || 'User'}</span>
+                <span>{connected ? `${publicKey.toBase58().slice(0, 5) + '...'}`: connecting ? 'Connecting...' : 'Connect to Wallet'}</span>
               </span>
             ) : (
               <>

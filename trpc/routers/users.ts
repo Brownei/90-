@@ -11,7 +11,7 @@ import { real } from "drizzle-orm/gel-core";
 export const usersRouter = createTRPCRouter({
   logout: baseProcedure
     .mutation(async ({input, ctx}) => {
-      await ctx.deleteCookie('session')
+      // await ctx.deleteCookie('session')
   }),
 
   getEscrowAccount: baseProcedure
@@ -60,7 +60,6 @@ export const usersRouter = createTRPCRouter({
           balance: existingUser[0].wallets?.solanaBalance,
         }))
 
-        await ctx.setCookie('session', token)
 
         return token
       } else {
@@ -100,7 +99,6 @@ export const usersRouter = createTRPCRouter({
           balance: newWallet[0].balance,
         }))
 
-        await ctx.setCookie('session', token)
 
         return token;
       }
