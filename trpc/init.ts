@@ -1,6 +1,5 @@
 import { initTRPC } from '@trpc/server';
 import { FetchCreateContextFnOptions } from '@trpc/server/adapters/fetch';
-import { cookies } from 'next/headers';
 import { cache } from 'react';
 
 export const createTRPCContext = cache(async ({ req }: FetchCreateContextFnOptions) => {
