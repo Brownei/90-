@@ -86,6 +86,7 @@ export const gameRouter = createTRPCRouter({
       const filteredPremierLeagueGames = premierLeagueGames.data.response.matches.filter((match: any) => match.status.started === false)
       const filteredUCLGames = championsGames.data.response.matches.filter((match: any) => match.status.started === false)
       const filteredLaLigaGames = laligaGames.data.response.matches.filter((match: any) => match.status.started === false)
+      console.log({filteredPremierLeagueGames})
 
       allFixtures.push(...filteredPremierLeagueGames, ...filteredUCLGames, ...filteredLaLigaGames)
 

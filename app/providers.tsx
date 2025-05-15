@@ -1,10 +1,7 @@
 "use client";
-
 import { SessionProvider } from "next-auth/react";
 import { TRPCProvider } from "@/trpc/client";
 import { HydrateClient } from "@/trpc/server";
-import dynamic from "next/dynamic";
-import HomeProvider from "@/components/providers/home-provider";
 import SolanaWalletProvider from "./providers/SolanaWalletProvider";
 
 // Dynamically import SolanaWalletProvider to avoid SSR issues

@@ -15,10 +15,11 @@ export const OPTIONS: AuthOptions = {
   callbacks: {
     async jwt({ token, account, profile }) {
       // Persist the OAuth access_token to the token right after sign in
-      if(profile && token.email) {
-        const existingUser = await db.select().from(users).where(eq(users.email, token.email!)).leftJoin(wallets, eq(users.id, wallets.userId))
+      if(profile) {
+        console.log({profile})
+        const existingUser = await db.select().from(users).where(eq(users.email, profile.email!)).leftJoin(wallets, eq(users.id, wallets.userId))
 
-        if (existingUser.length === 0) {
+        if (!existingUser[0]) {
           await db.insert(users).values({
             email: token.email,
             name: token.name,
@@ -30,6 +31,7 @@ export const OPTIONS: AuthOptions = {
 
       if (account) {
         console.log({account})
+        // token.email =
         token.accessToken = account.access_token;
         token.twitterId = account.providerAccountId;
       }
@@ -44,7 +46,6 @@ export const OPTIONS: AuthOptions = {
         twitterId: token.twitterId
       }
       session.accessToken = token.accessToken as string;
-      session.user.twitterId = token.twitterId as string;
       return session;
     },
   },
