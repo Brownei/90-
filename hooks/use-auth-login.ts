@@ -16,6 +16,9 @@ import { PersonalWallet } from '@/helpers/wallet';
 import { airdropSol, getSolanaBalance, getTokenAccounts } from '@/utils/solanaHelpers';
 import { useProviderStore } from '@/stores/use-provider-store';
 import { jsonlStreamConsumer } from '@trpc/server/unstable-core-do-not-import';
+import {useLoginWithEmail, Wallet} from '@privy-io/react-auth';
+import { useLoginWithOAuth } from '@privy-io/react-auth';
+import {useSolanaWallets} from '@privy-io/react-auth/solana';
 
 const chainConfig = {
   chainNamespace: CHAIN_NAMESPACES.SOLANA,
@@ -48,78 +51,54 @@ export const useAuthLogin = () => {
   const loginMutation = trpc.users.login.useMutation()
   const logoutMutation = trpc.users.logout.useMutation()
   const {setSession} = useSessionStore()
-  
-const initWeb3Auth = async () => {
-      setIsLoading(true)
-      try {
-        // Check if client ID exists
-        const clientId = process.env.NEXT_PUBLIC_WEB3AUTH_CLIENT_ID;
-        
-        if (!clientId) {
-          console.error("Web3Auth client ID is missing! Please add NEXT_PUBLIC_WEB3AUTH_CLIENT_ID to your .env.local file");
-          return;
+  const {sendCode, loginWithCode} = useLoginWithEmail();
+  const {createWallet} = useSolanaWallets();
+
+  const { initOAuth } = useLoginWithOAuth({
+    onComplete: async ({ user, isNewUser  }) => {
+        console.log('User logged in successfully', user);
+        user.google?.name
+        if (user) {
+        console.log(user)
+        const keypair = user.wallet as Wallet
+        keypair.address
+        // const balance = await getSolanaBalance(keypair.publicKey)
+        const encryptedProvider = encryptData(JSON.stringify(keypair))
+        const token = await loginMutation.mutateAsync({
+          name: user.google?.name as string,
+          email: user.google?.email as string,
+          profileImage: user.google?.subject as string,
+          email_verified: true,
+          publicKey: keypair.address,
+          balance: 0,
+          encryptedProvider: encryptedProvider,
+        })
+
+        setSession(token as string)
+
+        setUser({
+            name: user.google?.name as string,
+            email: user.google?.email as string,
+            profileImage: user.google?.subject as string,
+            address: keypair.address,
+            balance: "0",
+        })
+
+        //setProvider(keypair);
+        if (token) {
+          const sig = await airdropSol(keypair.address)
+        } // Perform actions for new users
         }
-
-        const web3authInstance = new Web3Auth({
-          clientId,
-          web3AuthNetwork: WEB3AUTH_NETWORK.SAPPHIRE_DEVNET,
-          privateKeyProvider: privateKeyProvider,
-        });
-
-        await web3authInstance.initModal();
-        setWeb3auth(web3authInstance);
-        setIsWeb3AuthInitialized(true);
-        // setProvider(web3authInstance.provider);
-
-        if (web3authInstance.connected) {
-          setLoggedIn(true);
-        }
-      } catch (error) {
-        console.error("Failed to initialize Web3Auth:", error);
-      } finally {
-        setIsLoading(false)
-      }
-    };
+    },
+    onError: (error) => {
+        console.error('Login failed', error);
+    }
+});
 
 
-
-useEffect(() => {
-    const initWeb3Auth = async () => {
-      try {
-        // Check if client ID exists
-        const clientId = process.env.NEXT_PUBLIC_WEB3AUTH_CLIENT_ID;
-        
-        if (!clientId) {
-          console.error("Web3Auth client ID is missing! Please add NEXT_PUBLIC_WEB3AUTH_CLIENT_ID to your .env.local file");
-          return;
-        }
-
-        const web3authInstance = new Web3Auth({
-          clientId,
-          web3AuthNetwork: WEB3AUTH_NETWORK.SAPPHIRE_DEVNET,
-          privateKeyProvider: privateKeyProvider,
-        });
-
-        await web3authInstance.initModal();
-        setWeb3auth(web3authInstance);
-        setIsWeb3AuthInitialized(true);
-        // setProvider(web3authInstance.provider);
-
-        if (web3authInstance.connected) {
-          setLoggedIn(true);
-        }
-      } catch (error) {
-        console.error("Failed to initialize Web3Auth:", error);
-      }
-    };
-
-    initWeb3Auth();
-
-    // Cleanup function
-    return () => {
-      // Add any cleanup if needed
-    };
-  }, []);
+  async function login () {
+    await initOAuth({provider:'google'})
+  }
 
 
   useEffect(() => {
@@ -177,7 +156,7 @@ useEffect(() => {
             email: userInfo.email as string,
             profileImage: userInfo.profileImage as string,
             email_verified: true,
-            publicKey: keypair.publicKey.toBase58(),
+            publicKey: keypair.publicKey,
             balance: 0,
             encryptedProvider: encryptedProvider,
           })

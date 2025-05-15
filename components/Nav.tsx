@@ -4,9 +4,11 @@ import { usePathname, useRouter } from 'next/navigation';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useAuthLogin } from '@/hooks/use-auth-login';
+import { usePrivy } from '@privy-io/react-auth';
 
 const Nav = () => {
   const pathname = usePathname()
+  const {ready} = usePrivy()
   const router = useRouter();
   const {
     isLoading,
@@ -49,7 +51,7 @@ const Nav = () => {
   const handleAuthAction = async () => {
     if (loggedIn && user !== null) {
       // await logout();
-    } else if (isWeb3AuthInitialized && !loggedIn) {
+    } else if (ready && !loggedIn) {
       try {
         await login();
       } catch (error) {
@@ -106,10 +108,10 @@ const Nav = () => {
 
           <button
             onClick={handleAuthAction}
-            disabled={!isWeb3AuthInitialized}
+            disabled={!ready}
             className='bg-darkGreen flex items-center gap-3 py-2 px-3 rounded-full  font-semibold text-white text-[0.8rem] cursor-pointer'
           >
-            {(!isWeb3AuthInitialized || isLoading) ? (
+            {(!ready || isLoading) ? (
               <span className="flex gap-3 items-center">Loading...</span>
             ) : (loggedIn && user !== null) ? (
               <span className="flex gap-3 items-center">

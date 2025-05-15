@@ -119,7 +119,7 @@ export async function updateWalletData(walletAddress: PublicKey) {
 /**
  * Airdrop SOL to a wallet (devnet only)
  */
-export async function airdropSol(publicKey: PublicKey, amount: number = 1): Promise<string> {
+export async function airdropSol(publicKey: string, amount: number = 1): Promise<string> {
   try {
     if (!publicKey) throw new Error('No wallet address provided');
     
@@ -127,7 +127,7 @@ export async function airdropSol(publicKey: PublicKey, amount: number = 1): Prom
     
     // Airdrop SOL to the wallet
     const signature = await connection.requestAirdrop(
-      publicKey,
+      new PublicKey(publicKey),
       amount * LAMPORTS_PER_SOL
     );
     
@@ -135,7 +135,7 @@ export async function airdropSol(publicKey: PublicKey, amount: number = 1): Prom
     await connection.confirmTransaction(signature);
     
     // Update our database
-    await updateWalletData(publicKey);
+    await updateWalletData(new PublicKey(publicKey));
     
     return signature;
   } catch (error) {
