@@ -210,7 +210,7 @@ const ClientParticularGamePage: FC<ClientParticularGamePageProps> = ({seletedGam
     setStakeAmount(stake);
 
     // For demo purposes, we're showing insufficient balance if stake > 5
-    if (stake < 0.5 || newBalance < 0.5) {
+    if (stake < 0.5 || newBalance === 0) {
       setInsufficientBalance(true);
     } else {
       setIsWagerModalOpen(false);

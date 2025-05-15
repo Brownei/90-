@@ -11,7 +11,7 @@ import { getSolanaBalance } from '@/utils/solanaHelpers';
 
 const Nav = () => {
   const pathname = usePathname()
-  const {data} = useSession()
+  const {data, status} = useSession()
   const user = data?.user
   const router = useRouter();
   const {connect, connected, connecting, publicKey} = useWallet()
@@ -119,7 +119,7 @@ const Nav = () => {
             disabled={isLoading}
             className='bg-darkGreen flex items-center gap-3 py-2 px-3 rounded-full  font-semibold text-white text-[0.8rem] cursor-pointer'
           >
-            {(isLoading) ? (
+            {(isLoading || status === 'loading') ? (
               <span className="flex gap-3 items-center">Loading...</span>
             ) : (user !== undefined) ? (
               <span className="flex gap-3 items-center">

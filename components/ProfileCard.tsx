@@ -5,7 +5,8 @@ import Image from 'next/image';
 import { useAuth } from '@/utils/useAuth';
 import { trpc } from '@/trpc/client';
 import { useAuthLogin } from '@/hooks/use-auth-login';
-import { useSession } from 'next-auth/react';
+import { signIn, signOut, useSession } from 'next-auth/react';
+import { sign } from 'crypto';
 
 interface ProfileCardProps {
   className?: string;
@@ -17,6 +18,10 @@ const ProfileCard: React.FC<ProfileCardProps> = ({ className = '' }) => {
   //   { userId: user?.id },
   //   { enabled: isAuthenticated && !!user?.id }
   // );
+
+  async function logout() {
+    await signOut()
+  }
 
   if (status === 'loading') {
     return (
@@ -62,7 +67,7 @@ const ProfileCard: React.FC<ProfileCardProps> = ({ className = '' }) => {
 
        
         <button
-          onClick={logout}
+          onClick={async () => await logout()}
           className="bg-red-600 text-white px-4 py-2 rounded-md text-sm hover:bg-red-700 transition"
         >
           Logout

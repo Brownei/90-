@@ -9,11 +9,11 @@ import { redirect } from 'next/navigation';
 export default async function CommentHub() {
   const fixturedGames = await trpc.games.getAllFixtures()
   const liveGames = await trpc.games.liveMatches()
-  const session = await getServerSession(OPTIONS)
-
-  if (session === null) {
-    redirect('/')
-  }
+  // const session = await getServerSession(OPTIONS)
+  //
+  // if (session === null) {
+  //   redirect('/')
+  // }
 
   return (
     <main className='pt-[60px] mb-[500px]'>
