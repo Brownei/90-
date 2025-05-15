@@ -21,7 +21,6 @@ import { allMessagesAtom } from '@/stores/navStore'
 import { getSolanaBalance } from '@/utils/solanaHelpers'
 import { trpc } from '@/trpc/client'
 import { useProviderStore } from '@/stores/use-provider-store'
-import SolanaRpc from '@/client/solana-rpc'
 
 type ClientParticularGamePageProps  = {
   seletedGame: any
@@ -378,7 +377,7 @@ const ClientParticularGamePage: FC<ClientParticularGamePageProps> = ({seletedGam
           }}
           onProceed={handleWagerProceed}
           selectedGame={seletedGame}
-          escrowAccount={escrowAccount}
+          escrowAccount={escrowAccount ? escrowAccount : ""}
           username={user?.name || "Pkay"}
           insufficientBalance={insufficientBalance}
         />
