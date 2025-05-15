@@ -4,7 +4,6 @@ import { usePathname, useRouter } from 'next/navigation';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useAuthLogin } from '@/hooks/use-auth-login';
-import { usePrivy } from '@privy-io/react-auth';
 import { useSession } from 'next-auth/react';
 import { useWallet } from '@solana/wallet-adapter-react';
 
