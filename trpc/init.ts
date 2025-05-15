@@ -3,7 +3,7 @@ import { FetchCreateContextFnOptions } from '@trpc/server/adapters/fetch';
 import { cache } from 'react';
 
 export const createTRPCContext = cache(async ({ req }: FetchCreateContextFnOptions) => {
-  return req
+  return {req}
 });
 // Avoid exporting the entire t-object
 // since it's not very descriptive.
