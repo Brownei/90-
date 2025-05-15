@@ -21,6 +21,7 @@ import { allMessagesAtom } from '@/stores/navStore'
 import { getSolanaBalance } from '@/utils/solanaHelpers'
 import { trpc } from '@/trpc/client'
 import { useProviderStore } from '@/stores/use-provider-store'
+import { useSession } from 'next-auth/react'
 
 type ClientParticularGamePageProps  = {
   seletedGame: any
@@ -112,7 +113,7 @@ const ClientParticularGamePage: FC<ClientParticularGamePageProps> = ({seletedGam
   };
 
   // Wager state
-  const {user} = useAuthLogin()
+  const {data: user} = useSession()
   const [isWagerModalOpen, setIsWagerModalOpen] = useState(false);
   const [isFundModalOpen, setIsFundModalOpen] = useState(false);
   const [isConfirmationModalOpen, setIsConfirmationModalOpen] = useState(false);
@@ -378,7 +379,7 @@ const ClientParticularGamePage: FC<ClientParticularGamePageProps> = ({seletedGam
           onProceed={handleWagerProceed}
           selectedGame={seletedGame}
           escrowAccount={escrowAccount ? escrowAccount : ""}
-          username={user?.name || "Pkay"}
+          username={user?.user.name || "Pkay"}
           insufficientBalance={insufficientBalance}
         />
 

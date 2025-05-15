@@ -9,6 +9,7 @@ import { useWallet } from '@solana/wallet-adapter-react';
 import {  Keypair, PublicKey } from '@solana/web3.js';
 import { eq } from 'drizzle-orm';
 import { useAtom } from 'jotai';
+import { useSession } from 'next-auth/react';
 import React, {  useState } from 'react';
 
 interface WagerModalProps {
@@ -31,8 +32,8 @@ const WagerModal: React.FC<WagerModalProps> = ({
   insufficientBalance,
 }) => {
   const [wagerCondition, setWagerCondition] = useState('');
-  const { publicKey,} = useWallet()
-  const {user} = useAuthLogin()
+  const { data: user} = useSession()
+  const { publicKey} = useWallet()
   const bettingClient = new BettingClient(publicKey!)
   const [stakeAmount, setStakeAmount] = useState('');
   const [forUsername, setForUsername] = useState(username);
@@ -44,22 +45,20 @@ const WagerModal: React.FC<WagerModalProps> = ({
 
   const handleProceed = async (home: string, away: string, hubId: number, startTime: number) => {
     if (wagerCondition && stakeAmount && escrowAccount) {
-      // onProceed(wagerCondition, parseFloat(stakeAmount));
       const transaction = await bettingClient.initialize(2)
-      // console.log(transaction)
 
       const newMatchTx = await bettingClient.createMatch(home, away, String(hubId), startTime)
       const betTx = await bettingClient.placeBet(
         String(hubId), 
         Number(stakeAmount), 
         wagerCondition, 
-        new PublicKey(user?.address!), 
+        publicKey!, 
         new PublicKey(escrowAccount)
       )
 
       await wagerMutation.mutateAsync({
         condition: wagerCondition,
-        for: Number(user?.id!),
+        for: Number(user?.user.twitterId!),
         amount: Number(stakeAmount),
         hubId,
       })
@@ -125,7 +124,7 @@ const WagerModal: React.FC<WagerModalProps> = ({
             <input 
               type="text" 
               className="w-full text-sm outline-none"
-              placeholder="$10"
+              placeholder="1 SOL"
               value={stakeAmount}
               onChange={(e) => {
                 const val = e.target.value.replace(/[^0-9.]/g, '');

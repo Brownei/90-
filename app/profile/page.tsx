@@ -9,28 +9,23 @@ import { useWallet } from '@solana/wallet-adapter-react';
 import { useAuthLogin } from '@/hooks/use-auth-login';
 import { SolanaWallet } from '@web3auth/solana-provider';
 import { IProvider } from '@web3auth/base';
+import { useSession } from 'next-auth/react';
 
 const ProfilePage = () => {
   const { } = useWallet();
+  const {data: user} = useSession()
   const router = useRouter();
   const { loggedIn, provider, isLoading } = useAuthLogin();
   const [tweetText, setTweetText] = React.useState('');
   const [isSubmitting, setIsSubmitting] = React.useState(false);
   // const postTweet = trpc.twitter.tweet.useMutation();
-  const solanaWallet = new SolanaWallet(provider as IProvider)
-
-  async function getAccountAddress() {
-    const accounts = await solanaWallet.requestAccounts()
-    
-    return accounts[0];
-  }
 
   React.useEffect(() => {
     // If not authenticated and not loading, redirect to home
-    if (!isLoading && !loggedIn) {
+    if (user?.user === undefined) {
       router.push('/');
     }
-  }, [loggedIn, isLoading, router]);
+  }, [user]);
 
   const handleTweetSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -59,7 +54,7 @@ const ProfilePage = () => {
     );
   }
 
-  if (!loggedIn) {
+  if (user?.user === undefined) {
     return null; // Will redirect in the useEffect
   }
 

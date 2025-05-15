@@ -30,7 +30,7 @@ const Carousel = ({
   }, [emblaApi]);
 
   const {data} = useSession()
-  const { login, loggedIn } = useAuthLogin();
+  const { login } = useAuthLogin();
 
   async function launchNewHub(urlRoute: string, home: string, away: string, startTime: string, awayScore: number, homeScore: number) {
     if (data?.user !== undefined) {

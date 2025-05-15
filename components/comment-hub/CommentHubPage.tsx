@@ -25,8 +25,8 @@ const CommentHubPage: FC<CommentHubPageProps> = ({fixturedGames, liveGames}) => 
   const { selected, setSelected } = useTabsStore()
   const [isLoading, setIsLoading] = React.useState(false)
   const [query, setQuery] = React.useState("")
-  const [filteredGames, setFilteredGames] = React.useState(liveGames)
-  const [filteredUpcomingGames, setFilteredUpcomingGames] = React.useState(fixturedGames)
+  const [filteredGames, setFilteredGames] = React.useState(liveGames ? liveGames : [])
+  const [filteredUpcomingGames, setFilteredUpcomingGames] = React.useState(fixturedGames ? fixturedGames : [])
 
   // console.log({ liveGames, fixturedGames })
 

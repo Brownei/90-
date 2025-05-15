@@ -4,6 +4,7 @@ import { db, tokens, users, wallets } from "@/lib/db";
 import { eq } from "drizzle-orm";
 import { getTokenAccounts } from "@/utils/solanaHelpers";
 import { PublicKey } from "@solana/web3.js";
+import { TRPCError } from "@trpc/server";
 
 export const walletsRouter = createTRPCRouter({
   createANewWallet: baseProcedure
@@ -54,7 +55,10 @@ export const walletsRouter = createTRPCRouter({
           return newWallet;
         }
       } else {
-        throw new Error('No user like this')
+        throw new TRPCError({
+          code: 'NOT_FOUND',
+          message: 'No user like this'
+        })
       }
   })
 })

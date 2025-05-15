@@ -3,7 +3,7 @@ import { baseProcedure, createTRPCRouter } from '../init';
 import { externalFootballApi, externalGetTeamInfoApi, formatDate, getTomorrowDate } from '@/utils/utils';
 import { AxiosError } from 'axios';
 import toast from 'react-hot-toast';
-// import { twitterRouter } from './twitter';
+import { TRPCError } from '@trpc/server';
 
 export const gameRouter = createTRPCRouter({
   popularLeagues: baseProcedure
@@ -34,12 +34,19 @@ export const gameRouter = createTRPCRouter({
 
   liveMatches: baseProcedure
     .query(async () => {
-      const allowedLeagueIds = [47, 87, 42];
-      const allLiveGames = await externalFootballApi('football-current-live')
-      const filteredGames = allLiveGames.data.response.live.filter((game: any) => allowedLeagueIds.includes(game.leagueId))
+      try {
+        const allowedLeagueIds = [47, 87, 42];
+        const allLiveGames = await externalFootballApi('football-current-live')
+        const filteredGames = allLiveGames.data.response.live.filter((game: any) => allowedLeagueIds.includes(game.leagueId))
 
-      // return allLiveGames.data.response.live;
-      return filteredGames;
+        // return allLiveGames.data.response.live;
+        return filteredGames;
+      } catch(error) {
+        throw new TRPCError({
+          code: 'BAD_REQUEST',
+          message: 'No data',
+        })
+      }
     }),
 
   getParticularLiveMatches: baseProcedure
@@ -86,7 +93,6 @@ export const gameRouter = createTRPCRouter({
       const filteredPremierLeagueGames = premierLeagueGames.data.response.matches.filter((match: any) => match.status.started === false)
       const filteredUCLGames = championsGames.data.response.matches.filter((match: any) => match.status.started === false)
       const filteredLaLigaGames = laligaGames.data.response.matches.filter((match: any) => match.status.started === false)
-      console.log({filteredPremierLeagueGames})
 
       allFixtures.push(...filteredPremierLeagueGames, ...filteredUCLGames, ...filteredLaLigaGames)
 

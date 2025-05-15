@@ -17,7 +17,7 @@ async function ParticularGamePage({params}: {
   const selectedGame = await trpc.hubs.getAParticularHub({name: game})
   const [home, away] = reverseFormatString(game).split("Vs")
   const particularGameLiveScores = await trpc.games.getParticularLiveMatches({home: home.trim().toLowerCase(), away: away.trim().toLowerCase()})
-  const escrowAccount = await trpc.users.getEscrowAccount()
+  // const escrowAccount = await trpc.users.getEscrowAccount()
   
 
   return (
@@ -25,7 +25,7 @@ async function ParticularGamePage({params}: {
       <ClientParticularGamePage 
         seletedGame={selectedGame} 
         particularGameLiveScores={particularGameLiveScores}
-        escrowAccount={escrowAccount[0].address}
+        escrowAccount={"Aes9enmjitXFojjRVTZySH9DXVmkHA78ExwM4r4jXmy6"}
       />
     </main>
   )

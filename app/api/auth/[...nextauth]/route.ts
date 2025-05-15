@@ -17,16 +17,20 @@ export const OPTIONS: AuthOptions = {
       // Persist the OAuth access_token to the token right after sign in
       if(profile) {
         console.log({profile})
-        const existingUser = await db.select().from(users).where(eq(users.email, profile.email!)).leftJoin(wallets, eq(users.id, wallets.userId))
+        const existingUser = await db.select({id: users.id}).from(users).where(eq(users.email, profile.email!)).leftJoin(wallets, eq(users.id, wallets.userId))
 
         if (!existingUser[0]) {
-          await db.insert(users).values({
-            email: token.email,
-            name: token.name,
+          const newUser = await db.insert(users).values({
+            email: profile.email,
+            name: profile.name,
             emailVerified: true,
             image: token.picture,
           }).returning({id: users.id, email: users.email, profileImage: users.image, name: users.name})
-        } 
+
+          token.userId = newUser[0].id
+        } else {
+          token.userId = existingUser[0].id
+        }
       }
 
       if (account) {
@@ -43,7 +47,7 @@ export const OPTIONS: AuthOptions = {
         email: token.email,
         name: token.name,
         image: token.picture,
-        twitterId: token.twitterId
+        twitterId: String(token.userId),
       }
       session.accessToken = token.accessToken as string;
       return session;

@@ -115,7 +115,7 @@ export async function externalFootballApi(endpoint: string): Promise<APIResponse
   if (!apiKey || !apiHost) {
     return {
       success: false,
-      error: 'Missing API credentials in environment variables.'
+      error: 'Missing API credentials in environment variables.',
     };
   }
 
@@ -124,32 +124,47 @@ export async function externalFootballApi(endpoint: string): Promise<APIResponse
     url: `https://free-api-live-football-data.p.rapidapi.com/${endpoint}`,
     headers: {
       'x-rapidapi-key': apiKey,
-      'x-rapidapi-host': apiHost
-    }
+      'x-rapidapi-host': apiHost,
+    },
   };
 
-  try {
-    const { data, status } = await axios.request(options);
+  let retries = 3;
+  while (retries > 0) {
+    try {
+      const { data, status } = await axios.request(options);
+      return {
+        success: status === 200,
+        data,
+      };
+    } catch (err) {
+      if (axios.isAxiosError(err)) {
+        if (err.response?.status === 429) {
+          const retryAfter = parseInt(err.response.headers['retry-after'] || '1', 10);
+          console.warn(`Rate limited. Retrying in ${retryAfter} seconds...`);
+          await new Promise((res) => setTimeout(res, retryAfter * 1000));
+          retries--;
+          continue;
+        }
 
-    return {
-      success: status === 200,
-      data
-    };
-  } catch (err) {
-    if (err instanceof AxiosError) {
-      console.error('Axios error:', err.message);
+        console.error('Axios error:', err.message);
+        return {
+          success: false,
+          error: err.message,
+        };
+      }
+
+      console.error('Unknown error:', err);
       return {
         success: false,
-        error: err.message
+        error: 'An unexpected error occurred.',
       };
     }
-
-    console.error('Unknown error:', err);
-    return {
-      success: false,
-      error: 'An unexpected error occurred.'
-    };
   }
+
+  return {
+    success: false,
+    error: 'Max retries exceeded due to rate limiting.',
+  };
 }
 
 const ALGORITHM = "aes-256-cbc";
