@@ -10,6 +10,7 @@ import { useRouter } from "next/navigation";
 import { useAuthLogin } from "@/hooks/use-auth-login";
 import { toast } from "react-hot-toast";
 import { trpc } from "@/trpc/client";
+import { useSession } from "next-auth/react";
 
 const LiveCarousel = ({
   tabs,
@@ -28,10 +29,11 @@ const LiveCarousel = ({
     }
   }, [emblaApi]);
 
+  const {data} = useSession()
   const { login, loggedIn } = useAuthLogin();
 
   async function launchNewHub(urlRoute: string, home: string, away: string, startTime: string, homeScore: number, awayScore: number) {
-    if (loggedIn) {
+    if (data?.user !== undefined) {
       toast.success("Launching the hub");
 
       await launchNewHubMutation.mutateAsync({
@@ -52,7 +54,7 @@ const LiveCarousel = ({
   } 
 
   function joinAHub(urlRoute: string) {
-    if (loggedIn) {
+    if (data?.user !== undefined) {
       toast.success("Joining the hub");
       router.push(`/comment-hub/${urlRoute}`);
     } else {
