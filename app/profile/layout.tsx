@@ -13,14 +13,11 @@ export default async function ProfileLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const serverCookies = await cookies()
-  const token = serverCookies.get("session")?.value as string
-
   return (
-    <AuthProvider >
-      <Nav />
-      {children}
-    </AuthProvider>
+      <>
+          <Nav />
+        {children}
+    </>
   );
 }
 

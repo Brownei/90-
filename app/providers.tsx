@@ -15,18 +15,15 @@ import SolanaWalletProvider from "./providers/SolanaWalletProvider";
 
 interface ProvidersProps {
   children: React.ReactNode;
-  token: string;
 }
 
-export function Providers({ children, token }: ProvidersProps) {
+export function Providers({ children, }: ProvidersProps) {
   return (
       <SessionProvider>
       <TRPCProvider>
         {/* <HydrateClient> */}
           <SolanaWalletProvider>
-          <HomeProvider >
             {children}
-          </HomeProvider>
           </SolanaWalletProvider>
         {/* </HydrateClient> */}
       </TRPCProvider>
