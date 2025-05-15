@@ -56,8 +56,9 @@ const Nav = () => {
       // await logout();
       if (!connected) {
         await connectToWallet()
-        const balance = await getSolanaBalance(publicKey!)
-        walletMutation.mutateAsync({
+      } else {
+        const balance = await getSolanaBalance(publicKey!.toBase58())
+        await walletMutation.mutateAsync({
           email: user.email!,
           balance,
           publicKey: publicKey?.toBase58() as string,

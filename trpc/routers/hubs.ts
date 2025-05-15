@@ -3,6 +3,7 @@ import { baseProcedure, createTRPCRouter } from "../init";
 import { comments, db, hubs, teams, users, wagers, wallets } from "@/lib/db";
 import { and, eq, name } from "drizzle-orm";
 import { encryptData } from "@/utils/utils";
+import { TRPCError } from "@trpc/server";
 
 export const hubsRouter = createTRPCRouter({
   launchHubs: baseProcedure
@@ -56,6 +57,14 @@ export const hubsRouter = createTRPCRouter({
         .leftJoin(teams, eq(teams.hubId, hubs.id))
         .leftJoin(comments, eq(comments.hubId, hubs.id))
         .leftJoin(wagers, eq(wagers.hubId, hubs.id))
+
+      if (!hub[0]) {
+        // You can either throw an error or return a fallback value
+        throw new TRPCError({
+          code: 'NOT_FOUND',
+          message: 'Hub not found',
+        });
+      }
 
       return hub[0];
     }),

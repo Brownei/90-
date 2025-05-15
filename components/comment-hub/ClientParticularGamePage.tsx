@@ -22,6 +22,7 @@ import { getSolanaBalance } from '@/utils/solanaHelpers'
 import { trpc } from '@/trpc/client'
 import { useProviderStore } from '@/stores/use-provider-store'
 import { useSession } from 'next-auth/react'
+import { useWallet } from '@solana/wallet-adapter-react'
 
 type ClientParticularGamePageProps  = {
   seletedGame: any
@@ -114,6 +115,7 @@ const ClientParticularGamePage: FC<ClientParticularGamePageProps> = ({seletedGam
 
   // Wager state
   const {data: user} = useSession()
+  const {publicKey, connected} = useWallet()
   const [isWagerModalOpen, setIsWagerModalOpen] = useState(false);
   const [isFundModalOpen, setIsFundModalOpen] = useState(false);
   const [isConfirmationModalOpen, setIsConfirmationModalOpen] = useState(false);
@@ -129,7 +131,7 @@ const ClientParticularGamePage: FC<ClientParticularGamePageProps> = ({seletedGam
   console.log({provider: provider, user})
   
     useEffect(() => {
-  if (user !== null) {
+  if (user?.user !== undefined && connected) {
     const lastRunKey = 'last-balance-check';
     const now = Date.now();
     const lastRun = Number(localStorage.getItem(lastRunKey));
@@ -138,7 +140,8 @@ const ClientParticularGamePage: FC<ClientParticularGamePageProps> = ({seletedGam
 
     if (!lastRun || now - lastRun > TWO_MINUTES) {
       const getB = async () => {
-        const userBalance = await getSolanaBalance(provider?.publicKey!);
+        const userBalance = await getSolanaBalance(publicKey!.toBase58());
+          console.log({userBalance})
 
         // await updateWalletData(user?.address!);
         setNewBalance(userBalance)

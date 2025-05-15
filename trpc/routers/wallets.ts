@@ -2,9 +2,10 @@ import { z } from "zod";
 import { baseProcedure, createTRPCRouter } from "../init";
 import { db, tokens, users, wallets } from "@/lib/db";
 import { eq } from "drizzle-orm";
-import { getTokenAccounts } from "@/utils/solanaHelpers";
+import { airdropSol, getTokenAccounts } from "@/utils/solanaHelpers";
 import { PublicKey } from "@solana/web3.js";
 import { TRPCError } from "@trpc/server";
+import toast from "react-hot-toast";
 
 export const walletsRouter = createTRPCRouter({
   createANewWallet: baseProcedure
@@ -52,6 +53,10 @@ export const walletsRouter = createTRPCRouter({
             })
           }
 
+          const sig = await airdropSol(publicKey)
+          if(sig) {
+            toast('1 SOL has been sent to your account')
+          }
           return newWallet;
         }
       } else {

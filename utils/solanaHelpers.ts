@@ -11,10 +11,11 @@ const DEFAULT_RPC_ENDPOINT = process.env.NEXT_PUBLIC_SOLANA_RPC_URL || 'https://
 /**
  * Gets the SOL balance for a wallet
  */
-export async function getSolanaBalance(walletAddress: PublicKey): Promise<number> {
+export async function getSolanaBalance(walletAddress: string): Promise<number> {
   try {
+    const publicKey = new PublicKey(walletAddress)
     const connection = new Connection(clusterApiUrl('testnet'), 'confirmed');
-    const balance = await connection.getBalance(walletAddress);
+    const balance = await connection.getBalance(publicKey);
     return balance / LAMPORTS_PER_SOL;
   } catch (error) {
     console.error('Error fetching Solana balance:', error);
@@ -57,23 +58,24 @@ export async function getTokenAccounts(publicKey: PublicKey) {
 /**
  * Update wallet data in database
  */
-export async function updateWalletData(walletAddress: PublicKey) {
+export async function updateWalletData(walletAddress: string) {
   try {
+    const publicKey = new PublicKey(walletAddress)
     // Get SOL balance
     const solBalance = await getSolanaBalance(walletAddress);
     
     // Update in database
     await db.update(wallets)
       .set({ solanaBalance: solBalance })
-      .where(eq(wallets.publicKey, walletAddress.toBase58()));
+      .where(eq(wallets.publicKey, walletAddress));
     
     // Get token accounts
-    const tokenAccounts = await getTokenAccounts(walletAddress);
+    const tokenAccounts = await getTokenAccounts(publicKey);
     
     // Get wallet from DB
     const [wallet] = await db.select()
       .from(wallets)
-      .where(eq(wallets.publicKey, walletAddress.toBase58()));
+      .where(eq(wallets.publicKey, walletAddress));
     
     if (!wallet) return;
     
@@ -135,7 +137,7 @@ export async function airdropSol(publicKey: string, amount: number = 1): Promise
     await connection.confirmTransaction(signature);
     
     // Update our database
-    await updateWalletData(new PublicKey(publicKey));
+    await updateWalletData(publicKey);
     
     return signature;
   } catch (error) {

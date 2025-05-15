@@ -10,6 +10,7 @@ import {  Keypair, PublicKey } from '@solana/web3.js';
 import { eq } from 'drizzle-orm';
 import { useAtom } from 'jotai';
 import { useSession } from 'next-auth/react';
+import { connected } from 'process';
 import React, {  useState } from 'react';
 
 interface WagerModalProps {
@@ -33,7 +34,7 @@ const WagerModal: React.FC<WagerModalProps> = ({
 }) => {
   const [wagerCondition, setWagerCondition] = useState('');
   const { data: user} = useSession()
-  const { publicKey} = useWallet()
+  const { publicKey, connected } = useWallet()
   const bettingClient = new BettingClient(publicKey!)
   const [stakeAmount, setStakeAmount] = useState('');
   const [forUsername, setForUsername] = useState(username);
@@ -44,7 +45,7 @@ const WagerModal: React.FC<WagerModalProps> = ({
   if (!isOpen) return null;
 
   const handleProceed = async (home: string, away: string, hubId: number, startTime: number) => {
-    if (wagerCondition && stakeAmount && escrowAccount) {
+    if (wagerCondition && stakeAmount && escrowAccount && connected) {
       const transaction = await bettingClient.initialize(2)
 
       const newMatchTx = await bettingClient.createMatch(home, away, String(hubId), startTime)
@@ -140,7 +141,7 @@ const WagerModal: React.FC<WagerModalProps> = ({
 
         <div className="flex justify-end">
           <button 
-            className="bg-green-700 disabled:bg-gray-700 text-white px-4 py-2 rounded cursor-pointer"
+            className={`bg-green-700 disabled:bg-gray-700 text-white px-4 py-2 rounded ${connected ? 'cursor-pointer' : 'cursor-none'}`}
             onClick={
               async () => await handleProceed(
                 selectedGame.team.home,
@@ -149,7 +150,7 @@ const WagerModal: React.FC<WagerModalProps> = ({
                 selectedGame.team.startTime
               )
             }
-            disabled={!wagerCondition || !stakeAmount}
+            disabled={!wagerCondition || !stakeAmount || !connected}
           >
             Book
           </button>
