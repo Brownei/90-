@@ -15,10 +15,10 @@ export const OPTIONS: AuthOptions = {
   callbacks: {
     async jwt({ token, account, profile }) {
       // Persist the OAuth access_token to the token right after sign in
-      if(profile) {
+      if(profile && token.email) {
         const existingUser = await db.select().from(users).where(eq(users.email, token.email!)).leftJoin(wallets, eq(users.id, wallets.userId))
 
-        if (!existingUser) {
+        if (existingUser.length === 0) {
           await db.insert(users).values({
             email: token.email,
             name: token.name,
