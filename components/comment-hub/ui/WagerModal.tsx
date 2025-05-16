@@ -13,6 +13,7 @@ import { useSession } from 'next-auth/react';
 import { connected } from 'process';
 import React, {  useState } from 'react';
 import toast from 'react-hot-toast';
+import { start } from 'repl';
 
 interface WagerModalProps {
   isOpen: boolean;
@@ -48,12 +49,21 @@ const WagerModal: React.FC<WagerModalProps> = ({
 
   const handleProceed = async (home: string, away: string, hubId: number, startTime: number) => {
     if (wagerCondition && stakeAmount && escrowAccount && connected) {
+      const date = new Date(startTime)
+      const formattedTime = date.toLocaleTimeString("en-GB", {
+        hour: "2-digit",
+        minute: "2-digit",
+        hour12: false,
+      }); // e.g., "14:30"
+
+      const numericTime = parseInt(formattedTime.replace(":", ""), 10);
       setIsLoading(true)
       try {
         toast.loading('This might take a while.....')
-        const transaction = await bettingClient.initialize(2)
+        // const transaction = await bettingClient.initialize(2)
 
-        const newMatchTx = await bettingClient.createMatch(home, away, String(hubId), startTime)
+        const newMatchTx = await bettingClient.createMatch(home, away, String(hubId), numericTime)
+        console.log({newMatchTx})
         if (newMatchTx) {
           const betTx = await bettingClient.placeBet(
             String(hubId), 
@@ -63,6 +73,7 @@ const WagerModal: React.FC<WagerModalProps> = ({
             new PublicKey(escrowAccount)
           )
 
+          console.log({betTx})
           if(betTx) {  
             await wagerMutation.mutateAsync({
               condition: wagerCondition,
@@ -71,7 +82,7 @@ const WagerModal: React.FC<WagerModalProps> = ({
               hubId,
             })
           }
-          console.log({newMatchTx, betTx, transaction})
+          // console.log({newMatchTx, betTx, transaction})
           toast.success('Wager created')
         }
       } catch (error) {
@@ -155,7 +166,7 @@ const WagerModal: React.FC<WagerModalProps> = ({
 
         <div className="flex justify-end">
           <button 
-            className={`bg-green-700 disabled:bg-gray-700 text-white px-4 py-2 rounded ${connected ? 'cursor-pointer' : 'cursor-none'}`}
+            className={`bg-green-700 disabled:bg-gray-700 text-white px-4 py-2 rounded`}
             onClick={
               async () => await handleProceed(
                 selectedGame.team.home,
@@ -164,9 +175,9 @@ const WagerModal: React.FC<WagerModalProps> = ({
                 selectedGame.team.startTime
               )
             }
-            disabled={!wagerCondition || !stakeAmount || !connected || isLoading}
+            disabled={!wagerCondition || !stakeAmount || isLoading}
           >
-            ${isLoading ? 'Booking...' : 'Book'}
+            {isLoading ? 'Booking...' : !connected ? 'Connect to wallet' : 'Book'}
           </button>
         </div>
         

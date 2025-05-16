@@ -16,6 +16,7 @@ interface ProfileCardProps {
 
 const ProfileCard: React.FC<ProfileCardProps> = ({ className = '' }) => {
   const { data: user, status} = useSession();
+  const {connected} = useWallet()
   const {publicKey} = useWallet()
   const [balance, setBalance] = useState(0)
   // const { data: twitterUsrInfo, isLoading: isLoadingTwitterInfo } = trpc.twitter.getUserInfo.useQuery(
@@ -79,7 +80,9 @@ const ProfileCard: React.FC<ProfileCardProps> = ({ className = '' }) => {
         )}
 
         <h2 className="text-xl font-bold mb-1">{user?.user.name || 'User'}</h2>
-        <h2 className='flex text-xl font-bold'>Balance: {balance} SOL</h2>
+        {connected && (
+          <h2 className='flex text-xl font-bold'>Balance: {balance} SOL</h2>
+        )}
 
        
         <button

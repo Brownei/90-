@@ -3,7 +3,7 @@ import { Program, Provider, web3, BN, AnchorProvider, Wallet } from '@project-se
 import { TOKEN_PROGRAM_ID } from '@solana/spl-token';
 // @ts-ignore
 import BettingIDL from './betting.json';
-import { AnchorWallet, useConnection, useWallet } from '@solana/wallet-adapter-react';
+import { AnchorWallet, useWallet } from '@solana/wallet-adapter-react';
 
 // Define the network and program ID
 export type Network = 'devnet' | 'testnet' | 'mainnet';
@@ -33,12 +33,12 @@ export class BettingClient {
     customRpcUrl?: string
   ) {
     // Set up connection
-    // const rpcUrl = customRpcUrl || RPC_ENDPOINTS[network];
-    const {connection} = useConnection()
-    const wallet = useWallet()
-    this.connection = connection;
+    const rpcUrl = customRpcUrl || RPC_ENDPOINTS[network];
+    this.connection = new Connection(rpcUrl, 'confirmed');
     this.address = address;
 
+
+    const wallet = useWallet()
     const provider = new AnchorProvider(this.connection, wallet as AnchorWallet, {
       preflightCommitment: 'processed',
     });
