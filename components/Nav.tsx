@@ -7,7 +7,9 @@ import { useAuthLogin } from '@/hooks/use-auth-login';
 import { useSession } from 'next-auth/react';
 import { useWallet } from '@solana/wallet-adapter-react';
 import { trpc } from '@/trpc/client';
-import { getSolanaBalance } from '@/utils/solanaHelpers';
+import { airdropSol, getSolanaBalance } from '@/utils/solanaHelpers';
+import toast from 'react-hot-toast';
+import { PublicKey } from '@solana/web3.js';
 
 const Nav = () => {
   const pathname = usePathname()
@@ -56,14 +58,27 @@ const Nav = () => {
       // await logout();
       if (!connected) {
         await connectToWallet()
-      } else {
-        const balance = await getSolanaBalance(publicKey!.toBase58())
-        await walletMutation.mutateAsync({
-          email: user.email!,
-          balance,
-          publicKey: publicKey?.toBase58() as string,
-          address: publicKey?.toBase58() as string,
-        })
+        await new Promise((res) => setTimeout(res, 500));
+      } 
+
+      if(publicKey) {
+        try {
+          const balance = await getSolanaBalance(publicKey.toBase58());
+
+          if (balance === 0) {
+            const sig = await airdropSol(publicKey.toBase58());
+            if (sig) toast("1 SOL has been sent to your account");
+          }
+
+          await walletMutation.mutateAsync({
+            email: user.email!,
+            balance,
+            publicKey: publicKey.toBase58(),
+            address: publicKey.toBase58(),
+          });
+        } catch (err) {
+          console.error("Error in wallet setup:", err);
+        }      
       }
     } else {
       try {
@@ -71,6 +86,8 @@ const Nav = () => {
       } catch (error) {
         console.error("Authentication error:", error);
       }
+
+      return;
     } 
   };
 

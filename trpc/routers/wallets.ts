@@ -53,10 +53,6 @@ export const walletsRouter = createTRPCRouter({
             })
           }
 
-          const sig = await airdropSol(publicKey)
-          if(sig) {
-            toast('1 SOL has been sent to your account')
-          }
           return newWallet;
         }
       } else {

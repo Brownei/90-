@@ -1,12 +1,14 @@
 "use client";
 
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import Image from 'next/image';
 import { useAuth } from '@/utils/useAuth';
 import { trpc } from '@/trpc/client';
 import { useAuthLogin } from '@/hooks/use-auth-login';
 import { signIn, signOut, useSession } from 'next-auth/react';
 import { sign } from 'crypto';
+import { useWallet } from '@solana/wallet-adapter-react';
+import { getSolanaBalance } from '@/utils/solanaHelpers';
 
 interface ProfileCardProps {
   className?: string;
@@ -14,6 +16,8 @@ interface ProfileCardProps {
 
 const ProfileCard: React.FC<ProfileCardProps> = ({ className = '' }) => {
   const { data: user, status} = useSession();
+  const {publicKey} = useWallet()
+  const [balance, setBalance] = useState(0)
   // const { data: twitterUsrInfo, isLoading: isLoadingTwitterInfo } = trpc.twitter.getUserInfo.useQuery(
   //   { userId: user?.id },
   //   { enabled: isAuthenticated && !!user?.id }
@@ -22,6 +26,17 @@ const ProfileCard: React.FC<ProfileCardProps> = ({ className = '' }) => {
   async function logout() {
     await signOut()
   }
+
+  useEffect(() => {
+    if(publicKey) {
+      async function getB() {
+        const balance = await getSolanaBalance(publicKey?.toBase58()!)
+        setBalance(balance)
+      }
+
+      getB()
+    }
+  }, [publicKey])
 
   if (status === 'loading') {
     return (
@@ -64,6 +79,7 @@ const ProfileCard: React.FC<ProfileCardProps> = ({ className = '' }) => {
         )}
 
         <h2 className="text-xl font-bold mb-1">{user?.user.name || 'User'}</h2>
+        <h2 className='flex text-xl font-bold'>Balance: {balance} SOL</h2>
 
        
         <button

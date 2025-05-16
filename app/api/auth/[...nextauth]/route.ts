@@ -17,12 +17,12 @@ export const OPTIONS: AuthOptions = {
       // Persist the OAuth access_token to the token right after sign in
       if(profile) {
         console.log({profile})
-        const existingUser = await db.select({id: users.id}).from(users).where(eq(users.email, profile.email!)).leftJoin(wallets, eq(users.id, wallets.userId))
+        const existingUser = await db.select({id: users.id}).from(users).where(eq(users.email, profile?.data?.username)).leftJoin(wallets, eq(users.id, wallets.userId))
 
-        if (!existingUser[0]) {
+        if (existingUser.length === 0) {
           const newUser = await db.insert(users).values({
-            email: profile.email,
-            name: profile.name,
+            email: profile?.data?.username,
+            name: profile?.data?.name,
             emailVerified: true,
             image: token.picture,
           }).returning({id: users.id, email: users.email, profileImage: users.image, name: users.name})

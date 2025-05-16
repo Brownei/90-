@@ -14,7 +14,7 @@ const DEFAULT_RPC_ENDPOINT = process.env.NEXT_PUBLIC_SOLANA_RPC_URL || 'https://
 export async function getSolanaBalance(walletAddress: string): Promise<number> {
   try {
     const publicKey = new PublicKey(walletAddress)
-    const connection = new Connection(clusterApiUrl('testnet'), 'confirmed');
+    const connection = new Connection(clusterApiUrl('devnet'), 'confirmed');
     const balance = await connection.getBalance(publicKey);
     return balance / LAMPORTS_PER_SOL;
   } catch (error) {
@@ -125,11 +125,12 @@ export async function airdropSol(publicKey: string, amount: number = 1): Promise
   try {
     if (!publicKey) throw new Error('No wallet address provided');
     
-    const connection = new Connection(clusterApiUrl('testnet'), 'confirmed');
+    const key = new PublicKey(publicKey)
+    const connection = new Connection(clusterApiUrl('devnet'), 'confirmed');
     
     // Airdrop SOL to the wallet
     const signature = await connection.requestAirdrop(
-      new PublicKey(publicKey),
+      key,
       amount * LAMPORTS_PER_SOL
     );
     
