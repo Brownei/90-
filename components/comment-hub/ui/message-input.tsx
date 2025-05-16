@@ -3,6 +3,7 @@ import React, { forwardRef, useState, useEffect } from "react";
 import { Message, useMessageStore } from "@/stores/use-messages-store";
 import { useAuthLogin } from "@/hooks/use-auth-login";
 import { trpc } from "@/trpc/client";
+import { useSession } from "next-auth/react";
 
 interface MessageInputProps {
   ref: React.ForwardedRef<HTMLDivElement | null>;
@@ -13,7 +14,8 @@ interface MessageInputProps {
 
 const MessageInput = forwardRef<HTMLDivElement | null, MessageInputProps>(
   ({ onWagerClick, hubId, hubName: name }, ref) => {
-    const { user } = useAuthLogin();
+    // const { user } = useAuthLogin();
+    const {data: user} = useSession()
     const [message, setMessage] = useState("");
     // const messagesMutation = trpc.messages.sendMessages.useMutation();
 
@@ -32,8 +34,8 @@ const MessageInput = forwardRef<HTMLDivElement | null, MessageInputProps>(
             message: newMessage.content,
             author: {
               id: newMessage.userId!,
-              name: user?.name!,
-              profileImage: user?.profileImage!
+              name: user?.user?.name!,
+              profileImage: user?.user?.image!
             },
             userId: newMessage.userId,
             time: new Date().toISOString()
@@ -65,7 +67,7 @@ const MessageInput = forwardRef<HTMLDivElement | null, MessageInputProps>(
       addMessage.mutateAsync({
         hubId,
         content: message.trim(),
-        userId: Number(user?.id),
+        userId: Number(user?.user.twitterId),
       })
 
       // Clear the input

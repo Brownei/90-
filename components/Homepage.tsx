@@ -11,8 +11,7 @@ import { Keypair } from '@solana/web3.js';
 import { useSession } from 'next-auth/react';
 
 const Homepage = () => {
-  const { loggedIn, user } = useAuthLogin()
-  const {data} = useSession()
+  const {data: user} = useSession()
   // async function joinConversation() {
   //   if (!isAuthenticated && !loggedIn) {
   //     await login()
@@ -20,8 +19,8 @@ const Homepage = () => {
   //
   //   router.push('/comment-hub')
   // }
-  const keypair = Keypair.generate()
-  console.log({keypair, data})
+  // const keypair = Keypair.generate()
+  // console.log({keypair, data})
 
   return (
     <main>
@@ -46,7 +45,7 @@ const Homepage = () => {
         </div>
 
 
-        <div className={` items-center container mx-auto px-4.5 grid grid-cols-1 grid-flow-row ${(loggedIn && user !== null) ? 'lg:grid-cols-1' : 'lg:grid-cols-1'} gap-4 mt-[25px] lg:mt-[50px]`}>
+        <div className={` items-center container mx-auto px-4.5 grid grid-cols-1 grid-flow-row ${user?.user !== undefined ? 'lg:grid-cols-1' : 'lg:grid-cols-1'} gap-4 mt-[25px] lg:mt-[50px]`}>
 
 
           <div className='bg-darkGreen rounded-md text-white p-4.5 w-[22rem] h-[12rem] gap-5'>

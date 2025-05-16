@@ -12,6 +12,7 @@ import { useAuth } from '@/utils/useAuth';
 import '@solana/wallet-adapter-react-ui/styles.css';
 import { useAuthLogin } from '@/hooks/use-auth-login';
 import dynamic from 'next/dynamic';
+import { useSession } from 'next-auth/react';
 
 interface SolanaWalletConnectorProps {
   className?: string;
@@ -19,13 +20,13 @@ interface SolanaWalletConnectorProps {
 
 const SolanaWalletConnector: React.FC<SolanaWalletConnectorProps> = ({ className = '' }) => {
   const { connection } = useConnection();
+  const {status} = useSession()
   const { publicKey, signMessage, connected, disconnect } = useWallet();
   const [authenticating, setAuthenticating] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [walletBalance, setWalletBalance] = useState<number | null>(null);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const router = useRouter();
-  const { loggedIn: isTwitterAuthenticated } = useAuthLogin();
 
   // Fetch wallet balance
   const fetchBalance = useCallback(async () => {
@@ -145,7 +146,7 @@ const SolanaWalletConnector: React.FC<SolanaWalletConnectorProps> = ({ className
         </div>
       )}
       
-      {isTwitterAuthenticated && !connected && (
+      {status === 'authenticated' && !connected && (
         <p className="text-sm text-gray-600 mt-2">
           Link your Solana wallet to your account for additional features
         </p>

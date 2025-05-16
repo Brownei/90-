@@ -124,7 +124,7 @@ async function updateWalletBalance(publicKey: string, walletId: string) {
   try {
     // Connect to Solana network
     const connection = new Connection(
-      process.env.NEXT_PUBLIC_SOLANA_RPC_URL || 'https://api.devnet.solana.com',
+      process.env.NEXT_PUBLIC_SOLANA_RPC_URL || 'https://api.testnet.solana.com',
       'confirmed'
     );
     

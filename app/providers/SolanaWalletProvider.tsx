@@ -15,7 +15,7 @@ interface SolanaWalletProviderProps {
 
 const SolanaWalletProvider: React.FC<SolanaWalletProviderProps> = ({ children }) => {
   // Set to 'mainnet-beta', 'testnet', 'devnet' or a custom RPC endpoint
-  const network = WalletAdapterNetwork.Devnet;
+  const network = WalletAdapterNetwork.Testnet;
 
   // You can also provide a custom RPC endpoint
   const endpoint = useMemo(() => 
