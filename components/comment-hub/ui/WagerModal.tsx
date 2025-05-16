@@ -12,6 +12,7 @@ import { useAtom } from 'jotai';
 import { useSession } from 'next-auth/react';
 import { connected } from 'process';
 import React, {  useState } from 'react';
+import toast from 'react-hot-toast';
 
 interface WagerModalProps {
   isOpen: boolean;
@@ -36,6 +37,7 @@ const WagerModal: React.FC<WagerModalProps> = ({
   const { data: user} = useSession()
   const { publicKey, connected } = useWallet()
   const bettingClient = new BettingClient(publicKey!)
+  const [isLoading, setIsLoading] = useState(false);
   const [stakeAmount, setStakeAmount] = useState('');
   const [forUsername, setForUsername] = useState(username);
   const [againstUsername, setAgainstUsername] = useState('');
@@ -46,25 +48,37 @@ const WagerModal: React.FC<WagerModalProps> = ({
 
   const handleProceed = async (home: string, away: string, hubId: number, startTime: number) => {
     if (wagerCondition && stakeAmount && escrowAccount && connected) {
-      const transaction = await bettingClient.initialize(2)
+      setIsLoading(true)
+      try {
+        toast.loading('This might take a while.....')
+        const transaction = await bettingClient.initialize(2)
 
-      const newMatchTx = await bettingClient.createMatch(home, away, String(hubId), startTime)
-      const betTx = await bettingClient.placeBet(
-        String(hubId), 
-        Number(stakeAmount), 
-        wagerCondition, 
-        publicKey!, 
-        new PublicKey(escrowAccount)
-      )
+        const newMatchTx = await bettingClient.createMatch(home, away, String(hubId), startTime)
+        if (newMatchTx) {
+          const betTx = await bettingClient.placeBet(
+            String(hubId), 
+            Number(stakeAmount), 
+            wagerCondition, 
+            publicKey!, 
+            new PublicKey(escrowAccount)
+          )
 
-      await wagerMutation.mutateAsync({
-        condition: wagerCondition,
-        for: Number(user?.user.twitterId!),
-        amount: Number(stakeAmount),
-        hubId,
-      })
-
-      console.log({newMatchTx, betTx, transaction})
+          if(betTx) {  
+            await wagerMutation.mutateAsync({
+              condition: wagerCondition,
+              for: Number(user?.user.twitterId!),
+              amount: Number(stakeAmount),
+              hubId,
+            })
+          }
+          console.log({newMatchTx, betTx, transaction})
+          toast.success('Wager created')
+        }
+      } catch (error) {
+        toast.error('Cannot create a wager')
+      } finally {
+        setIsLoading(false)
+      }
     }
   };
 
@@ -150,9 +164,9 @@ const WagerModal: React.FC<WagerModalProps> = ({
                 selectedGame.team.startTime
               )
             }
-            disabled={!wagerCondition || !stakeAmount || !connected}
+            disabled={!wagerCondition || !stakeAmount || !connected || isLoading}
           >
-            Book
+            ${isLoading ? 'Booking...' : 'Book'}
           </button>
         </div>
         

@@ -67,7 +67,7 @@ const Nav = () => {
 
           if (balance === 0) {
             const sig = await airdropSol(publicKey.toBase58());
-            if (sig) toast("1 SOL has been sent to your account");
+            if (sig) toast.success("1 SOL has been sent to your account");
           }
 
           await walletMutation.mutateAsync({

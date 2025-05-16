@@ -27,7 +27,7 @@ export const gameRouter = createTRPCRouter({
     } catch(error) {
       if (error instanceof AxiosError) {
         console.log("Error from fetching the info")
-        toast("Error from fetching the info")
+        toast.error("Error from fetching the info")
       }
     }
   }),
