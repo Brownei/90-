@@ -12,108 +12,116 @@ import { useSession } from 'next-auth/react';
 
 const Homepage = () => {
   const {data: user} = useSession()
-  // async function joinConversation() {
-  //   if (!isAuthenticated && !loggedIn) {
-  //     await login()
-  //   }
-  //
-  //   router.push('/comment-hub')
-  // }
-  // const keypair = Keypair.generate()
-  // console.log({keypair, data})
 
   return (
-    <main>
-      <div>
-        <div className='relative'>
-          <Image
-            className='w-full object-cover h-[100dvh]'
-            src={'/hero.jpg'}
-            alt='Cheering'
-            width={500}
-            height={500}
-            quality={100}
-            unoptimized={true}
-          />
-          <div className='absolute grid gap-2 top-[50%] z-40 text-white text-center w-full left-[50%] translate-x-[-50%] translate-y-[-40%] lg:translate-y-[-50%]'>
-            <h1 className=' text-[1.5rem] lg:text-[5rem] lg:leading-[70px] uppercase font-bold w-full'>The center stage for the global game</h1>
-            <div className='flex flex-col justify-center items-center font-medium mx-4 lg:mx-0'>
-              <p className='text-[0.8rem] lg:w-[200px] font-medium text-center'>The Home of Live Football Engagement, Powered by You!</p>
+    <main className="min-h-screen min-w-screen bg-[#ECF5F5]">
+      {/* Hero Section - simplified to match mobile design */}
+      <div className="pt-20 pb-12 px-4">
+      
+      </div>
+
+      {/* In-Play Wagers Section */}
+      <div className="px-1 pb-1">
+        <div className="max-w-4xl mx-auto  overflow-hidden">
+          <div className="p-2 lg:p-2 text-center">
+            <h2 className="text-2xl lg:text-3xl font-bold text-black mb-4">
+              In-Play Wagers; Bet on Your Banter
+            </h2>
+            <p className="text-gray-600 text-sm lg:text-base mb-8 max-w-2xl mx-auto">
+              Settle arguments fast and easy on-chain
+            </p>
+            
+            <Link href={'/wagers'} className="inline-block bg-blue-500 hover:bg-blue-600 transition-colors text-white font-medium py-3 px-8 rounded-full text-sm lg:text-base mb-8">
+              BOOK WAGER
+            </Link>
+
+            <div className="mb-8">
+              <div className="flex items-center justify-between bg-white border-1 border-[#847F83] rounded-full p-2 max-w-md mx-auto mb-6">
+                <input 
+                  type="text" 
+                  placeholder="Paste wager link to join" 
+                  className="flex-1 bg-transparent outline-none px-3 text-sm text-gray-600 placeholder-gray-400"
+                />
+                <button className="bg-white text-black font-medium py-2 px-4 rounded-full text-sm ">
+                  Wager
+                </button>
+              </div>
+            </div>
+
+            <div className="bg-white justify-around p-4 rounded-xl ">
+            <div className="text-left mx-auto">
+              <h3 className="font-semibold text-black mb-4 pb-1">
+                Booked wagers
+              </h3>
+              
+              <div className="space-y-3">
+                <div className="flex items-center justify-between py-1">
+                  <span className="text-sm text-gray-700">Mbappe to score in the second half</span>
+                  <div className="flex items-center gap-1.5">
+                    <button className="text-blue-500 text-xs underline">View</button>
+                    <span className="bg-red-500 text-white text-xs px-2 py-1 rounded">Cancel</span>
+                  </div>
+                </div>
+                
+                <div className="flex items-center justify-between py-2">
+                  <span className="text-sm text-gray-700">Inter Milan to win the UCL</span>
+                  <div className="flex items-center gap-2">
+                    <button className="text-blue-500 text-xs underline">View</button>
+                    <span className="bg-red-500 text-white text-xs px-2 py-1 rounded">Cancel</span>
+                  </div>
+                </div>
+                
+                <div className="flex items-center justify-between py-2">
+                  <span className="text-sm text-gray-700">Inter Milan to win the UCL</span>
+                  <div className="flex items-center gap-2">
+                    <button className="text-blue-500 text-xs underline">View</button>
+                    <span className="bg-gray-300 text-gray-600 text-xs px-2 py-1 rounded">Withdraw</span>
+                  </div>
+                </div>
+              </div>
+            </div>
             </div>
           </div>
-          <div className='bg-black/30 absolute z-20 top-0 left-0 right-0 bottom-0' />
         </div>
+      </div>
 
-
-        <div className={` items-center container mx-auto px-4.5 grid grid-cols-1 grid-flow-row ${user?.user !== undefined ? 'lg:grid-cols-1' : 'lg:grid-cols-1'} gap-4 mt-[25px] lg:mt-[50px]`}>
-
-
-          <div className='bg-darkGreen rounded-md text-white p-4.5 w-[22rem] h-[12rem] gap-5'>
-            <div className='flex justify-between items-center'>
-              <MessageIcon />
-              <Link href={'/comment-hub'} className=' p-2 rounded-full'>
-                <ArrowRight />
-              </Link>
+      {/* Wager Rooms Section */}
+      <div className="px-4 pb-12">
+        <div className="max-w-4xl mx-auto">
+          <Link 
+            href="/wager-rooms" 
+            className="block bg-gray-400 hover:bg-gray-500 transition-colors text-white rounded-2xl p-6 lg:p-8"
+          >
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-4">
+                <div className="w-12 h-12  flex items-center justify-center">
+                  <MessageIcon  />
+                </div>
+                <div>
+                  <h3 className="font-semibold text-lg lg:text-xl">Wager rooms</h3>
+                </div>
+              </div>
+              <ArrowRight className="w-6 h-6 text-white" />
             </div>
-           
-            <div className='grid gap-.005'>
-              <h4 className='font-medium py-[15] text-[1.2rem]'>Comment Hubs</h4>
-              <p className='text-[0.8rem] font-light lg:text-[0.8rem]'>Step into the Comment Hubs, where fans from all over the world connect to debate, celebrate, and Interact in real-time.</p>
-            </div>
-          </div>
+          </Link>
         </div>
+      </div>
 
-
-        <div className='container mx-auto p-4 lg:px-6 lg:py-12 bg-white flex flex-col justify-center items-center gap-4 mt-[25px] lg:mt-[50px]'>
-          <div className='relative flex flex-col justify-center text-center items-center w-full'>
-            <h4 className='font-medium text-[1.2rem] p-3.5'> In-Play Wagers{":"} Bet on Your Banter</h4>
-            <p className=' w-full font-light lg:w-[800px] text-center text-[0.8rem] lg:text-[0.5rem]'>Soon, {"you’ll"} be able to instantly bet your takes during live matches. Whether {"it's"} a bold prediction or a hot debate, In-play wagers will let you put your insights on the line, enabling Peer to Peer bets</p>
-          <Image
-            className='w-[70px] h-[94px]'
-            src={"/ball.gif"}
-            alt="Ball gif"
-            width={500}
-            height={500}
-            quality={100}
-            unoptimized={true}
-          />
-            <Image
-              className='absolute left-0 right-0 bottom-0 top-0 object-cover block lg:hidden'
-              src={"/background.png"}
-              alt="Background"
-              width={1000}
-              height={1000}
-              quality={100}
-            />
-          </div>
-        </div>
-
-
-        <div className='bg-[#141517]  text-white lg:pb-[20px] mt-[25px] lg:mt-[50px]'>
-          <div className='mb-[50px] flex flex-col justify-center items-center gap-3 p-4 lg:px-6 lg:pt-12 '>
-            <h4 className='font-medium text-[1.2rem] p-3.5'>What’s Next? Stay Tuned…</h4>
-            <p className='w-full font-light lg:w-[800px] text-center text-[0.8rem] lg:text-[0.5rem]'>The game never stops and neither do we. Big features are on the horizon, and you won’t want to miss what’s coming next.
-              Partake in the future of live football Interaction</p>
-            <div className='bg-ash flex justify-between items-center rounded-full p-1'>
-              <input className='outline-none border-none text-white w-full lg:w-[354px] text-[0.7rem] p-2' placeholder='Enter your email address' />
-              <button className='text-black bg-white rounded-full font-semibold text-[0.7rem] p-2'>Subscribe</button>
-            </div>
-          </div>
-          <div className='border-ash border-[0.75px] w-full' />
-          <div className='flex justify-between items-center text-[0.6rem] px-2 py-3'>
-            <p className='text-white/40'>© 2025 90+</p>
-            <div className='flex gap-1 items-center text-[#ECF5F5]'>
-              <Link href={'/'}>Support</Link>
-              <span className='text-white/40'>|</span>
-              <Link className='w-full' href={'/'}>{`Terms & Conditions`}</Link>
+      {/* Newsletter Section */}
+      <div className='bg-[#141517] text-white'> 
+        <div className='border-t border-gray-700'>
+          <div className='max-w-4xl mx-auto px-4 py-4 flex justify-between items-center text-xs'>
+            <p className='text-gray-400'>© 2025 90+</p>
+            <div className='flex gap-2 items-center text-gray-300'>
+              <Link href={'/'} className="hover:text-white transition-colors">Support</Link>
+              <span className='text-gray-600'>|</span>
+              <Link href={'/'} className="hover:text-white transition-colors">Terms & Conditions</Link>
             </div>
           </div>
         </div>
       </div>
     </main>
   );
-
-
 }
 
 export default Homepage

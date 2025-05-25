@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import "./globals.css";
 import { Providers } from "./providers";
 import { Toaster } from "react-hot-toast";
+import { CivicAuthProvider } from "@civic/auth/nextjs";
 
 export const metadata: Metadata = {
   title: "90+: The Future of Live Football Engagement",
@@ -21,8 +22,10 @@ export default async function RootLayout({
     <html lang="en">
       <body className="font-inter">
         <Providers >
-          <Toaster />
-          {children}
+          <CivicAuthProvider>
+            <Toaster />
+            {children}
+          </CivicAuthProvider>
         </Providers>
       </body>
     </html>

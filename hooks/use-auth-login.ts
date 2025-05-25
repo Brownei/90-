@@ -2,7 +2,7 @@
 import { useAtom } from 'jotai';
 import { useAuthStore } from '@/stores/authStore';
 import { CHAIN_NAMESPACES, CustomChainConfig, IProvider, WEB3AUTH_NETWORK, } from "@web3auth/base";
-import { useEffect, useState, } from 'react'
+import { useEffect, useState, useCallback } from 'react'
 import { scrolledAtom,  loggedInAtom, web3authAtom, isWeb3AuthInitializedAtom, userAtom } from '@/stores/navStore';
 import { useWallet, } from '@solana/wallet-adapter-react';
 import { useRouter } from 'next/navigation';
@@ -59,6 +59,16 @@ export const useAuthLogin = () => {
       }
     } 
   }
+  const doSignIn = useCallback(() => {
+    console.log("Starting sign-in process");
+    signIn()
+      .then(() => {
+        console.log("Sign-in completed successfully");
+      })
+      .catch((error) => {
+        console.error("Sign-in failed:", error);
+      });
+  }, [signIn]);
 
   async function connectToWallet() {
     if(!wallet) {
@@ -135,5 +145,6 @@ export const useAuthLogin = () => {
     setUser,
     getUserInfo,
     connectToWallet,
+    doSignIn,
   }
 }

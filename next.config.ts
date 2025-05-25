@@ -1,4 +1,5 @@
 import type { NextConfig } from "next";
+import { createCivicAuthPlugin } from "@civic/auth/nextjs"
 
 const nextConfig: NextConfig = {
   /* config options here */
@@ -21,4 +22,9 @@ const nextConfig: NextConfig = {
   },
 };
 
-export default nextConfig;
+
+const withCivicAuth = createCivicAuthPlugin({
+  clientId: "968a6503-3167-4af3-9ff4-7387339f60db"
+});
+
+export default withCivicAuth(nextConfig)

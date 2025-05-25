@@ -9,6 +9,7 @@ import { useWallet } from '@solana/wallet-adapter-react';
 import { trpc } from '@/trpc/client';
 import { airdropSol, getSolanaBalance } from '@/utils/solanaHelpers';
 import toast from 'react-hot-toast';
+import { UserButton } from "@civic/auth/react";
 import { PublicKey } from '@solana/web3.js';
 
 const Nav = () => {
@@ -22,7 +23,8 @@ const Nav = () => {
     isLoading,
     logout,
     login,
-    connectToWallet
+    connectToWallet,
+    doSignIn
   } = useAuthLogin();
 
   // State to track scroll position
@@ -95,7 +97,7 @@ const Nav = () => {
     <nav className={`
       ${scrolled ? 'fixed shadow-md' : pathname !== '/' ? 'fixed' : 'absolute'} 
       top-0 left-0 z-50 right-0 px-3 lg:px-5 py-3 transition-all duration-300 
-      ${scrolled ? 'bg-[#ECF5F5]/95 backdrop-blur-sm' : 'bg-[#ECF5F5]'} 
+      ${scrolled ? 'bg-[#ffffff]/95 backdrop-blur-sm' : 'bg-[#ffffff]'} 
       text-black w-full
     `}>
       <div className='flex justify-between items-center'>
@@ -130,11 +132,11 @@ const Nav = () => {
           {/*     {connected ? `${publicKey.toBase58().slice(0, 8) + '...'}`: connecting ? 'Connecting...' : 'Connect to Wallet'} */}
           {/*   </button> */}
           {/* )} */}
-
+          <UserButton />
           <button
-            onClick={handleAuthAction}
+            onClick={doSignIn}
             disabled={isLoading}
-            className='bg-darkGreen flex items-center gap-3 py-2 px-3 rounded-full  font-semibold text-white text-[0.8rem] cursor-pointer'
+            className='bg-blue-500 flex items-center gap-3 py-2 px-3 rounded-full  font-semibold text-white text-[0.8rem] cursor-pointer'
           >
             {(isLoading || status === 'loading') ? (
               <span className="flex gap-3 items-center">Loading...</span>
