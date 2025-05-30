@@ -21,7 +21,11 @@ const Nav = () => {
   const walletMutation = trpc.wallets.createANewWallet.useMutation()
   const {
     isLoading,
+    setLoggedIn,
+    setIsLoading,
     login,
+    setUser,
+    user: settedUser
   } = useAuthLogin();
 
   // State to track scroll position
@@ -50,8 +54,22 @@ const Nav = () => {
     };
   }, []);
 
+  useEffect(() => {
+    if (user !== null && status === 'authenticated') {
+      setIsLoading(false)
+      setLoggedIn(true)
+      setUser({
+        email: user.email!,
+        id: user.id,
+        name: user.name,
+        profileImage: user.picture,
+        address: address ? address : '',
+      })
+    }
+  }, [user, status])
 
-  console.log({ user })
+
+  console.log({ user, settedUser, status })
 
   return (
     <nav className={`
@@ -74,7 +92,7 @@ const Nav = () => {
         </Link>
 
         <div className="flex items-center gap-3">
-          {user !== null && (
+          {settedUser !== null && (
             <Link
               href={'/profile'}
               className={` font-semibold text-[0.8rem] cursor-pointer text-black`}
@@ -82,16 +100,6 @@ const Nav = () => {
               Profile
             </Link>
           )}
-
-          {/* {(user !== undefined) && ( */}
-          {/*   <button */}
-          {/*     // href={'/wallet'} */}
-          {/*     onClick={async () => await connectToWallet()} */}
-          {/*     className={` font-semibold border border-darkGreen py-2 px-3 rounded-full text-[0.8rem] cursor-pointer text-black`} */}
-          {/*   > */}
-          {/*     {connected ? `${publicKey.toBase58().slice(0, 8) + '...'}`: connecting ? 'Connecting...' : 'Connect to Wallet'} */}
-          {/*   </button> */}
-          {/* )} */}
           <button
             onClick={
               async () => await login()
@@ -99,15 +107,15 @@ const Nav = () => {
             disabled={isLoading}
             className='bg-blue-500 flex items-center gap-3 py-2 px-3 rounded-full  font-semibold text-white text-[0.8rem] cursor-pointer'
           >
-            {((isLoading || status === 'authenticating') ? (
+            {((isLoading) ? (
               <span className="flex gap-3 items-center">Loading...</span>
-            ) : (user !== null) ? (
+            ) : settedUser !== null ? (
               <span className="flex gap-3 items-center">
-                {user?.picture ? (
+                {settedUser?.profileImage ? (
                   <div className="h-5 w-5 rounded-full overflow-hidden">
                     <Image
-                      src={user?.picture}
-                      alt={user.name || 'User'}
+                      src={settedUser?.profileImage!}
+                      alt={settedUser.name || 'User'}
                       width={500}
                       height={500}
                       quality={100}
@@ -115,8 +123,8 @@ const Nav = () => {
                     />
                   </div>
                 ) : null}
-                <span className='hidden'>{user?.name || 'User'}</span>
-                {address && <span>{address.slice(0, 5)}...</span>}
+                <span className='hidden'>{settedUser?.name || 'User'}</span>
+                <span>{settedUser?.address?.slice(0, 5)}...</span>
               </span>
             ) : (
               <>

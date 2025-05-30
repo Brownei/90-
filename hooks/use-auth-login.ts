@@ -38,7 +38,8 @@ export const useAuthLogin = () => {
   const { connected, connect, select, wallet, wallets, publicKey } = useWallet();
   const { provider, setProvider } = useProviderStore();
   const [isLoading, setIsLoading] = useState(false);
-  const [user, setUser] = useAtom(userAtom);
+  const { session: user, setSession: setUser } = useSessionStore()
+  // const [user, setUser] = useAtom(userAtom);
   const [loggedIn, setLoggedIn] = useAtom(loggedInAtom);
   const [web3auth, setWeb3auth] = useAtom(web3authAtom);
   const [isWeb3AuthInitialized, setIsWeb3AuthInitialized] = useAtom(isWeb3AuthInitializedAtom);
@@ -47,19 +48,27 @@ export const useAuthLogin = () => {
   const logoutMutation = trpc.users.logout.useMutation()
   const { setSession } = useSessionStore()
   const usercontext = useUser()
-  const { user: data } = usercontext
+  const { user: data, authStatus: status } = usercontext
 
   async function login() {
     if (data === null) {
       setIsLoading(true)
       try {
-        // await signIn('twitter')
         await usercontext.signIn()
+        // setUser({
+        //   email: data.email!,
+        //   id: data.id,
+        //   name: data.name,
+        //   profileImage: data.picture,
+        // })
+
       } catch (error) {
         console.error(error)
       } finally {
-        setIsLoading(false)
-        setLoggedIn(true)
+        if (data !== null && status === 'authenticated') {
+          setIsLoading(false)
+          setLoggedIn(true)
+        }
       }
     }
   }
