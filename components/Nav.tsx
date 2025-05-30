@@ -26,7 +26,6 @@ const Nav = () => {
 
   // State to track scroll position
   const [scrolled, setScrolled] = useState(false);
-  console.log({ user })
 
   // Scroll event handler
   useEffect(() => {

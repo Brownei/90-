@@ -85,7 +85,7 @@ const BookedWager: React.FC = () => {
               {/* Wager Condition */}
               <div>
                 <h3 className="font-semibold text-black text-sm mb-2">WAGER CONDITION</h3>
-                <p className="text-gray-700 text-sm">"{wagerData.wagerCondition}"</p>
+                <p className="text-gray-700 text-sm">&quot;{wagerData.wagerCondition}</p>
               </div>
 
               {/* Stake Amount */}
