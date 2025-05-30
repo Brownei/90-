@@ -6,7 +6,7 @@ import { useAuth } from '@/utils/useAuth';
 import { trpc } from '@/trpc/client';
 import { useAuthLogin } from '@/hooks/use-auth-login';
 import { signIn, signOut, } from 'next-auth/react';
-import { useUser } from "@civic/auth-web3/react";
+import { useSessionStore } from '@/stores/use-session-store';
 import { sign } from 'crypto';
 import { useWallet } from '@solana/wallet-adapter-react';
 import { getSolanaBalance } from '@/utils/solanaHelpers';
@@ -16,9 +16,7 @@ interface ProfileCardProps {
 }
 
 const ProfileCard: React.FC<ProfileCardProps> = ({ className = '' }) => {
-  const { user, authStatus: status } = useUser();
-  const { connected } = useWallet()
-  const { publicKey } = useWallet()
+  const { session: user } = useSessionStore();
   const [balance, setBalance] = useState(0)
   // const { data: twitterUsrInfo, isLoading: isLoadingTwitterInfo } = trpc.twitter.getUserInfo.useQuery(
   //   { userId: user?.id },
@@ -30,25 +28,25 @@ const ProfileCard: React.FC<ProfileCardProps> = ({ className = '' }) => {
   }
 
   useEffect(() => {
-    if (publicKey) {
+    if (user) {
       async function getB() {
-        const balance = await getSolanaBalance(publicKey?.toBase58()!)
+        const balance = await getSolanaBalance(user?.address!)
         setBalance(balance)
       }
 
       getB()
     }
-  }, [publicKey])
+  }, [user])
 
-  if (status === 'authenticating') {
-    return (
-      <div className={`bg-white rounded-lg shadow-md p-6 ${className}`}>
-        <div className="flex items-center justify-center h-32">
-          <p className="text-gray-500">Loading...</p>
-        </div>
-      </div>
-    );
-  }
+  // if (status === 'authenticating') {
+  //   return (
+  //     <div className={`bg-white rounded-lg shadow-md p-6 ${className}`}>
+  //       <div className="flex items-center justify-center h-32">
+  //         <p className="text-gray-500">Loading...</p>
+  //       </div>
+  //     </div>
+  //   );
+  // }
 
   if ((user === null)) {
     return (
@@ -63,10 +61,10 @@ const ProfileCard: React.FC<ProfileCardProps> = ({ className = '' }) => {
   return (
     <div className={`bg-white rounded-lg shadow-md p-6 ${className}`}>
       <div className="flex flex-col items-center">
-        {user?.picture ? (
+        {user?.profileImage ? (
           <div className="relative w-24 h-24 rounded-full overflow-hidden mb-4">
             <Image
-              src={user.picture!}
+              src={user.profileImage!}
               alt={user.name || 'User'}
               className="object-cover size-[104px]"
               quality={100}
@@ -81,10 +79,7 @@ const ProfileCard: React.FC<ProfileCardProps> = ({ className = '' }) => {
         )}
 
         <h2 className="text-xl font-bold mb-1">{user?.name || 'User'}</h2>
-        {connected && (
-          <h2 className='flex text-xl font-bold'>Balance: {balance} SOL</h2>
-        )}
-
+        <h2 className='flex text-xl font-bold'>Balance: {balance} SOL</h2>
 
         <button
           onClick={async () => await logout()}

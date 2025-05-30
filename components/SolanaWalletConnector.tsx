@@ -12,7 +12,7 @@ import { useAuth } from '@/utils/useAuth';
 import '@solana/wallet-adapter-react-ui/styles.css';
 import { useAuthLogin } from '@/hooks/use-auth-login';
 import dynamic from 'next/dynamic';
-import { useUser } from "@civic/auth-web3/react";
+import { useSessionStore } from '@/stores/use-session-store';
 
 interface SolanaWalletConnectorProps {
   className?: string;
@@ -20,7 +20,7 @@ interface SolanaWalletConnectorProps {
 
 const SolanaWalletConnector: React.FC<SolanaWalletConnectorProps> = ({ className = '' }) => {
   const { connection } = useConnection();
-  const { authStatus: status } = useUser()
+  const { session: user } = useSessionStore()
   const { publicKey, signMessage, connected, disconnect } = useWallet();
   const [authenticating, setAuthenticating] = useState(false);
   const [error, setError] = useState<string | null>(null);

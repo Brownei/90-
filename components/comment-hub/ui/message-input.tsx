@@ -3,7 +3,7 @@ import React, { forwardRef, useState, useEffect } from "react";
 import { Message, useMessageStore } from "@/stores/use-messages-store";
 import { useAuthLogin } from "@/hooks/use-auth-login";
 import { trpc } from "@/trpc/client";
-import { useUser } from "@civic/auth-web3/react";
+import { useSessionStore } from "@/stores/use-session-store";
 
 interface MessageInputProps {
   ref: React.ForwardedRef<HTMLDivElement | null>;
@@ -15,7 +15,7 @@ interface MessageInputProps {
 const MessageInput = forwardRef<HTMLDivElement | null, MessageInputProps>(
   ({ onWagerClick, hubId, hubName: name }, ref) => {
     // const { user } = useAuthLogin();
-    const { user } = useUser()
+    const { session: user } = useSessionStore()
     const [message, setMessage] = useState("");
     // const messagesMutation = trpc.messages.sendMessages.useMutation();
 
@@ -35,7 +35,7 @@ const MessageInput = forwardRef<HTMLDivElement | null, MessageInputProps>(
             author: {
               id: newMessage.userId!,
               name: user?.name!,
-              profileImage: user?.picture!
+              profileImage: user?.profileImage!
             },
             userId: newMessage.userId,
             time: new Date().toISOString()

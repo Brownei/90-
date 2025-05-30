@@ -2,7 +2,7 @@
 import React, { useEffect, useState } from 'react'
 import Link from 'next/link';
 import { Copy, Share2 } from 'lucide-react';
-import { useUser } from "@civic/auth-web3/react";
+import { useSessionStore } from '@/stores/use-session-store';
 
 interface WagerData {
   forUser: string;
@@ -14,7 +14,7 @@ interface WagerData {
 }
 
 const BookedWager: React.FC = () => {
-  const { user } = useUser()
+  const { session: user } = useSessionStore()
   const [wagerData, setWagerData] = useState<WagerData | null>(null)
 
   useEffect(() => {

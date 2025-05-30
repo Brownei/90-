@@ -2,7 +2,7 @@ import { BettingClient } from '@/client/betting-client';
 import { trpc } from '@/trpc/client';
 import { useWallet } from '@solana/wallet-adapter-react';
 import { PublicKey } from '@solana/web3.js';
-import { useUser } from "@civic/auth-web3/react";
+import { useSessionStore } from '@/stores/use-session-store';
 import React, { useState } from 'react';
 import toast from 'react-hot-toast';
 
@@ -26,7 +26,7 @@ const WagerModal: React.FC<WagerModalProps> = ({
   insufficientBalance,
 }) => {
   const [wagerCondition, setWagerCondition] = useState('');
-  const { user } = useUser()
+  const { session: user } = useSessionStore()
   const { publicKey, connected } = useWallet()
   const bettingClient = new BettingClient(publicKey!)
   const [isLoading, setIsLoading] = useState(false);

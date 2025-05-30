@@ -10,7 +10,7 @@ import { useRouter } from "next/navigation";
 import { useAuthLogin } from "@/hooks/use-auth-login";
 import { toast } from "react-hot-toast";
 import { trpc } from "@/trpc/client";
-import { useUser } from "@civic/auth-web3/react";
+import { useSessionStore } from "@/stores/use-session-store";
 
 const LiveCarousel = ({
   tabs,
@@ -29,7 +29,7 @@ const LiveCarousel = ({
     }
   }, [emblaApi]);
 
-  const { user } = useUser()
+  const { session: user } = useSessionStore()
   const { login, loggedIn } = useAuthLogin();
 
   async function launchNewHub(urlRoute: string, home: string, away: string, startTime: string, homeScore: number, awayScore: number) {

@@ -8,7 +8,7 @@ import { useWallet } from "@civic/auth-web3/react";
 import { trpc } from '@/trpc/client';
 import { airdropSol, getSolanaBalance } from '@/utils/solanaHelpers';
 import toast from 'react-hot-toast';
-import { useUser, UserButton } from "@civic/auth-web3/react";
+import { useUser } from "@civic/auth-web3/react";
 import CivicWallet from './CivicWallet';
 import { addListener } from 'process';
 
@@ -69,7 +69,7 @@ const Nav = () => {
   }, [user, status])
 
 
-  console.log({ user, settedUser, status })
+  // console.log({ user, settedUser, status })
 
   return (
     <nav className={`

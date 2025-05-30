@@ -21,7 +21,7 @@ import { allMessagesAtom } from '@/stores/navStore'
 import { getSolanaBalance } from '@/utils/solanaHelpers'
 import { trpc } from '@/trpc/client'
 import { useProviderStore } from '@/stores/use-provider-store'
-import { useUser } from "@civic/auth-web3/react";
+import { useSessionStore } from '@/stores/use-session-store'
 import { useWallet } from '@solana/wallet-adapter-react'
 
 type ClientParticularGamePageProps = {
@@ -114,7 +114,7 @@ const ClientParticularGamePage: FC<ClientParticularGamePageProps> = ({ seletedGa
   };
 
   // Wager state
-  const { user } = useUser()
+  const { session: user } = useSessionStore()
   const { publicKey, connected } = useWallet()
   const [isWagerModalOpen, setIsWagerModalOpen] = useState(false);
   const [isFundModalOpen, setIsFundModalOpen] = useState(false);

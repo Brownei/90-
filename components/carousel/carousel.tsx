@@ -11,7 +11,8 @@ import { useAuthLogin } from "@/hooks/use-auth-login";
 import { toast } from "react-hot-toast";
 import { trpc } from "@/trpc/client";
 import { url } from "inspector";
-import { useUser } from "@civic/auth-web3/react";
+import { useSessionStore } from "@/stores/use-session-store";
+
 const Carousel = ({
   tabs,
 }: {
@@ -29,7 +30,7 @@ const Carousel = ({
     }
   }, [emblaApi]);
 
-  const { user } = useUser()
+  const { session: user } = useSessionStore()
   const { login } = useAuthLogin();
 
   async function launchNewHub(urlRoute: string, home: string, away: string, startTime: string, awayScore: number, homeScore: number) {

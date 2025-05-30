@@ -2,11 +2,11 @@
 import React, { useState } from 'react'
 import Link from 'next/link';
 import { ChevronLeft } from 'lucide-react';
-import { useUser } from "@civic/auth-web3/react";
+import { useSessionStore } from '@/stores/use-session-store';
 import { useRouter } from 'next/navigation';
 
 const Wager = () => {
-  const { user } = useUser()
+  const { session: user } = useSessionStore()
   const router = useRouter()
   const [forUser, setForUser] = useState('')
   const [againstUser, setAgainstUser] = useState('')

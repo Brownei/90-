@@ -9,12 +9,12 @@ import { useWallet } from '@solana/wallet-adapter-react';
 import { useAuthLogin } from '@/hooks/use-auth-login';
 import { SolanaWallet } from '@web3auth/solana-provider';
 import { IProvider } from '@web3auth/base';
-import { useUser } from "@civic/auth-web3/react";
+import { useSessionStore } from '@/stores/use-session-store';
 
 const ProfilePage = () => {
   const { } = useWallet();
-  const usercontext = useUser()
-  const { user } = usercontext
+  const { session: user } = useSessionStore()
+  // const { user } = usercontext
   const router = useRouter();
   const { loggedIn, provider, isLoading } = useAuthLogin();
   const [tweetText, setTweetText] = React.useState('');
