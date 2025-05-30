@@ -3,15 +3,17 @@ import { useAtom } from 'jotai';
 import { useAuthStore } from '@/stores/authStore';
 import { CHAIN_NAMESPACES, CustomChainConfig, IProvider, WEB3AUTH_NETWORK, } from "@web3auth/base";
 import { useEffect, useState, useCallback } from 'react'
-import { scrolledAtom,  loggedInAtom, web3authAtom, isWeb3AuthInitializedAtom, userAtom } from '@/stores/navStore';
+import { scrolledAtom, loggedInAtom, web3authAtom, isWeb3AuthInitializedAtom, userAtom } from '@/stores/navStore';
 import { useWallet, } from '@solana/wallet-adapter-react';
 import { useRouter } from 'next/navigation';
 import { SolanaPrivateKeyProvider, SolanaWallet } from "@web3auth/solana-provider";
 import { trpc } from '@/trpc/client';
 import { useSessionStore } from '@/stores/use-session-store';
 import { useProviderStore } from '@/stores/use-provider-store';
-import { signIn, useSession } from 'next-auth/react';
+import { signIn } from 'next-auth/react';
 import { WalletConnectWalletName, PhantomWalletName } from '@solana/wallet-adapter-wallets';
+import { useUser } from "@civic/auth-web3/react";
+import { UserCog } from 'lucide-react';
 
 const chainConfig = {
   chainNamespace: CHAIN_NAMESPACES.SOLANA,
@@ -33,9 +35,8 @@ export const useAuthLogin = () => {
     setIsAuthenticated,
     isAuthenticated,
   } = useAuthStore();
-  const {data} = useSession()
   const { connected, connect, select, wallet, wallets, publicKey } = useWallet();
-  const {provider, setProvider} = useProviderStore();
+  const { provider, setProvider } = useProviderStore();
   const [isLoading, setIsLoading] = useState(false);
   const [user, setUser] = useAtom(userAtom);
   const [loggedIn, setLoggedIn] = useAtom(loggedInAtom);
@@ -44,34 +45,37 @@ export const useAuthLogin = () => {
   const router = useRouter()
   const loginMutation = trpc.users.login.useMutation()
   const logoutMutation = trpc.users.logout.useMutation()
-  const {setSession} = useSessionStore()
+  const { setSession } = useSessionStore()
+  const usercontext = useUser()
+  const { user: data } = usercontext
 
-  async function login () {
-    if(data?.user === undefined) {
+  async function login() {
+    if (data === null) {
       setIsLoading(true)
       try {
-        await signIn('twitter')
+        // await signIn('twitter')
+        await usercontext.signIn()
       } catch (error) {
         console.error(error)
       } finally {
         setIsLoading(false)
         setLoggedIn(true)
       }
-    } 
+    }
   }
-  const doSignIn = useCallback(() => {
-    console.log("Starting sign-in process");
-    signIn()
-      .then(() => {
-        console.log("Sign-in completed successfully");
-      })
-      .catch((error) => {
-        console.error("Sign-in failed:", error);
-      });
-  }, [signIn]);
+  // const doSignIn = useCallback(() => {
+  //   console.log("Starting sign-in process");
+  //   signIn()
+  //     .then(() => {
+  //       console.log("Sign-in completed successfully");
+  //     })
+  //     .catch((error) => {
+  //       console.error("Sign-in failed:", error);
+  //     });
+  // }, [signIn]);
 
   async function connectToWallet() {
-    if(!wallet) {
+    if (!wallet) {
       select(PhantomWalletName)
     }
 
@@ -145,6 +149,5 @@ export const useAuthLogin = () => {
     setUser,
     getUserInfo,
     connectToWallet,
-    doSignIn,
   }
 }

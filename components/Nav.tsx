@@ -4,32 +4,29 @@ import { usePathname, useRouter } from 'next/navigation';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useAuthLogin } from '@/hooks/use-auth-login';
-import { useSession } from 'next-auth/react';
-import { useWallet } from '@solana/wallet-adapter-react';
+import { useWallet } from "@civic/auth-web3/react";
 import { trpc } from '@/trpc/client';
 import { airdropSol, getSolanaBalance } from '@/utils/solanaHelpers';
 import toast from 'react-hot-toast';
-import { UserButton } from "@civic/auth/react";
-import { PublicKey } from '@solana/web3.js';
+import { useUser, UserButton } from "@civic/auth-web3/react";
+import CivicWallet from './CivicWallet';
+import { addListener } from 'process';
 
 const Nav = () => {
   const pathname = usePathname()
-  const {data, status} = useSession()
-  const user = data?.user
+  const usercontext = useUser()
+  const { user, authStatus: status } = usercontext
+  const { address } = useWallet({ type: "solana" });
   const router = useRouter();
-  const {connect, connected, connecting, publicKey} = useWallet()
   const walletMutation = trpc.wallets.createANewWallet.useMutation()
   const {
     isLoading,
-    logout,
     login,
-    connectToWallet,
-    doSignIn
   } = useAuthLogin();
 
   // State to track scroll position
   const [scrolled, setScrolled] = useState(false);
-  console.log({user})
+  console.log({ user })
 
   // Scroll event handler
   useEffect(() => {
@@ -44,10 +41,10 @@ const Nav = () => {
 
     // Add scroll event listener
     window.addEventListener('scroll', handleScroll);
-    
+
     // Initial check
     handleScroll();
-    
+
     // Clean up
     return () => {
       window.removeEventListener('scroll', handleScroll);
@@ -55,43 +52,7 @@ const Nav = () => {
   }, []);
 
 
-  const handleAuthAction = async () => {
-    if (user !== undefined) {
-      // await logout();
-      if (!connected) {
-        await connectToWallet()
-        await new Promise((res) => setTimeout(res, 500));
-      } 
-
-      if(publicKey) {
-        try {
-          const balance = await getSolanaBalance(publicKey.toBase58());
-
-          if (balance === 0) {
-            const sig = await airdropSol(publicKey.toBase58());
-            if (sig) toast.success("1 SOL has been sent to your account");
-          }
-
-          await walletMutation.mutateAsync({
-            email: user.email!,
-            balance,
-            publicKey: publicKey.toBase58(),
-            address: publicKey.toBase58(),
-          });
-        } catch (err) {
-          console.error("Error in wallet setup:", err);
-        }      
-      }
-    } else {
-      try {
-        await login();
-      } catch (error) {
-        console.error("Authentication error:", error);
-      }
-
-      return;
-    } 
-  };
+  console.log({ user })
 
   return (
     <nav className={`
@@ -114,7 +75,7 @@ const Nav = () => {
         </Link>
 
         <div className="flex items-center gap-3">
-          {(user !== undefined) && (
+          {user !== null && (
             <Link
               href={'/profile'}
               className={` font-semibold text-[0.8rem] cursor-pointer text-black`}
@@ -132,20 +93,21 @@ const Nav = () => {
           {/*     {connected ? `${publicKey.toBase58().slice(0, 8) + '...'}`: connecting ? 'Connecting...' : 'Connect to Wallet'} */}
           {/*   </button> */}
           {/* )} */}
-          <UserButton />
           <button
-            onClick={doSignIn}
+            onClick={
+              async () => await login()
+            }
             disabled={isLoading}
             className='bg-blue-500 flex items-center gap-3 py-2 px-3 rounded-full  font-semibold text-white text-[0.8rem] cursor-pointer'
           >
-            {(isLoading || status === 'loading') ? (
+            {((isLoading || status === 'authenticating') ? (
               <span className="flex gap-3 items-center">Loading...</span>
-            ) : (user !== undefined) ? (
+            ) : (user !== null) ? (
               <span className="flex gap-3 items-center">
-                {user?.image ? (
+                {user?.picture ? (
                   <div className="h-5 w-5 rounded-full overflow-hidden">
                     <Image
-                      src={user.image}
+                      src={user?.picture}
                       alt={user.name || 'User'}
                       width={500}
                       height={500}
@@ -155,14 +117,14 @@ const Nav = () => {
                   </div>
                 ) : null}
                 <span className='hidden'>{user?.name || 'User'}</span>
-                <span>{connected ? `${publicKey?.toBase58().slice(0, 5) + '...'}`: connecting ? 'Connecting...' : 'Connect to Wallet'}</span>
+                {address && <span>{address.slice(0, 5)}...</span>}
               </span>
             ) : (
               <>
                 <span className='hidden lg:flex gap-3 items-center font-bold'> Join Now</span>
                 <span className='flex gap-3 lg:hidden items-center'>Join Now</span>
               </>
-            )}
+            ))}
           </button>
         </div>
       </div>

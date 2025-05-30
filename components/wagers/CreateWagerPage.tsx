@@ -2,11 +2,11 @@
 import React, { useState } from 'react'
 import Link from 'next/link';
 import { ChevronLeft } from 'lucide-react';
-import { useSession } from 'next-auth/react';
+import { useUser } from "@civic/auth-web3/react";
 import { useRouter } from 'next/navigation';
 
 const Wager = () => {
-  const {data: user} = useSession()
+  const { user } = useUser()
   const router = useRouter()
   const [forUser, setForUser] = useState('')
   const [againstUser, setAgainstUser] = useState('')
@@ -22,17 +22,17 @@ const Wager = () => {
 
     // Create wager data object
     const wagerData = {
-      forUser: forUser || user?.user?.name || '@user',
+      forUser: forUser || user?.name || '@user',
       againstUser,
       wagerCondition,
       amount,
-      bookedBy: user?.user?.name || '@user',
+      bookedBy: user?.name || '@user',
       wagerLink: `${window.location.origin}/wager/${Date.now()}` // Generate unique link
     }
 
     // Store in sessionStorage for the BookedWager component to read
     sessionStorage.setItem('currentWager', JSON.stringify(wagerData));
-    
+
     // Navigate to booked wager page
     router.push('/booked-wager');
   }
@@ -70,7 +70,7 @@ const Wager = () => {
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm text-gray-700 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 />
               </div>
-              
+
               <div>
                 <label className="block text-sm font-semibold text-black mb-2">
                   AGAINST

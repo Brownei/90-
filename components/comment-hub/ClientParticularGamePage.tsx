@@ -1,9 +1,9 @@
 "use client"
-import {  teamLogos, } from '@/data'
+import { teamLogos, } from '@/data'
 import BackIcon from '@/public/icons/BackIcon'
 import CurvedArrow from '@/public/icons/CurvedArrow'
-import { formatDateToBritish} from '@/utils/utils'
-import {  useRouter } from 'next/navigation'
+import { formatDateToBritish } from '@/utils/utils'
+import { useRouter } from 'next/navigation'
 import React, { useState, useEffect, useRef, FC } from 'react'
 import MessagePopup from './ui/message-popup'
 import MessageInput from './ui/message-input'
@@ -11,9 +11,9 @@ import gsap from 'gsap'
 import WagerModal from './ui/WagerModal'
 import FundWagerModal from './ui/FundWagerModal'
 import TransactionConfirmedModal from './ui/TransactionConfirmedModal'
-import {  Message, useMessageStore } from '@/stores/use-messages-store'
+import { Message, useMessageStore } from '@/stores/use-messages-store'
 import pusherClient from '@/lib/pusher/init'
-import { LAMPORTS_PER_SOL} from '@solana/web3.js'
+import { LAMPORTS_PER_SOL } from '@solana/web3.js'
 import { useAuthLogin } from '@/hooks/use-auth-login'
 import Image from 'next/image'
 import { useAtom } from 'jotai'
@@ -21,16 +21,16 @@ import { allMessagesAtom } from '@/stores/navStore'
 import { getSolanaBalance } from '@/utils/solanaHelpers'
 import { trpc } from '@/trpc/client'
 import { useProviderStore } from '@/stores/use-provider-store'
-import { useSession } from 'next-auth/react'
+import { useUser } from "@civic/auth-web3/react";
 import { useWallet } from '@solana/wallet-adapter-react'
 
-type ClientParticularGamePageProps  = {
+type ClientParticularGamePageProps = {
   seletedGame: any
   particularGameLiveScores: any
   escrowAccount: string
 };
 
-const ClientParticularGamePage: FC<ClientParticularGamePageProps> = ({seletedGame,  escrowAccount, particularGameLiveScores}) => {
+const ClientParticularGamePage: FC<ClientParticularGamePageProps> = ({ seletedGame, escrowAccount, particularGameLiveScores }) => {
   const router = useRouter();
   const inputRef = React.useRef<HTMLDivElement>(null);
   const boxRef = React.useRef<HTMLDivElement>(null);
@@ -38,14 +38,14 @@ const ClientParticularGamePage: FC<ClientParticularGamePageProps> = ({seletedGam
   const [isSlidOut, setIsSlidOut] = React.useState(false);
   const [messages, setMessages] = useAtom(allMessagesAtom)
   const [messageCount, setMessageCount] = useState(0);
-              const homeMatchedKey = Object.keys(teamLogos).find((key) =>
-              key.toLowerCase().includes(seletedGame ? seletedGame.team!.home.toLowerCase() : '')
-            );
-            const awayMatchedKey = Object.keys(teamLogos).find((key) =>
-              key.toLowerCase().includes(seletedGame ? seletedGame.team!.away.toLowerCase() : '')
-            );
-            const logoHome = homeMatchedKey ? teamLogos[homeMatchedKey] : ''
-            const logoAway = awayMatchedKey ? teamLogos[awayMatchedKey] : ''
+  const homeMatchedKey = Object.keys(teamLogos).find((key) =>
+    key.toLowerCase().includes(seletedGame ? seletedGame.team!.home.toLowerCase() : '')
+  );
+  const awayMatchedKey = Object.keys(teamLogos).find((key) =>
+    key.toLowerCase().includes(seletedGame ? seletedGame.team!.away.toLowerCase() : '')
+  );
+  const logoHome = homeMatchedKey ? teamLogos[homeMatchedKey] : ''
+  const logoAway = awayMatchedKey ? teamLogos[awayMatchedKey] : ''
 
   useEffect(() => {
     setMessageCount(messages.length);
@@ -71,25 +71,25 @@ const ClientParticularGamePage: FC<ClientParticularGamePageProps> = ({seletedGam
     // });
 
     channel.bind("new-message", (payload: any) => {
-    setMessages(prev => {
-      // Remove optimistic message (match by message content or negative temp ID logic)
-      const filtered = prev.filter(msg => {
-        // Option 1: Remove messages with same content and temp ID (if used)
-        const isDuplicate =
-          msg.message === payload.message &&
-          msg.userId === payload.userId &&
-          new Date(msg.time).getTime() === new Date(payload.time!).getTime();
+      setMessages(prev => {
+        // Remove optimistic message (match by message content or negative temp ID logic)
+        const filtered = prev.filter(msg => {
+          // Option 1: Remove messages with same content and temp ID (if used)
+          const isDuplicate =
+            msg.message === payload.message &&
+            msg.userId === payload.userId &&
+            new Date(msg.time).getTime() === new Date(payload.time!).getTime();
 
-        // Option 2: Remove negative ID (if optimistic messages use tempId = -Date.now())
-        const isTemp = typeof msg.id === 'number' && msg.id < 0;
+          // Option 2: Remove negative ID (if optimistic messages use tempId = -Date.now())
+          const isTemp = typeof msg.id === 'number' && msg.id < 0;
 
-        return !isDuplicate && !isTemp;
+          return !isDuplicate && !isTemp;
+        });
+
+        return [...filtered, payload].sort((a, b) =>
+          new Date(a.time).getTime() - new Date(b.time).getTime()
+        );
       });
-
-      return [...filtered, payload].sort((a, b) =>
-        new Date(a.time).getTime() - new Date(b.time).getTime()
-      );
-    });
     });
 
     return () => {
@@ -114,8 +114,8 @@ const ClientParticularGamePage: FC<ClientParticularGamePageProps> = ({seletedGam
   };
 
   // Wager state
-  const {data: user} = useSession()
-  const {publicKey, connected} = useWallet()
+  const { user } = useUser()
+  const { publicKey, connected } = useWallet()
   const [isWagerModalOpen, setIsWagerModalOpen] = useState(false);
   const [isFundModalOpen, setIsFundModalOpen] = useState(false);
   const [isConfirmationModalOpen, setIsConfirmationModalOpen] = useState(false);
@@ -123,35 +123,35 @@ const ClientParticularGamePage: FC<ClientParticularGamePageProps> = ({seletedGam
   const [wagerCondition, setWagerCondition] = useState("");
   const [stakeAmount, setStakeAmount] = useState(0);
   const [selectedMessage, setSelectedMessage] = useState<any | null>(null);
-  const {date, time} = formatDateToBritish(seletedGame ? seletedGame.team!.startTime : '')
+  const { date, time } = formatDateToBritish(seletedGame ? seletedGame.team!.startTime : '')
   const [newBalance, setNewBalance] = useState(0)
-  const {provider} = useProviderStore()
+  const { provider } = useProviderStore()
   // const {data: privateKey, isLoading, error} = trpc.users.getPrivateKey.useQuery({email: user?.email!, provider: provider})
 
-  console.log({provider: provider, user})
-  
-    useEffect(() => {
-  if (user?.user !== undefined && connected) {
-    const lastRunKey = 'last-balance-check';
-    const now = Date.now();
-    const lastRun = Number(localStorage.getItem(lastRunKey));
+  console.log({ provider: provider, user })
 
-    const TWO_MINUTES = 2 * 60 * 1000;
+  useEffect(() => {
+    if (user !== null && connected) {
+      const lastRunKey = 'last-balance-check';
+      const now = Date.now();
+      const lastRun = Number(localStorage.getItem(lastRunKey));
 
-    if (!lastRun || now - lastRun > TWO_MINUTES) {
-      const getB = async () => {
-        const userBalance = await getSolanaBalance(publicKey!.toBase58());
-          console.log({userBalance})
+      const TWO_MINUTES = 2 * 60 * 1000;
 
-        // await updateWalletData(user?.address!);
-        setNewBalance(userBalance)
-        localStorage.setItem(lastRunKey, String(now));
-      };
+      if (!lastRun || now - lastRun > TWO_MINUTES) {
+        const getB = async () => {
+          const userBalance = await getSolanaBalance(publicKey!.toBase58());
+          console.log({ userBalance })
 
-      getB();
+          // await updateWalletData(user?.address!);
+          setNewBalance(userBalance)
+          localStorage.setItem(lastRunKey, String(now));
+        };
+
+        getB();
+      }
     }
-  }
-}, [user]);
+  }, [user]);
 
 
   const handleToggle = () => {
@@ -246,159 +246,159 @@ const ClientParticularGamePage: FC<ClientParticularGamePageProps> = ({seletedGam
     }
   };
 
-    return (
-      <main className="min-h-screen flex flex-col">
-        <div className="overflow-visible text-white z-30 shadow-md pb-3 bg-gradient-to-b from-gradientDarkGreen to-gradientLightGreen">
-          <div className="container mx-auto px-4 md:px-6 pt-2 pb-2">
-            {/* Navigation bar */}
-            <div className="flex justify-between items-center mb-2">
-              <button
-                onClick={() => router.back()}
-                className="p-2 rounded-full hover:bg-[#3E3D3D30] transition-colors"
-              >
-                <BackIcon />
-              </button>
-              <CurvedArrow />
-            </div>
+  return (
+    <main className="min-h-screen flex flex-col">
+      <div className="overflow-visible text-white z-30 shadow-md pb-3 bg-gradient-to-b from-gradientDarkGreen to-gradientLightGreen">
+        <div className="container mx-auto px-4 md:px-6 pt-2 pb-2">
+          {/* Navigation bar */}
+          <div className="flex justify-between items-center mb-2">
+            <button
+              onClick={() => router.back()}
+              className="p-2 rounded-full hover:bg-[#3E3D3D30] transition-colors"
+            >
+              <BackIcon />
+            </button>
+            <CurvedArrow />
+          </div>
 
-            {/* Teams and score section */}
-            <div className="flex flex-col justify-center items-center">
-              <div className="flex w-full md:w-[90%] max-w-2xl pt-1 justify-between items-center">
-                {/* Home team */}
-                <div className="flex flex-col items-center">
-                  {seletedGame.team.home && (
-                    <Image
-                      src={logoHome}
-                      alt={seletedGame.team.home}
-                      width={100}
-                      height={100}
-                      className="w-[40px] md:w-[50px] lg:w-[60px] transition-transform hover:scale-105"
-                    />
-                  )}
-                  <p className="text-center text-[0.65rem] md:text-[0.7rem] lg:text-[0.8rem] font-medium mt-1">
-                    {seletedGame.team.home}
+          {/* Teams and score section */}
+          <div className="flex flex-col justify-center items-center">
+            <div className="flex w-full md:w-[90%] max-w-2xl pt-1 justify-between items-center">
+              {/* Home team */}
+              <div className="flex flex-col items-center">
+                {seletedGame.team.home && (
+                  <Image
+                    src={logoHome}
+                    alt={seletedGame.team.home}
+                    width={100}
+                    height={100}
+                    className="w-[40px] md:w-[50px] lg:w-[60px] transition-transform hover:scale-105"
+                  />
+                )}
+                <p className="text-center text-[0.65rem] md:text-[0.7rem] lg:text-[0.8rem] font-medium mt-1">
+                  {seletedGame.team.home}
+                </p>
+              </div>
+
+              {/* Score or time */}
+              <div className="grid place-items-center">
+                <div className="flex items-center gap-2 leading-8 font-bold">
+                  <p className="text-[2rem] md:text-[2.2rem] lg:text-[2.5rem]">
+                    {seletedGame.hub.isGameStarted === true ? particularGameLiveScores.home.score : seletedGame.team.homeScore}
+                  </p>
+                  <span className="text-[2rem] md:text-[2.2rem] lg:text-[2.5rem]">
+                    {" "}
+                    -{" "}
+                  </span>
+                  <p className="text-[2rem] md:text-[2.2rem] lg:text-[2.5rem]">
+                    {seletedGame.hub.isGameStarted === true ? particularGameLiveScores.away.score : seletedGame.team?.awayScore}
                   </p>
                 </div>
-
-                {/* Score or time */}
-                <div className="grid place-items-center">
-                  <div className="flex items-center gap-2 leading-8 font-bold">
-                    <p className="text-[2rem] md:text-[2.2rem] lg:text-[2.5rem]">
-                      {seletedGame.hub.isGameStarted === true ? particularGameLiveScores.home.score : seletedGame.team.homeScore}
-                    </p>
-                    <span className="text-[2rem] md:text-[2.2rem] lg:text-[2.5rem]">
-                      {" "}
-                      -{" "}
-                    </span>
-                    <p className="text-[2rem] md:text-[2.2rem] lg:text-[2.5rem]">
-                      {seletedGame.hub.isGameStarted === true ? particularGameLiveScores.away.score : seletedGame.team?.awayScore}
-                    </p>
-                  </div>
-                  <div className=" text-[0.65rem] md:text-[0.7rem] flex flex-col gap-1 items-center bg-[#ffffff20] px-3 py-0.5 rounded-full">
-                    <span>{seletedGame.hub.isGameStarted === true && particularGameLiveScores.status.liveTime.long}</span>
-                    <span>{seletedGame.hub.isGameStarted === false && date}</span>
-                  </div>
-                </div>
-
-                {/* Away team */}
-                <div className="flex flex-col items-center">
-                  {seletedGame.team.away && (
-                    <Image
-                      src={logoAway}
-                      alt={seletedGame.team.away}
-                      width={100}
-                      height={100}
-                      className="w-[40px] md:w-[50px] lg:w-[60px] transition-transform hover:scale-105"
-                    />
-                  )}
-                  <p className="text-center text-[0.65rem] md:text-[0.7rem] lg:text-[0.8rem] font-medium mt-1">
-                    {seletedGame.team.away}
-                  </p>
+                <div className=" text-[0.65rem] md:text-[0.7rem] flex flex-col gap-1 items-center bg-[#ffffff20] px-3 py-0.5 rounded-full">
+                  <span>{seletedGame.hub.isGameStarted === true && particularGameLiveScores.status.liveTime.long}</span>
+                  <span>{seletedGame.hub.isGameStarted === false && date}</span>
                 </div>
               </div>
 
-              {/* Match overview section - using a green underline to make it stand out */}
-              <div className="mt-3 mb-1">
-                <p className=" font-medium text-[0.7rem] md:text-[0.8rem] inline-block relative p-2">
-                  
-                  
+              {/* Away team */}
+              <div className="flex flex-col items-center">
+                {seletedGame.team.away && (
+                  <Image
+                    src={logoAway}
+                    alt={seletedGame.team.away}
+                    width={100}
+                    height={100}
+                    className="w-[40px] md:w-[50px] lg:w-[60px] transition-transform hover:scale-105"
+                  />
+                )}
+                <p className="text-center text-[0.65rem] md:text-[0.7rem] lg:text-[0.8rem] font-medium mt-1">
+                  {seletedGame.team.away}
                 </p>
               </div>
             </div>
-          </div>
-        </div>
 
-        {/* Chat Container - Adjusts based on screen size */}
-        <div className="">
-          {/* Message area - takes remaining height */}
-          <div
-            ref={messageAreaRef}
-            className="border h-[calc(100vh-290px)] sm:h-[calc(100vh-340px)] bg-[#ECF5F5] flex-1 z-20 overflow-y-auto rounded-t-3xl message-area"
-            style={{ marginTop: "0", border: "none" }}
-          >
-            <div className="  px-3 py-1 bg-[#ECF5F5] pb-20" ref={boxRef}>
-              <MessagePopup seletedGame={seletedGame} />
+            {/* Match overview section - using a green underline to make it stand out */}
+            <div className="mt-3 mb-1">
+              <p className=" font-medium text-[0.7rem] md:text-[0.8rem] inline-block relative p-2">
+
+
+              </p>
             </div>
+          </div>
+        </div>
+      </div>
 
-            {/* Scroll to Bottom button - shows only when not at bottom */}
-            <button
-              onClick={handleScrollToBottom}
-              className="fixed bottom-24 right-4 text-black rounded-full p-3 transition-colors z-50"
-              aria-label="Scroll to bottom"
-            >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                className="h-6 w-6"
-                fill="black"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M19 14l-7 7m0 0l-7-7m7 7V3"
-                />
-              </svg>
-            </button>
+      {/* Chat Container - Adjusts based on screen size */}
+      <div className="">
+        {/* Message area - takes remaining height */}
+        <div
+          ref={messageAreaRef}
+          className="border h-[calc(100vh-290px)] sm:h-[calc(100vh-340px)] bg-[#ECF5F5] flex-1 z-20 overflow-y-auto rounded-t-3xl message-area"
+          style={{ marginTop: "0", border: "none" }}
+        >
+          <div className="  px-3 py-1 bg-[#ECF5F5] pb-20" ref={boxRef}>
+            <MessagePopup seletedGame={seletedGame} />
           </div>
 
-          {/* Message input - always at bottom */}
-          <MessageInput
-            hubName={seletedGame.hub.name!}
-            hubId={seletedGame.hub.id!}
-            ref={inputRef}
-            onWagerClick={handleWagerClick}
-          />
+          {/* Scroll to Bottom button - shows only when not at bottom */}
+          <button
+            onClick={handleScrollToBottom}
+            className="fixed bottom-24 right-4 text-black rounded-full p-3 transition-colors z-50"
+            aria-label="Scroll to bottom"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              className="h-6 w-6"
+              fill="black"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M19 14l-7 7m0 0l-7-7m7 7V3"
+              />
+            </svg>
+          </button>
         </div>
 
-        {/* Wager Modals */}
-        <WagerModal
-          isOpen={isWagerModalOpen}
-          onClose={() => {
-            setIsWagerModalOpen(false);
-            setInsufficientBalance(false);
-          }}
-          onProceed={handleWagerProceed}
-          selectedGame={seletedGame}
-          escrowAccount={escrowAccount ? escrowAccount : ""}
-          username={user?.user.name || "Pkay"}
-          insufficientBalance={insufficientBalance}
+        {/* Message input - always at bottom */}
+        <MessageInput
+          hubName={seletedGame.hub.name!}
+          hubId={seletedGame.hub.id!}
+          ref={inputRef}
+          onWagerClick={handleWagerClick}
         />
+      </div>
 
-        <FundWagerModal
-          isOpen={isFundModalOpen}
-          onClose={() => setIsFundModalOpen(false)}
-          onConfirm={handleFundConfirm}
-          amount={stakeAmount}
-        />
+      {/* Wager Modals */}
+      <WagerModal
+        isOpen={isWagerModalOpen}
+        onClose={() => {
+          setIsWagerModalOpen(false);
+          setInsufficientBalance(false);
+        }}
+        onProceed={handleWagerProceed}
+        selectedGame={seletedGame}
+        escrowAccount={escrowAccount ? escrowAccount : ""}
+        username={user?.name || "Pkay"}
+        insufficientBalance={insufficientBalance}
+      />
 
-        <TransactionConfirmedModal
-          isOpen={isConfirmationModalOpen}
-          onClose={() => setIsConfirmationModalOpen(false)}
-        />
-      </main>
-    );
+      <FundWagerModal
+        isOpen={isFundModalOpen}
+        onClose={() => setIsFundModalOpen(false)}
+        onConfirm={handleFundConfirm}
+        amount={stakeAmount}
+      />
+
+      <TransactionConfirmedModal
+        isOpen={isConfirmationModalOpen}
+        onClose={() => setIsConfirmationModalOpen(false)}
+      />
+    </main>
+  );
 
 };
 

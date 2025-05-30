@@ -3,7 +3,7 @@ import React, { forwardRef, useState, useEffect } from "react";
 import { Message, useMessageStore } from "@/stores/use-messages-store";
 import { useAuthLogin } from "@/hooks/use-auth-login";
 import { trpc } from "@/trpc/client";
-import { useSession } from "next-auth/react";
+import { useUser } from "@civic/auth-web3/react";
 
 interface MessageInputProps {
   ref: React.ForwardedRef<HTMLDivElement | null>;
@@ -15,50 +15,50 @@ interface MessageInputProps {
 const MessageInput = forwardRef<HTMLDivElement | null, MessageInputProps>(
   ({ onWagerClick, hubId, hubName: name }, ref) => {
     // const { user } = useAuthLogin();
-    const {data: user} = useSession()
+    const { user } = useUser()
     const [message, setMessage] = useState("");
     // const messagesMutation = trpc.messages.sendMessages.useMutation();
 
     const utils = trpc.useUtils();
     const addMessage = trpc.messages.sendMessages.useMutation({
-    // ✅ Optimistic Update
-    onMutate: async (newMessage) => {
-      await utils.messages.getAllMessages.cancel({ hubName: name });
-      const previous = utils.messages.getAllMessages.getData({ hubName: name });
-      const tempId = -Date.now()
-      // Optimistically update local cache
-      utils.messages.getAllMessages.setData({ hubName: name }, (old = []) => {
-        const aNewMessage = {
-          id: tempId,
+      // ✅ Optimistic Update
+      onMutate: async (newMessage) => {
+        await utils.messages.getAllMessages.cancel({ hubName: name });
+        const previous = utils.messages.getAllMessages.getData({ hubName: name });
+        const tempId = -Date.now()
+        // Optimistically update local cache
+        utils.messages.getAllMessages.setData({ hubName: name }, (old = []) => {
+          const aNewMessage = {
+            id: tempId,
             hubId,
             message: newMessage.content,
             author: {
               id: newMessage.userId!,
-              name: user?.user?.name!,
-              profileImage: user?.user?.image!
+              name: user?.name!,
+              profileImage: user?.picture!
             },
             userId: newMessage.userId,
             time: new Date().toISOString()
+          }
+
+
+          return [...old, aNewMessage].sort((a, b) =>
+            new Date(a.time ?? '').getTime() - new Date(b.time ?? '').getTime()
+          );
+        });
+
+        return { previous }
+      },
+      // ✅ Rollback on error
+      onError: (err, newMessage, context) => {
+        if (context?.previous) {
+          utils.messages.getAllMessages.setData({ hubName: name }, context.previous);
         }
-
-                
-        return [...old, aNewMessage].sort((a, b) =>
-          new Date(a.time ?? '').getTime() - new Date(b.time ?? '').getTime()
-        );
-      });
-
-      return {previous}
-    },
-    // ✅ Rollback on error
-    onError: (err, newMessage, context) => {
-      if (context?.previous) {
-        utils.messages.getAllMessages.setData({ hubName: name }, context.previous);
-      }
-    },
-    // ✅ Re-fetch on success
-    onSettled: () => {
-      utils.messages.getAllMessages.invalidate({ hubName: name });
-    },
+      },
+      // ✅ Re-fetch on success
+      onSettled: () => {
+        utils.messages.getAllMessages.invalidate({ hubName: name });
+      },
     });
 
     const handleSendMessage = async () => {
@@ -67,7 +67,7 @@ const MessageInput = forwardRef<HTMLDivElement | null, MessageInputProps>(
       addMessage.mutateAsync({
         hubId,
         content: message.trim(),
-        userId: Number(user?.user.twitterId),
+        userId: Number(user?.id),
       })
 
       // Clear the input
@@ -119,11 +119,10 @@ const MessageInput = forwardRef<HTMLDivElement | null, MessageInputProps>(
                 handleSendMessage();
               }}
               disabled={!message.trim()}
-              className={`${
-                !message.trim()
-                  ? "text-gray-400"
-                  : "text-blue-500 hover:text-blue-600"
-              } flex-shrink-0`}
+              className={`${!message.trim()
+                ? "text-gray-400"
+                : "text-blue-500 hover:text-blue-600"
+                } flex-shrink-0`}
             >
               <SendIcon />
             </button>

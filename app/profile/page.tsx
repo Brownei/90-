@@ -9,11 +9,12 @@ import { useWallet } from '@solana/wallet-adapter-react';
 import { useAuthLogin } from '@/hooks/use-auth-login';
 import { SolanaWallet } from '@web3auth/solana-provider';
 import { IProvider } from '@web3auth/base';
-import { useSession } from 'next-auth/react';
+import { useUser } from "@civic/auth-web3/react";
 
 const ProfilePage = () => {
   const { } = useWallet();
-  const {data: user} = useSession()
+  const usercontext = useUser()
+  const { user } = usercontext
   const router = useRouter();
   const { loggedIn, provider, isLoading } = useAuthLogin();
   const [tweetText, setTweetText] = React.useState('');
@@ -22,7 +23,7 @@ const ProfilePage = () => {
 
   React.useEffect(() => {
     // If not authenticated and not loading, redirect to home
-    if (user?.user === undefined) {
+    if (user === null) {
       router.push('/');
     }
   }, [user]);
@@ -54,7 +55,7 @@ const ProfilePage = () => {
     );
   }
 
-  if (user?.user === undefined) {
+  if (user === null) {
     return null; // Will redirect in the useEffect
   }
 

@@ -10,14 +10,14 @@ import { useRouter } from "next/navigation";
 import { useAuthLogin } from "@/hooks/use-auth-login";
 import { toast } from "react-hot-toast";
 import { trpc } from "@/trpc/client";
-import { useSession } from "next-auth/react";
+import { useUser } from "@civic/auth-web3/react";
 
 const LiveCarousel = ({
   tabs,
 }: {
-  tabs:  any[] | undefined;
+  tabs: any[] | undefined;
 }) => {
-    const router = useRouter();
+  const router = useRouter();
   const [emblaRef, emblaApi] = useEmblaCarousel({ loop: false });
   const launchNewHubMutation = trpc.hubs.launchHubs.useMutation()
   const { selectedIndex, scrollSnaps, onDotButtonClick } =
@@ -29,11 +29,11 @@ const LiveCarousel = ({
     }
   }, [emblaApi]);
 
-  const {data} = useSession()
+  const { user } = useUser()
   const { login, loggedIn } = useAuthLogin();
 
   async function launchNewHub(urlRoute: string, home: string, away: string, startTime: string, homeScore: number, awayScore: number) {
-    if (data?.user !== undefined) {
+    if (user !== null) {
       toast.success("Launching the hub");
 
       await launchNewHubMutation.mutateAsync({
@@ -51,10 +51,10 @@ const LiveCarousel = ({
       toast.error("Please login to join the hub");
       login();
     }
-  } 
+  }
 
   function joinAHub(urlRoute: string) {
-    if (data?.user !== undefined) {
+    if (user !== null) {
       toast.success("Joining the hub");
       router.push(`/comment-hub/${urlRoute}`);
     } else {
@@ -74,94 +74,94 @@ const LiveCarousel = ({
         ) : (
           <>
             {tabs?.map((game, i) => {
-            const urlRoute = formatString(`${game.home.name} vs ${game.away.name}`);
-            const {data: hub, isLoading, error} = trpc.hubs.getAParticularHub.useQuery({name: urlRoute})
-            const homeMatchedKey = Object.keys(teamLogos).find((key) =>
-              key.toLowerCase().includes(game.home.name.toLowerCase())
-            );
-            const awayMatchedKey = Object.keys(teamLogos).find((key) =>
-              key.toLowerCase().includes(game.away.name.toLowerCase())
-            );
-            const logoHome = homeMatchedKey ? teamLogos[homeMatchedKey] : ''
-            const logoAway = awayMatchedKey ? teamLogos[awayMatchedKey] : ''
+              const urlRoute = formatString(`${game.home.name} vs ${game.away.name}`);
+              const { data: hub, isLoading, error } = trpc.hubs.getAParticularHub.useQuery({ name: urlRoute })
+              const homeMatchedKey = Object.keys(teamLogos).find((key) =>
+                key.toLowerCase().includes(game.home.name.toLowerCase())
+              );
+              const awayMatchedKey = Object.keys(teamLogos).find((key) =>
+                key.toLowerCase().includes(game.away.name.toLowerCase())
+              );
+              const logoHome = homeMatchedKey ? teamLogos[homeMatchedKey] : ''
+              const logoAway = awayMatchedKey ? teamLogos[awayMatchedKey] : ''
 
-            return (
-              <div
-                className="min-w-0 lg:lg:transform-gpu lg:pl-[1rem] lg:flex-[0_0_50%] flex-[0_0_100%] gap-3 border border-[#BEBEBE]/50 bg-white rounded-[12px]"
-                key={i}
-              >
-                <div className="p-3 text-black">
-                  <div className="flex justify-between items-center">
-                    <div
-                      className={`text-[0.65rem] text-[#FF0000] flex gap-1 items-center`}
-                    >
-                      <div className="bg-[#FF0000] size-1 rounded" />
-                      Live
-                    </div>
-                    <p className="font-semibold text-[1rem]">Premier League</p>
-                    <CurvedArrow />
-                  </div>
-
-                  <div className="flex justify-between items-center p-4">
-                    <div className="flex flex-col items-center">
-                      <Image
-                        src={logoHome}
-                        alt={game.home.name}
-                        width={100}
-                        height={100}
-                        className="w-[50px] lg:w-[150px]"
-                      />
-                      <p className="text-center text-[0.9rem] lg:text-[1rem] ">
-                        {game.home.name}
-                      </p>
+              return (
+                <div
+                  className="min-w-0 lg:lg:transform-gpu lg:pl-[1rem] lg:flex-[0_0_50%] flex-[0_0_100%] gap-3 border border-[#BEBEBE]/50 bg-white rounded-[12px]"
+                  key={i}
+                >
+                  <div className="p-3 text-black">
+                    <div className="flex justify-between items-center">
+                      <div
+                        className={`text-[0.65rem] text-[#FF0000] flex gap-1 items-center`}
+                      >
+                        <div className="bg-[#FF0000] size-1 rounded" />
+                        Live
+                      </div>
+                      <p className="font-semibold text-[1rem]">Premier League</p>
+                      <CurvedArrow />
                     </div>
 
-                    <div className="flex flex-col gap-2">
-                      <div className="flex items-center gap-1 font-bold">
-                        <p className="text-[#FF0000] text-[1.5rem] lg:text-[2rem]">
-                          {game.home.score}
-                        </p>
-                        <span className="text-[1.5rem] lg:text-[2rem]">:</span>
-                        <p className="text-[#FF0000] text-[1.5rem] lg:text-[2rem]">
-                          {game.away.score}
+                    <div className="flex justify-between items-center p-4">
+                      <div className="flex flex-col items-center">
+                        <Image
+                          src={logoHome}
+                          alt={game.home.name}
+                          width={100}
+                          height={100}
+                          className="w-[50px] lg:w-[150px]"
+                        />
+                        <p className="text-center text-[0.9rem] lg:text-[1rem] ">
+                          {game.home.name}
                         </p>
                       </div>
-                      <div>{game.status.liveTime.long}</div>
+
+                      <div className="flex flex-col gap-2">
+                        <div className="flex items-center gap-1 font-bold">
+                          <p className="text-[#FF0000] text-[1.5rem] lg:text-[2rem]">
+                            {game.home.score}
+                          </p>
+                          <span className="text-[1.5rem] lg:text-[2rem]">:</span>
+                          <p className="text-[#FF0000] text-[1.5rem] lg:text-[2rem]">
+                            {game.away.score}
+                          </p>
+                        </div>
+                        <div>{game.status.liveTime.long}</div>
+                      </div>
+
+
+                      <div className="flex flex-col items-center">
+                        <Image
+                          src={logoAway}
+                          alt={game.away.name}
+                          width={100}
+                          height={100}
+                          className="w-[50px] lg:w-[150px]"
+                        />
+                        <p className="text-center text-[0.9rem] lg:text-[1rem]">
+                          {game.away.name}
+                        </p>
+                      </div>
                     </div>
 
-
-                    <div className="flex flex-col items-center">
-                    <Image
-                      src={logoAway}
-                      alt={game.away.name}
-                      width={100}
-                      height={100}
-                      className="w-[50px] lg:w-[150px]"
-                    />
-                    <p className="text-center text-[0.9rem] lg:text-[1rem]">
-                      {game.away.name}
-                    </p>
+                    <div className="flex justify-center items-center">
+                      <button
+                        onClick={async () => {
+                          if (hub?.hub.name === urlRoute) {
+                            joinAHub(urlRoute)
+                          } else {
+                            await launchNewHub(urlRoute, game.home.name, game.away.name, game.status.utcTime, game.home.score, game.away.score)
+                          }
+                        }}
+                        className="w-fit bg-darkGreen py-1 cursor-pointer px-6 text-white font-extrabold rounded-xl"
+                      >
+                        {(!isLoading && hub?.hub.name === urlRoute) ? 'Join Hub' : 'Launch Hub'}
+                      </button>
+                    </div>
                   </div>
                 </div>
-
-                <div className="flex justify-center items-center">
-                  <button
-                    onClick={async () => {
-                        if(hub?.hub.name === urlRoute) {
-                            joinAHub(urlRoute)
-                        } else {
-                          await launchNewHub(urlRoute, game.home.name, game.away.name, game.status.utcTime, game.home.score, game.away.score)
-                        }
-                    }}
-                    className="w-fit bg-darkGreen py-1 cursor-pointer px-6 text-white font-extrabold rounded-xl"
-                  >
-                    {(!isLoading && hub?.hub.name === urlRoute) ? 'Join Hub': 'Launch Hub'}
-                  </button>
-                </div>
-              </div>
-            </div>
-          );
-        })}
+              );
+            })}
           </>
         )}
       </div>

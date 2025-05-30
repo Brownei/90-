@@ -11,7 +11,7 @@ import { useAuthLogin } from "@/hooks/use-auth-login";
 import { toast } from "react-hot-toast";
 import { trpc } from "@/trpc/client";
 import { url } from "inspector";
-import { useSession } from "next-auth/react";
+import { useUser } from "@civic/auth-web3/react";
 const Carousel = ({
   tabs,
 }: {
@@ -29,11 +29,11 @@ const Carousel = ({
     }
   }, [emblaApi]);
 
-  const {data} = useSession()
+  const { user } = useUser()
   const { login } = useAuthLogin();
 
   async function launchNewHub(urlRoute: string, home: string, away: string, startTime: string, awayScore: number, homeScore: number) {
-    if (data?.user !== undefined) {
+    if (user !== null) {
       toast.success("Launching the hub");
 
       await launchNewHubMutation.mutateAsync({
@@ -51,10 +51,10 @@ const Carousel = ({
       toast.error("Please login to join the hub");
       login();
     }
-  } 
+  }
 
   function joinAHub(urlRoute: string) {
-    if (data?.user !== undefined) {
+    if (user !== null) {
       toast.success("Joining the hub");
       router.push(`/comment-hub/${urlRoute}`);
     } else {
@@ -70,8 +70,8 @@ const Carousel = ({
       <div className="flex lg:gap-1 lg[touch-action:pan-y_pinch-zoom] lg:ml-[calc(1rem_*_ -1)]">
         {tabs!.map((game, i) => {
           const urlRoute = formatString(`${game.home.name} vs ${game.away.name}`);
-          const {date, time} = formatDateToBritish(game.status.utcTime)
-          const {data: hub, isLoading, error} = trpc.hubs.getAParticularHub.useQuery({name: urlRoute})
+          const { date, time } = formatDateToBritish(game.status.utcTime)
+          const { data: hub, isLoading, error } = trpc.hubs.getAParticularHub.useQuery({ name: urlRoute })
           const homeMatchedKey = Object.keys(teamLogos).find((key) =>
             key.toLowerCase().includes(game.home.name.toLowerCase())
           );
@@ -80,8 +80,8 @@ const Carousel = ({
           );
           const logoHome = homeMatchedKey ? teamLogos[homeMatchedKey] : ''
           const logoAway = awayMatchedKey ? teamLogos[awayMatchedKey] : ''
-          {/* const {data: homeTeamInfo, isLoading: isHomeTeamInfoLoading, error: homeTeamInfoError} = trpc.games.getTeamInfo.useQuery({name: game.home.longName}) */}
-          {/* const {data: awayTeamInfo, isLoading: isAwayTeamInfoLoading, error: awayTeamInfoError} = trpc.games.getTeamInfo.useQuery({name: game.away.longName}) */}
+          {/* const {data: homeTeamInfo, isLoading: isHomeTeamInfoLoading, error: homeTeamInfoError} = trpc.games.getTeamInfo.useQuery({name: game.home.longName}) */ }
+          {/* const {data: awayTeamInfo, isLoading: isAwayTeamInfoLoading, error: awayTeamInfoError} = trpc.games.getTeamInfo.useQuery({name: game.away.longName}) */ }
 
           return (
             <div
@@ -94,7 +94,7 @@ const Carousel = ({
                     className={`text-[0.65rem] text-[#FF0000] flex gap-1 items-center`}
                   >
                   </div>
-                  <p className="font-semibold text-[1rem]">{getLeague(game.home.name, game.away.name)}</p>  
+                  <p className="font-semibold text-[1rem]">{getLeague(game.home.name, game.away.name)}</p>
                   <CurvedArrow />
                 </div>
 
@@ -112,10 +112,10 @@ const Carousel = ({
                     </p>
                   </div>
 
-                    <div className="text-[1rem] lg:text-[1.1rem] flex flex-col gap-1 items-center">
-                      <p>{date}</p>
-                      <p>{time}</p>
-                    </div>
+                  <div className="text-[1rem] lg:text-[1.1rem] flex flex-col gap-1 items-center">
+                    <p>{date}</p>
+                    <p>{time}</p>
+                  </div>
 
                   <div className="flex flex-col items-center">
                     <Image
@@ -135,14 +135,14 @@ const Carousel = ({
                   <button
                     onClick={async () => {
                       if (hub?.hub.name !== urlRoute) {
-                        await launchNewHub(urlRoute, game.home.name, game.away.name, game.status.utcTime, game.away.score, game.home.score)        
+                        await launchNewHub(urlRoute, game.home.name, game.away.name, game.status.utcTime, game.away.score, game.home.score)
                       } else {
                         joinAHub(urlRoute)
                       }
                     }}
                     className="w-fit bg-darkGreen py-1 cursor-pointer px-6 text-white font-extrabold rounded-xl"
                   >
-                    {(!isLoading && hub?.hub.name === urlRoute) ? 'Join Hub': 'Launch Hub'}
+                    {(!isLoading && hub?.hub.name === urlRoute) ? 'Join Hub' : 'Launch Hub'}
                   </button>
                 </div>
               </div>

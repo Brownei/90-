@@ -1,23 +1,15 @@
 'use client';
 import React from 'react'
-import Image from 'next/image';
 import MessageIcon from '@/public/icons/MessageIcon';
-import ChainIcon from '@/public/icons/ChainIcon';
-import FooterLogo from '@/public/icons/FooterLogo';
 import Link from 'next/link';
 import { ArrowRight, } from 'lucide-react';
-import { useAuthLogin } from '@/hooks/use-auth-login';
-import { Keypair } from '@solana/web3.js';
-import { useSession } from 'next-auth/react';
 
 const Homepage = () => {
-  const {data: user} = useSession()
-
   return (
     <main className="min-h-screen min-w-screen bg-[#ECF5F5]">
       {/* Hero Section - simplified to match mobile design */}
       <div className="pt-20 pb-12 px-4">
-      
+
       </div>
 
       {/* In-Play Wagers Section */}
@@ -30,16 +22,16 @@ const Homepage = () => {
             <p className="text-gray-600 text-sm lg:text-base mb-8 max-w-2xl mx-auto">
               Settle arguments fast and easy on-chain
             </p>
-            
+
             <Link href={'/wagers'} className="inline-block bg-blue-500 hover:bg-blue-600 transition-colors text-white font-medium py-3 px-8 rounded-full text-sm lg:text-base mb-8">
               BOOK WAGER
             </Link>
 
             <div className="mb-8">
               <div className="flex items-center justify-between bg-white border-1 border-[#847F83] rounded-full p-2 max-w-md mx-auto mb-6">
-                <input 
-                  type="text" 
-                  placeholder="Paste wager link to join" 
+                <input
+                  type="text"
+                  placeholder="Paste wager link to join"
                   className="flex-1 bg-transparent outline-none px-3 text-sm text-gray-600 placeholder-gray-400"
                 />
                 <button className="bg-white text-black font-medium py-2 px-4 rounded-full text-sm ">
@@ -49,37 +41,37 @@ const Homepage = () => {
             </div>
 
             <div className="bg-white justify-around p-4 rounded-xl ">
-            <div className="text-left mx-auto">
-              <h3 className="font-semibold text-black mb-4 pb-1">
-                Booked wagers
-              </h3>
-              
-              <div className="space-y-3">
-                <div className="flex items-center justify-between py-1">
-                  <span className="text-sm text-gray-700">Mbappe to score in the second half</span>
-                  <div className="flex items-center gap-1.5">
-                    <button className="text-blue-500 text-xs underline">View</button>
-                    <span className="bg-red-500 text-white text-xs px-2 py-1 rounded">Cancel</span>
+              <div className="text-left mx-auto">
+                <h3 className="font-semibold text-black mb-4 pb-1">
+                  Booked wagers
+                </h3>
+
+                <div className="space-y-3">
+                  <div className="flex items-center justify-between py-1">
+                    <span className="text-sm text-gray-700">Mbappe to score in the second half</span>
+                    <div className="flex items-center gap-1.5">
+                      <button className="text-blue-500 text-xs underline">View</button>
+                      <span className="bg-red-500 text-white text-xs px-2 py-1 rounded">Cancel</span>
+                    </div>
                   </div>
-                </div>
-                
-                <div className="flex items-center justify-between py-2">
-                  <span className="text-sm text-gray-700">Inter Milan to win the UCL</span>
-                  <div className="flex items-center gap-2">
-                    <button className="text-blue-500 text-xs underline">View</button>
-                    <span className="bg-red-500 text-white text-xs px-2 py-1 rounded">Cancel</span>
+
+                  <div className="flex items-center justify-between py-2">
+                    <span className="text-sm text-gray-700">Inter Milan to win the UCL</span>
+                    <div className="flex items-center gap-2">
+                      <button className="text-blue-500 text-xs underline">View</button>
+                      <span className="bg-red-500 text-white text-xs px-2 py-1 rounded">Cancel</span>
+                    </div>
                   </div>
-                </div>
-                
-                <div className="flex items-center justify-between py-2">
-                  <span className="text-sm text-gray-700">Inter Milan to win the UCL</span>
-                  <div className="flex items-center gap-2">
-                    <button className="text-blue-500 text-xs underline">View</button>
-                    <span className="bg-gray-300 text-gray-600 text-xs px-2 py-1 rounded">Withdraw</span>
+
+                  <div className="flex items-center justify-between py-2">
+                    <span className="text-sm text-gray-700">Inter Milan to win the UCL</span>
+                    <div className="flex items-center gap-2">
+                      <button className="text-blue-500 text-xs underline">View</button>
+                      <span className="bg-gray-300 text-gray-600 text-xs px-2 py-1 rounded">Withdraw</span>
+                    </div>
                   </div>
                 </div>
               </div>
-            </div>
             </div>
           </div>
         </div>
@@ -88,14 +80,14 @@ const Homepage = () => {
       {/* Wager Rooms Section */}
       <div className="px-4 pb-12">
         <div className="max-w-4xl mx-auto">
-          <Link 
-            href="/wager-rooms" 
+          <Link
+            href="/wager-rooms"
             className="block bg-gray-400 hover:bg-gray-500 transition-colors text-white rounded-2xl p-6 lg:p-8"
           >
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-4">
                 <div className="w-12 h-12  flex items-center justify-center">
-                  <MessageIcon  />
+                  <MessageIcon />
                 </div>
                 <div>
                   <h3 className="font-semibold text-lg lg:text-xl">Wager rooms</h3>
@@ -108,7 +100,7 @@ const Homepage = () => {
       </div>
 
       {/* Newsletter Section */}
-      <div className='bg-[#141517] text-white'> 
+      <div className='bg-[#141517] text-white'>
         <div className='border-t border-gray-700'>
           <div className='max-w-4xl mx-auto px-4 py-4 flex justify-between items-center text-xs'>
             <p className='text-gray-400'>© 2025 90+</p>

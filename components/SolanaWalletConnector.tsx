@@ -12,7 +12,7 @@ import { useAuth } from '@/utils/useAuth';
 import '@solana/wallet-adapter-react-ui/styles.css';
 import { useAuthLogin } from '@/hooks/use-auth-login';
 import dynamic from 'next/dynamic';
-import { useSession } from 'next-auth/react';
+import { useUser } from "@civic/auth-web3/react";
 
 interface SolanaWalletConnectorProps {
   className?: string;
@@ -20,7 +20,7 @@ interface SolanaWalletConnectorProps {
 
 const SolanaWalletConnector: React.FC<SolanaWalletConnectorProps> = ({ className = '' }) => {
   const { connection } = useConnection();
-  const {status} = useSession()
+  const { authStatus: status } = useUser()
   const { publicKey, signMessage, connected, disconnect } = useWallet();
   const [authenticating, setAuthenticating] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -31,7 +31,7 @@ const SolanaWalletConnector: React.FC<SolanaWalletConnectorProps> = ({ className
   // Fetch wallet balance
   const fetchBalance = useCallback(async () => {
     if (!publicKey || !connection) return;
-    
+
     try {
       const balance = await connection.getBalance(publicKey);
       setWalletBalance(balance / 1e9); // Convert lamports to SOL
@@ -53,12 +53,12 @@ const SolanaWalletConnector: React.FC<SolanaWalletConnectorProps> = ({ className
     try {
       // Create a message for the user to sign
       const message = `Sign this message to authenticate with our app: ${Date.now()}`;
-      
+
       // Sign the message with the wallet
       const encodedMessage = new TextEncoder().encode(message);
       const signedMessage = await signMessage(encodedMessage);
       const signature = bs58.encode(signedMessage);
-      
+
       // Send the signed message to our API
       // const response = await fetch('/api/auth/solana-auth', {
       //   method: 'POST',
@@ -71,17 +71,17 @@ const SolanaWalletConnector: React.FC<SolanaWalletConnectorProps> = ({ className
       //     signature,
       //   }),
       // });
-      
+
       // const data = await response.json();
-      
+
       // if (!response.ok) {
       //   throw new Error(data.error || 'Authentication failed');
       // }
-      
+
       // Authentication successful
       setIsAuthenticated(true);
       await fetchBalance();
-      
+
       // // Redirect to wallet page or refresh
       // if (data.success) {
       //   router.refresh();
@@ -107,21 +107,21 @@ const SolanaWalletConnector: React.FC<SolanaWalletConnectorProps> = ({ className
   return (
     <div className={`flex flex-col items-center ${className}`}>
       <div className="mb-4">
-        <WalletMultiButton className='bg-darkGreen flex items-center gap-3 py-2 px-3 rounded-2xl  font-semibold text-white text-[0.8rem] cursor-pointer'/>
+        <WalletMultiButton className='bg-darkGreen flex items-center gap-3 py-2 px-3 rounded-2xl  font-semibold text-white text-[0.8rem] cursor-pointer' />
       </div>
-      
+
       {connected && publicKey && (
         <div className="mt-3 flex flex-col items-center">
           <p className="text-sm font-medium">
             Connected: {publicKey.toString().slice(0, 4)}...{publicKey.toString().slice(-4)}
           </p>
-          
+
           {walletBalance !== null && (
             <p className="text-sm text-gray-600 mt-1">
               Balance: {walletBalance.toFixed(4)} SOL
             </p>
           )}
-          
+
           {!isAuthenticated && (
             <button
               onClick={handleConnect}
@@ -131,13 +131,13 @@ const SolanaWalletConnector: React.FC<SolanaWalletConnectorProps> = ({ className
               {authenticating ? 'Authenticating...' : 'Authenticate Wallet'}
             </button>
           )}
-          
+
           {isAuthenticated && (
             <div className="mt-3 px-3 py-1 bg-green-100 text-green-800 rounded-full text-xs">
               Wallet Authenticated
             </div>
           )}
-          
+
           {error && (
             <div className="mt-3 px-3 py-1 bg-red-100 text-red-800 rounded-full text-xs">
               {error}
@@ -145,7 +145,7 @@ const SolanaWalletConnector: React.FC<SolanaWalletConnectorProps> = ({ className
           )}
         </div>
       )}
-      
+
       {status === 'authenticated' && !connected && (
         <p className="text-sm text-gray-600 mt-2">
           Link your Solana wallet to your account for additional features

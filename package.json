@@ -13,7 +13,9 @@
     "db:generate": "drizzle-kit generate",
     "db:migrate": "node lib/db/migrate.ts",
     "db:push": "drizzle-kit push",
-    "db:migrate-from-prisma": "node scripts/migrate-from-prisma.js"
+    "db:migrate-from-prisma": "node scripts/migrate-from-prisma.js",
+    "anchor:deploy": "cd contract && anchor deploy",
+    "anchor:build": "cd contract && anchor build"
   },
   "dependencies": {
     "@auth/core": "^0.39.0",
