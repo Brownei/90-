@@ -1,6 +1,4 @@
 import type { Metadata } from "next";
-import AuthProvider from "@/components/providers/auth-provider";
-import { cookies } from "next/headers";
 import Nav from "@/components/Nav";
 
 export const metadata: Metadata = {
@@ -14,9 +12,9 @@ export default async function ProfileLayout({
   children: React.ReactNode;
 }>) {
   return (
-      <>
-          <Nav />
-        {children}
+    <>
+      <Nav />
+      {children}
     </>
   );
 }

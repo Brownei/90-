@@ -6,11 +6,12 @@ import { useEffect, useState, useCallback } from 'react'
 import { scrolledAtom, loggedInAtom, web3authAtom, isWeb3AuthInitializedAtom, userAtom } from '@/stores/navStore';
 import { useWallet, } from '@solana/wallet-adapter-react';
 import { useRouter } from 'next/navigation';
-import { SolanaPrivateKeyProvider, } from "@web3auth/solana-provider";
+import { SolanaPrivateKeyProvider, SolanaWallet } from "@web3auth/solana-provider";
 import { trpc } from '@/trpc/client';
 import { useSessionStore } from '@/stores/use-session-store';
 import { useProviderStore } from '@/stores/use-provider-store';
 import { PhantomWalletName } from '@solana/wallet-adapter-wallets';
+import { useUser } from "@civic/auth-web3/react";
 
 const chainConfig = {
   chainNamespace: CHAIN_NAMESPACES.SOLANA,

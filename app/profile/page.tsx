@@ -14,7 +14,6 @@ import { useSessionStore } from '@/stores/use-session-store';
 const ProfilePage = () => {
   const { } = useWallet();
   const { session: user } = useSessionStore()
-  // const { user } = usercontext
   const router = useRouter();
   const { loggedIn, provider, isLoading } = useAuthLogin();
   const [tweetText, setTweetText] = React.useState('');
@@ -53,10 +52,6 @@ const ProfilePage = () => {
         </div>
       </div>
     );
-  }
-
-  if (user === null) {
-    return null; // Will redirect in the useEffect
   }
 
   return (
