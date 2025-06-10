@@ -14,7 +14,8 @@ const nextConfig: NextConfig = {
       new URL('https://lh3.googleusercontent.com/a/**'),
       new URL('https://loodibee.com/wp-content/upload/**'),
       new URL('https://www.sportslogos.net/logos/**'),
-      new URL('https://drive.google.com/file/**')
+      new URL('https://drive.google.com/file/**'),
+      new URL('https://auth.civic.com/**')
     ],
   },
   typescript: {
