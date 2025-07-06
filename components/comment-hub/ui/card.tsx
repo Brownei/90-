@@ -1,9 +1,9 @@
-import { Game, games } from '@/data'
+import { Game } from '@/data'
 import Image from 'next/image'
 import React from 'react'
 
 const Card = ({ game }: { game: Game }) => {
-  const alreadyAHub = games.find((g) => g === game)
+  const alreadyAHub = true
   return (
     <div>
       {alreadyAHub && <p className=' font-semibold text-[0.9rem] mb-[10px]'>⚠️ This Hub already exists.</p>}
@@ -22,7 +22,7 @@ const Card = ({ game }: { game: Game }) => {
             <p className='text-center text-[0.9rem] lg:text-[1rem] '>{game.homeTeam}</p>
           </div>
 
-          {alreadyAHub !== undefined ? (
+          {game !== undefined ? (
             <div className='flex justify-between items-center gap-1 font-bold'>
               <p className='text-[#FF0000] text-[1.5rem] lg:text-[2rem]'>{game.homeScore}</p>
               <span className='text-[1.5rem] lg:text-[2rem]'>:</span>

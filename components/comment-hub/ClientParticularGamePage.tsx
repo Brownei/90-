@@ -95,7 +95,7 @@ const ClientParticularGamePage: FC<ClientParticularGamePageProps> = ({ seletedGa
     return () => {
       pusherClient.unsubscribe(String(seletedGame.hub!.id));
     };
-  }, [pusherClient]);
+  }, [seletedGame, setMessages]);
 
   const scrollToBottom = () => {
     if (messageAreaRef.current) {

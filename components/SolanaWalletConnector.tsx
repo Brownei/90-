@@ -38,7 +38,7 @@ const SolanaWalletConnector: React.FC<SolanaWalletConnectorProps> = ({ className
     } catch (err) {
       console.error('Error fetching balance:', err);
     }
-  }, [publicKey, connection]);
+  }, [publicKey, connection, router]);
 
   // Connect wallet
   const handleConnect = useCallback(async () => {

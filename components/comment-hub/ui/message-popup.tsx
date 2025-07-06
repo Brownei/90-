@@ -17,6 +17,7 @@ import { set } from "@project-serum/anchor/dist/cjs/utils/features";
 import { useAtom } from "jotai";
 import { allMessagesAtom } from "@/stores/navStore";
 import LoadingIcon from "@/public/icons/LoadingIcon";
+import Image from "next/image";
 
 const MessagePopup = ({ seletedGame }: { seletedGame: any }) => {
   const [messages, setMessages] = useAtom(allMessagesAtom)
@@ -154,171 +155,170 @@ const MessagePopup = ({ seletedGame }: { seletedGame: any }) => {
   // }
 
   // Enhanced messages for demo
-  if(isLoading) {
+  if (isLoading) {
     return (
-    <div className="flex justify-center py-4">
-      <LoadingIcon />
-    </div>
+      <div className="flex justify-center py-4">
+        <LoadingIcon />
+      </div>
     )
   } else {
     return (
-    <section className="overflow-auto h-full pt-2">
-      {/* Original messages */}
-      {messages.length === 0 ? (
-        <p className="text-center text-gray-500 py-8">
-          No messages in the hub.
-        </p>
-      ) : (
-        messages.map((message, i) => {
-            const {date, time} = formatDateToBritish(message.time!)
-          return (
-          <div
-            key={message.id}
-            className={`${
-              i !== messages.length - 1 && "border-b border-[#B7B7B7] "
-            } py-4`}
-          >
-            <div className="flex gap-2 items-start">
-              <img
-                src={message.author?.profileImage}
-                alt={message.author?.name}
-                width={500}
-                height={500}
-                className="size-[50px] rounded-full"
-              />
+      <section className="overflow-auto h-full pt-2">
+        {/* Original messages */}
+        {messages.length === 0 ? (
+          <p className="text-center text-gray-500 py-8">
+            No messages in the hub.
+          </p>
+        ) : (
+          messages.map((message, i) => {
+            const { date, time } = formatDateToBritish(message.time!)
+            return (
+              <div
+                key={message.id}
+                className={`${i !== messages.length - 1 && "border-b border-[#B7B7B7] "
+                  } py-4`}
+              >
+                <div className="flex gap-2 items-start">
+                  <Image
+                    src={message.author?.profileImage}
+                    alt={message.author?.name}
+                    width={500}
+                    height={500}
+                    className="size-[50px] rounded-full"
+                  />
 
-              <div className="grid gap-1 w-full">
-                <p className="flex gap-1 items-center">
-                  <span className="text-[#616061] text-[1rem] md:text-[0.75rem] font-medium">
-                    {message.author?.name}
-                  </span>
-                  <span className="text-[0.5rem] lg:text-[0.5rem] text-[#808080]/55">
-                    {time}
-                  </span>
-                </p>
-                <p className="flex gap-2 justify-between items-start">
-                  <span className="lg:w-[700px] text-[1rem] tracking-[0.2px] w-full">
-                    {message.message}
-                  </span>
-                  {/* {!message.isRef && ( */}
-                  {/*   <button */}
-                  {/*     className='flex items-center gap-[2px]' */}
-                  {/*     onClick={() => handleWagerClick(message)} */}
-                  {/*   > */}
-                  {/*     <span className='text-[0.9rem] lg:text-[0.9rem]'>⚽</span> */}
-                  {/*     <span className='text-[#000]/50 text-[0.6rem] w-[15%] lg:text-[0.8rem]'> {formatNumberInThousands(message.actionNos)}</span> */}
-                  {/*   </button> */}
-                  {/* )} */}
-                </p>
+                  <div className="grid gap-1 w-full">
+                    <p className="flex gap-1 items-center">
+                      <span className="text-[#616061] text-[1rem] md:text-[0.75rem] font-medium">
+                        {message.author?.name}
+                      </span>
+                      <span className="text-[0.5rem] lg:text-[0.5rem] text-[#808080]/55">
+                        {time}
+                      </span>
+                    </p>
+                    <p className="flex gap-2 justify-between items-start">
+                      <span className="lg:w-[700px] text-[1rem] tracking-[0.2px] w-full">
+                        {message.message}
+                      </span>
+                      {/* {!message.isRef && ( */}
+                      {/*   <button */}
+                      {/*     className='flex items-center gap-[2px]' */}
+                      {/*     onClick={() => handleWagerClick(message)} */}
+                      {/*   > */}
+                      {/*     <span className='text-[0.9rem] lg:text-[0.9rem]'>⚽</span> */}
+                      {/*     <span className='text-[#000]/50 text-[0.6rem] w-[15%] lg:text-[0.8rem]'> {formatNumberInThousands(message.actionNos)}</span> */}
+                      {/*   </button> */}
+                      {/* )} */}
+                    </p>
 
-                <div className="lg:w-[700px] text-[1rem] tracking-[0.2px] w-[calc(100%_-_10%)] flex justify-between items-center">
-                  {message.replies && message.replies.length > 0 ? (
-                    <button
-                      onClick={() => handleShowReplies(message.id!)}
-                      className="text-[#000000] underline text-[0.7rem] lg:text-[0.75rem] hover:text-blue-600"
-                    >
-                      {showAllReplies[message.id!]
-                        ? "Hide replies"
-                        : `View ${message.replies.length} ${
-                            message.replies.length === 1 ? "reply" : "replies"
-                          }`}
-                    </button>
-                  ) : (
-                    <button className="text-[#ECF5F5]/60 text-[0.7rem] lg:text-[0.75rem] hover:text-[#ECF5F5]">
-                      {`Reply to ${message.author?.name}`}
-                    </button>
-                  )}
+                    <div className="lg:w-[700px] text-[1rem] tracking-[0.2px] w-[calc(100%_-_10%)] flex justify-between items-center">
+                      {message.replies && message.replies.length > 0 ? (
+                        <button
+                          onClick={() => handleShowReplies(message.id!)}
+                          className="text-[#000000] underline text-[0.7rem] lg:text-[0.75rem] hover:text-blue-600"
+                        >
+                          {showAllReplies[message.id!]
+                            ? "Hide replies"
+                            : `View ${message.replies.length} ${message.replies.length === 1 ? "reply" : "replies"
+                            }`}
+                        </button>
+                      ) : (
+                        <button className="text-[#ECF5F5]/60 text-[0.7rem] lg:text-[0.75rem] hover:text-[#ECF5F5]">
+                          {`Reply to ${message.author?.name}`}
+                        </button>
+                      )}
 
-                  <div className="flex gap-2 items-center">
-                    {/* {!message.isRef && ( */}
-                    {/*   <button */}
-                    {/*     className='bg-yellow-100 text-yellow-800 px-2 py-1 rounded-full text-xs font-medium hover:bg-yellow-200' */}
-                    {/*     onClick={() => handleWagerClick(message)} */}
-                    {/*   > */}
-                    {/*     Wager */}
-                    {/*   </button> */}
+                      <div className="flex gap-2 items-center">
+                        {/* {!message.isRef && ( */}
+                        {/*   <button */}
+                        {/*     className='bg-yellow-100 text-yellow-800 px-2 py-1 rounded-full text-xs font-medium hover:bg-yellow-200' */}
+                        {/*     onClick={() => handleWagerClick(message)} */}
+                        {/*   > */}
+                        {/*     Wager */}
+                        {/*   </button> */}
+                        {/* )} */}
+                      </div>
+                    </div>
+
+                    {/* Show all replies when expanded */}
+                    {/* {showAllReplies[message.id] && message.replies && ( */}
+                    {/*   <div className="ml-12 mt-3 border-l-2 border-gray-200 pl-4"> */}
+                    {/*     <Replies replies={message.replies} messageUsername={message.username} /> */}
+                    {/**/}
+                    {/*     {replyingTo !== message.id && ( */}
+                    {/*       <div className="mt-2 mb-3"> */}
+                    {/*         <button */}
+                    {/*           onClick={() => setReplyingTo(message.id)} */}
+                    {/*           className="text-blue-600 text-sm hover:text-blue-800" */}
+                    {/*         > */}
+                    {/*           Add a reply... */}
+                    {/*         </button> */}
+                    {/*       </div> */}
+                    {/*     )} */}
+                    {/*   </div> */}
                     {/* )} */}
+
+                    {/* Reply input when replying to this message */}
+                    {replyingTo === message.id && (
+                      <div className="mt-2 ml-6 flex gap-2 items-center">
+                        <input
+                          type="text"
+                          value={replyText}
+                          onChange={(e) => setReplyText(e.target.value)}
+                          placeholder={`Reply to ${message.author?.name}...`}
+                          className="flex-1 p-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-400"
+                          autoFocus
+                        />
+                        <div className="flex gap-2">
+                          <button
+                            onClick={() => setReplyingTo(null)}
+                            className="text-gray-500 text-sm hover:text-gray-700"
+                          >
+                            Cancel
+                          </button>
+                          <button
+                            className="bg-blue-500 text-white px-3 py-1 rounded-lg text-sm hover:bg-blue-600"
+                            disabled={!replyText.trim()}
+                          >
+                            Send
+                          </button>
+                        </div>
+                      </div>
+                    )}
                   </div>
                 </div>
-
-                {/* Show all replies when expanded */}
-                {/* {showAllReplies[message.id] && message.replies && ( */}
-                {/*   <div className="ml-12 mt-3 border-l-2 border-gray-200 pl-4"> */}
-                {/*     <Replies replies={message.replies} messageUsername={message.username} /> */}
-                {/**/}
-                {/*     {replyingTo !== message.id && ( */}
-                {/*       <div className="mt-2 mb-3"> */}
-                {/*         <button */}
-                {/*           onClick={() => setReplyingTo(message.id)} */}
-                {/*           className="text-blue-600 text-sm hover:text-blue-800" */}
-                {/*         > */}
-                {/*           Add a reply... */}
-                {/*         </button> */}
-                {/*       </div> */}
-                {/*     )} */}
-                {/*   </div> */}
-                {/* )} */}
-
-                {/* Reply input when replying to this message */}
-                {replyingTo === message.id && (
-                  <div className="mt-2 ml-6 flex gap-2 items-center">
-                    <input
-                      type="text"
-                      value={replyText}
-                      onChange={(e) => setReplyText(e.target.value)}
-                      placeholder={`Reply to ${message.author?.name}...`}
-                      className="flex-1 p-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-400"
-                      autoFocus
-                    />
-                    <div className="flex gap-2">
-                      <button
-                        onClick={() => setReplyingTo(null)}
-                        className="text-gray-500 text-sm hover:text-gray-700"
-                      >
-                        Cancel
-                      </button>
-                      <button
-                        className="bg-blue-500 text-white px-3 py-1 rounded-lg text-sm hover:bg-blue-600"
-                        disabled={!replyText.trim()}
-                      >
-                        Send
-                      </button>
-                    </div>
-                  </div>
-                )}
               </div>
-            </div>
-          </div>
-        ) 
-        })
-      )}
+            )
+          })
+        )}
 
-      {/* Wager Modals */}
-      <WagerModal
-        isOpen={isWagerModalOpen}
-        onClose={() => {
-          setIsWagerModalOpen(false);
-          setInsufficientBalance(false);
-        }}
-        selectedGame={seletedGame}
-        onProceed={handleWagerProceed}
-        username={selectedMessage?.username || "User"}
-        insufficientBalance={insufficientBalance}
-      />
+        {/* Wager Modals */}
+        <WagerModal
+          isOpen={isWagerModalOpen}
+          onClose={() => {
+            setIsWagerModalOpen(false);
+            setInsufficientBalance(false);
+          }}
+          selectedGame={seletedGame}
+          onProceed={handleWagerProceed}
+          username={selectedMessage?.username || "User"}
+          insufficientBalance={insufficientBalance}
+          escrowAccount=""
+        />
 
-      <FundWagerModal
-        isOpen={isFundModalOpen}
-        onClose={() => setIsFundModalOpen(false)}
-        onConfirm={handleFundConfirm}
-        amount={stakeAmount}
-      />
+        <FundWagerModal
+          isOpen={isFundModalOpen}
+          onClose={() => setIsFundModalOpen(false)}
+          onConfirm={handleFundConfirm}
+          amount={stakeAmount}
+        />
 
-      <TransactionConfirmedModal
-        isOpen={isConfirmationModalOpen}
-        onClose={() => setIsConfirmationModalOpen(false)}
-      />
-    </section>
-  );
+        <TransactionConfirmedModal
+          isOpen={isConfirmationModalOpen}
+          onClose={() => setIsConfirmationModalOpen(false)}
+        />
+      </section>
+    );
   }
 };
 

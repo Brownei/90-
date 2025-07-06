@@ -30,21 +30,21 @@ const WalletPage = () => {
 
   const fetchWalletData = async () => {
     if (!publicKey || !connection) return;
-    
+
     setLoading(true);
     setError(null);
-    
+
     try {
       // Fetch SOL balance
       const solBalance = await connection.getBalance(publicKey);
       setBalance(solBalance / LAMPORTS_PER_SOL);
-      
+
       // Fetch token accounts
       const tokenAccounts = await connection.getParsedTokenAccountsByOwner(
         publicKey,
         { programId: new PublicKey('TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA') }
       );
-      
+
       // Process token data
       const tokenInfos: TokenInfo[] = tokenAccounts.value.map(tokenAccount => {
         const accountData = tokenAccount.account.data.parsed.info;
@@ -52,7 +52,7 @@ const WalletPage = () => {
         const balance = accountData.tokenAmount.amount;
         const decimals = accountData.tokenAmount.decimals;
         const uiBalance = Number(balance) / Math.pow(10, decimals);
-        
+
         return {
           mint,
           balance: Number(balance),
@@ -60,7 +60,7 @@ const WalletPage = () => {
           uiBalance
         };
       });
-      
+
       setTokens(tokenInfos);
     } catch (err) {
       console.error('Error fetching wallet data:', err);
@@ -72,10 +72,10 @@ const WalletPage = () => {
 
   const requestAirdrop = async () => {
     if (!publicKey || !isAuthenticated) return;
-    
+
     setAirdropLoading(true);
     setAirdropMessage(null);
-    
+
     try {
       const response = await fetch('/api/wallet/airdrop', {
         method: 'POST',
@@ -87,15 +87,15 @@ const WalletPage = () => {
           amount: 1 // Request 1 SOL
         }),
       });
-      
+
       const data = await response.json();
-      
+
       if (!response.ok) {
         throw new Error(data.error || data.message || 'Airdrop failed');
       }
-      
+
       setAirdropMessage(data.message || 'Airdrop successful!');
-      
+
       // Refresh balance after airdrop
       setTimeout(() => {
         fetchWalletData();
@@ -116,7 +116,7 @@ const WalletPage = () => {
       setBalance(null);
       setTokens([]);
     }
-  }, [connected, publicKey, connection]);
+  }, [connected, publicKey, connection, fetchWalletData]);
 
   const handleDisconnect = () => {
     disconnect();
@@ -127,7 +127,7 @@ const WalletPage = () => {
     <div className="container mx-auto px-4 py-8">
       <div className="max-w-xl mx-auto">
         <h1 className="text-2xl font-bold mb-6">Your Solana Wallet</h1>
-        
+
         {!connected && (
           <div className="bg-white rounded-lg shadow-md p-6 mb-8">
             <h2 className="text-xl font-bold mb-4">Connect Your Wallet</h2>
@@ -135,7 +135,7 @@ const WalletPage = () => {
             {/* <SolanaWalletConnector /> */}
           </div>
         )}
-        
+
         {connected && publicKey && (
           <>
             <div className="bg-white rounded-lg shadow-md p-6 mb-6">
@@ -152,7 +152,7 @@ const WalletPage = () => {
                 </button>
               </div>
             </div>
-            
+
             <div className="bg-white rounded-lg shadow-md p-6 mb-6">
               <div className="flex justify-between items-center mb-4">
                 <h2 className="text-lg font-semibold">SOL Balance</h2>
@@ -164,13 +164,13 @@ const WalletPage = () => {
                   {airdropLoading ? 'Requesting...' : 'Request 1 SOL (Devnet)'}
                 </button>
               </div>
-              
+
               {airdropMessage && (
                 <div className={`p-2 mb-3 text-sm rounded ${airdropMessage.includes('failed') ? 'bg-red-100 text-red-800' : 'bg-green-100 text-green-800'}`}>
                   {airdropMessage}
                 </div>
               )}
-              
+
               {loading ? (
                 <p className="text-gray-600">Loading balance...</p>
               ) : balance !== null ? (
@@ -179,10 +179,10 @@ const WalletPage = () => {
                 <p className="text-gray-600">Unable to fetch balance</p>
               )}
             </div>
-            
+
             <div className="bg-white rounded-lg shadow-md p-6">
               <h2 className="text-lg font-semibold mb-4">Token Holdings</h2>
-              
+
               {loading ? (
                 <p className="text-gray-600">Loading tokens...</p>
               ) : error ? (
@@ -209,7 +209,7 @@ const WalletPage = () => {
               ) : (
                 <p className="text-gray-600">No tokens found in this wallet</p>
               )}
-              
+
               <button
                 onClick={fetchWalletData}
                 disabled={loading || !connected}
