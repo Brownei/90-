@@ -10,20 +10,22 @@ export const metadata: Metadata = {
   description: 'Live match commentary, betting, and interactive chat for sports enthusiasts.',
 };
 
-async function ParticularGamePage({params}: {
+async function ParticularGamePage({ params }: {
   params: Promise<{ game: string }>
 }) {
-  const {game} = await params
-  const selectedGame = await trpc.hubs.getAParticularHub({name: game})
-  const [home, away] = reverseFormatString(game).split("Vs")
-  const particularGameLiveScores = await trpc.games.getParticularLiveMatches({home: home.trim().toLowerCase(), away: away.trim().toLowerCase()})
+  const { game } = await params
+  //const selectedGame = await trpc.hubs.getAParticularHub({name: game})
+  const selectedGame: any = {}
+  //const [home, away] = reverseFormatString(game).split("Vs")
+  //const particularGameLiveScores = await trpc.games.getParticularLiveMatches({ home: home.trim().toLowerCase(), away: away.trim().toLowerCase() })
+  const particularGameLiveScores: any = {}
   // const escrowAccount = await trpc.users.getEscrowAccount()
-  
+
 
   return (
     <main className=' overflow-hidden '>
-      <ClientParticularGamePage 
-        seletedGame={selectedGame} 
+      <ClientParticularGamePage
+        seletedGame={selectedGame}
         particularGameLiveScores={particularGameLiveScores}
         escrowAccount={"Aes9enmjitXFojjRVTZySH9DXVmkHA78ExwM4r4jXmy6"}
       />

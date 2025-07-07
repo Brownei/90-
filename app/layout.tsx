@@ -22,10 +22,8 @@ export default async function RootLayout({
     <html lang="en">
       <body className="font-inter">
         <Providers >
-          <CivicAuthProvider>
-            <Toaster />
-            {children}
-          </CivicAuthProvider>
+          <Toaster />
+          {children}
         </Providers>
       </body>
     </html>
