@@ -53,6 +53,7 @@
     "next": "15.3.1",
     "next-auth": "^4.24.11",
     "oslo": "^1.2.1",
+    "permissionless": "^0.2.50",
     "pg": "^8.15.6",
     "pino-pretty": "^13.0.0",
     "pusher": "^5.2.0",

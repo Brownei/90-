@@ -7,7 +7,7 @@ import { useAuthState } from '@/context';
 
 const Nav = () => {
   const pathname = usePathname();
-  const { login, user } = useAuthState();
+  const { login, user, logout } = useAuthState();
 
   // State to track scroll position
   const [scrolled, setScrolled] = useState(false);
@@ -77,7 +77,7 @@ const Nav = () => {
               </>
             </button>
           ) : (
-            <button className="bg-blue-500 flex items-center gap-3 py-2 px-3 rounded-full  font-semibold text-white text-[0.8rem] cursor-pointer">
+            <button onClick={logout} className="bg-blue-500 flex items-center gap-3 py-2 px-3 rounded-full  font-semibold text-white text-[0.8rem] cursor-pointer">
               Log Out
             </button>
           )}

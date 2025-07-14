@@ -13,13 +13,13 @@ export const users = pgTable('users', {
   updatedAt: date('updated_at').notNull().defaultNow(),
 });
 
-export const usersRelation = relations(users, ({one, many}) => ({
+export const usersRelation = relations(users, ({ one, many }) => ({
   wallets: one(wallets, {
     fields: [users.id],
     references: [wallets.userId]
   }),
-  for: many(wagers, {relationName: 'for'}),
-  against: many(wagers, {relationName: 'against'}),
+  for: many(wagers, { relationName: 'for' }),
+  against: many(wagers, { relationName: 'against' }),
   comments: many(comments),
   replies: many(replies),
 }))
@@ -28,17 +28,15 @@ export const usersRelation = relations(users, ({one, many}) => ({
 export const wallets = pgTable('wallets', {
   id: serial('id').primaryKey(),
   userId: integer('user_id').references(() => users.id),
-  provider: text('provider').notNull(),
   publicKey: text('public_key').notNull().unique(),
   solanaBalance: real('solana_balance'),
-  isMainWallet: boolean('is_main_wallet').notNull().default(false),
   createdAt: date('created_at').notNull().defaultNow(),
   updatedAt: date('updated_at').notNull().defaultNow(),
 });
 
 export const walletsRelations = relations(wallets, ({ one }) => ({
-	owner: one(users, { fields: [wallets.userId], references: [users.id] }),
-  token: one(tokens, {fields: [wallets.id], references: [tokens.walletId]})
+  owner: one(users, { fields: [wallets.userId], references: [users.id] }),
+  token: one(tokens, { fields: [wallets.id], references: [tokens.walletId] })
 }));
 
 export const comments = pgTable('comments', {
@@ -46,14 +44,14 @@ export const comments = pgTable('comments', {
   content: text('content').notNull(),
   userId: integer('user_id').references(() => users.id),
   hubId: integer('hub_id').references(() => hubs.id),
-    createdAt: date('created_at').notNull().defaultNow(),
+  createdAt: date('created_at').notNull().defaultNow(),
 })
 
 export const commentsRelations = relations(comments, ({ one, many }) => ({
-	author: one(users, {
-		fields: [comments.userId],
-		references: [users.id],
-	}),
+  author: one(users, {
+    fields: [comments.userId],
+    references: [users.id],
+  }),
   hub: one(hubs, {
     fields: [comments.hubId],
     references: [hubs.id]
@@ -66,14 +64,14 @@ export const replies = pgTable('replies', {
   content: text('content').notNull(),
   commentId: integer('comment_id').references(() => comments.id),
   userId: integer('user_id').references(() => users.id),
-    createdAt: date('created_at').notNull().defaultNow(),
+  createdAt: date('created_at').notNull().defaultNow(),
 })
 
 export const repliesRelations = relations(replies, ({ one }) => ({
-	author: one(users, {
-		fields: [replies.userId],
-		references: [users.id],
-	}),
+  author: one(users, {
+    fields: [replies.userId],
+    references: [users.id],
+  }),
   comments: one(comments, {
     fields: [replies.commentId],
     references: [comments.id]
@@ -89,7 +87,7 @@ export const hubs = pgTable('hubs', {
   updatedAt: date('updated_at').notNull().defaultNow(),
 })
 
-export const hubsRelations = relations(hubs, ({one, many}) => ({
+export const hubsRelations = relations(hubs, ({ one, many }) => ({
   teams: one(teams, {
     fields: [hubs.id],
     references: [teams.hubId], // make sure this matches your foreign key
@@ -110,7 +108,7 @@ export const teams = pgTable('teams', {
 })
 
 export const teamsRelations = relations(teams, ({ one }) => ({
-	owner: one(hubs, { fields: [teams.hubId], references: [hubs.id] }),
+  owner: one(hubs, { fields: [teams.hubId], references: [hubs.id] }),
 }));
 
 export const wagers = pgTable('wagers', {
@@ -125,9 +123,9 @@ export const wagers = pgTable('wagers', {
 })
 
 export const wagersRelations = relations(wagers, ({ one }) => ({
-	owner: one(hubs, { fields: [wagers.hubId], references: [hubs.id] }),
-  for: one(users, {fields: [wagers.for], references: [users.id], relationName: 'for'}),
-  against: one(users, {fields: [wagers.against], references: [users.id], relationName: 'against'})
+  owner: one(hubs, { fields: [wagers.hubId], references: [hubs.id] }),
+  for: one(users, { fields: [wagers.for], references: [users.id], relationName: 'for' }),
+  against: one(users, { fields: [wagers.against], references: [users.id], relationName: 'against' })
 }));
 
 // Token Schema
@@ -143,6 +141,6 @@ export const tokens = pgTable('tokens', {
   updatedAt: date('updated_at').notNull().defaultNow(),
 });
 
-export const tokensRelations = relations(tokens, ({one}) => ({
-  wallet: one(wallets, {fields: [tokens.walletId], references: [wallets.id]})
+export const tokensRelations = relations(tokens, ({ one }) => ({
+  wallet: one(wallets, { fields: [tokens.walletId], references: [wallets.id] })
 }))
