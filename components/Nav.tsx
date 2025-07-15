@@ -33,9 +33,7 @@ const Nav = () => {
     return () => {
       window.removeEventListener('scroll', handleScroll);
     };
-  }, []);
-
-  console.log('User:', user);
+  }, [setScrolled]);
 
   return (
     <nav

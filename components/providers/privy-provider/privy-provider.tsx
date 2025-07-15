@@ -10,17 +10,10 @@ const PrivyAuthProvider = ({ children }: { children: ReactNode }) => {
     <PrivyProvider
       appId={process.env.NEXT_PUBLIC_PRIVY_APP_ID || ''}
       config={{
-        //solanaClusters: [{ name: 'mainnet-beta', rpcUrl: 'https://api.mainnet-beta.solana.com' }],
         embeddedWallets: {
           solana: {
             createOnLogin: 'users-without-wallets',
           }
-        },
-        appearance: {
-          theme: 'dark',
-          accentColor: '#512da8',
-          logo: 'https://solana.com/src/img/branding/solanaLogoMark.svg',
-          walletChainType: 'solana-only',
         },
       }}
     >

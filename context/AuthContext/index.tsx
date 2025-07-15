@@ -47,8 +47,8 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       console.error(
         'User data is incomplete, skipping authentication request.'
       );
-      logout()
       console.log("Logging out....")
+      logout()
       return;
     }
 
@@ -63,14 +63,12 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         wallet_addr: existingUser.wallet as string
       })
     } else {
-      const wallet = await createWallet()
-
-      if (wallet) {
+      if (privyUser.wallet?.address) {
         await loginMutation.mutateAsync({
           email: privyUser.google?.email as string,
           name: privyUser.google?.name as string,
           balance: 0,
-          publicKey: wallet.address,
+          publicKey: privyUser.wallet?.address as string,
           profileImage: '',
           email_verified: true,
         })
@@ -78,10 +76,32 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         const formData = {
           privy_id: privyUser.id,
           email: privyUser.google?.email,
-          wallet_addr: wallet.address,
+          wallet_addr: privyUser.wallet?.address as string,
         };
 
         setUserData(formData);
+
+      } else {
+        const wallet = await createWallet()
+
+        if (wallet) {
+          await loginMutation.mutateAsync({
+            email: privyUser.google?.email as string,
+            name: privyUser.google?.name as string,
+            balance: 0,
+            publicKey: wallet.address,
+            profileImage: '',
+            email_verified: true,
+          })
+
+          const formData = {
+            privy_id: privyUser.id,
+            email: privyUser.google?.email,
+            wallet_addr: wallet.address,
+          };
+
+          setUserData(formData);
+        }
       }
     }
 
@@ -107,24 +127,14 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     }
   };
 
-  useEffect(() => {
-    async function getToken() {
-      //const authToken = await getAccessToken();
-      if (ready) {
-        console.log("Ready!")
-        if (authenticated && user) {
-          console.log("Handle user, e dey")
-          console.log({ user })
-          handleAuthentication(user);
-        } else {
-          console.log("User no dey")
-          //setIsAuthLoaded(true);
-        }
-      }
-    }
+  const userId = user?.id;
 
-    getToken()
-  }, [authenticated, ready, user]);
+  useEffect(() => {
+    if (!ready) return;
+    if (!authenticated && !user) return;
+
+    handleAuthentication(user);
+  }, [authenticated, ready, userId]);
 
   function logoutUser() {
     logout()
