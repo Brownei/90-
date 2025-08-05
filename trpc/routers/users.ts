@@ -3,10 +3,6 @@ import { baseProcedure, createTRPCRouter } from "../init";
 import { db, tokens, users, wallets } from "@/lib/db";
 import { eq } from "drizzle-orm";
 import { decryptData, encryptData } from "@/utils/utils";
-import { PublicKey } from "@solana/web3.js";
-import { getTokenAccounts } from "@/utils/solanaHelpers";
-import { IProvider } from "@web3auth/base";
-import { real } from "drizzle-orm/gel-core";
 
 export const usersRouter = createTRPCRouter({
   logout: baseProcedure
@@ -28,7 +24,7 @@ export const usersRouter = createTRPCRouter({
         email: z.string()
       })
     ).mutation(async ({ input }) => {
-      const existingUser = await db.select({ email: users.email, wallet: wallets.publicKey }).from(users).where(eq(users.email, input.email)).leftJoin(wallets, eq(users.id, wallets.userId))
+      const existingUser = await db.select({ email: users.email, name: users.name, wallet: wallets.publicKey }).from(users).where(eq(users.email, input.email)).leftJoin(wallets, eq(users.id, wallets.userId))
 
       return existingUser[0]
     }),

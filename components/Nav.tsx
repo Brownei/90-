@@ -1,17 +1,21 @@
 'use client';
 import React, { useEffect, useState } from 'react';
-import { usePathname } from 'next/navigation';
+import { useRouter, usePathname } from 'next/navigation';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useAuthState } from '@/context';
+import { usePrivy } from "@privy-io/react-auth";
 
 const Nav = () => {
   const pathname = usePathname();
-  const { login, user, logout } = useAuthState();
+  const router = useRouter();
+  const { login, user, } = useAuthState();
+  const { user: privyUser, logout } = usePrivy();
 
   // State to track scroll position
   const [scrolled, setScrolled] = useState(false);
 
+  console.log({ privyUser, user })
   // Scroll event handler
   useEffect(() => {
     const handleScroll = () => {
@@ -75,7 +79,12 @@ const Nav = () => {
               </>
             </button>
           ) : (
-            <button onClick={logout} className="bg-blue-500 flex items-center gap-3 py-2 px-3 rounded-full  font-semibold text-white text-[0.8rem] cursor-pointer">
+            <button onClick={() => {
+              logout()
+              if (pathname !== '/') {
+                router.push("/")
+              }
+            }} className="bg-blue-500 flex items-center gap-3 py-2 px-3 rounded-full  font-semibold text-white text-[0.8rem] cursor-pointer">
               Log Out
             </button>
           )}

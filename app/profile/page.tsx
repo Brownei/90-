@@ -1,5 +1,7 @@
 "use client";
 
+import { useFundWallet } from '@privy-io/react-auth';
+import { base } from 'viem/chains'
 import React from 'react';
 import { useRouter } from 'next/navigation';
 import ProfileCard from '@/components/ProfileCard';
@@ -10,22 +12,35 @@ import { useAuthLogin } from '@/hooks/use-auth-login';
 import { SolanaWallet } from '@web3auth/solana-provider';
 import { IProvider } from '@web3auth/base';
 import { useSessionStore } from '@/stores/use-session-store';
+import { useAuthState } from '@/context';
+import { usePrivy } from "@privy-io/react-auth";
 
 const ProfilePage = () => {
+  const { fundWallet } = useFundWallet();
   const { } = useWallet();
-  const { session: user } = useSessionStore()
-  const router = useRouter();
+  const { user } = useAuthState();
+  const { user: privyUser } = usePrivy();
   const { loggedIn, provider, isLoading } = useAuthLogin();
   const [tweetText, setTweetText] = React.useState('');
   const [isSubmitting, setIsSubmitting] = React.useState(false);
   // const postTweet = trpc.twitter.tweet.useMutation();
 
-  React.useEffect(() => {
-    // If not authenticated and not loading, redirect to home
-    if (user === null) {
-      router.push('/');
-    }
-  }, [user, router]);
+
+  console.log({ privyUser })
+  function receiveMoney() {
+    fundWallet(user?.wallet_addr as string, {
+      chain: base,
+      amount: '0.01', // SOL
+      card: {
+        preferredProvider: 'coinbase',
+      },
+      defaultFundingMethod: 'exchange',
+      uiConfig: {
+        receiveFundsTitle: 'Receive 0.05 ETH',
+        receiveFundsSubtitle: 'Scan this code or copy your wallet address to receive funds on Base.'
+      }
+    });
+  }
 
   const handleTweetSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -67,6 +82,8 @@ const ProfilePage = () => {
             Connect your Solana wallet to access additional features and participate in the ecosystem.
           </p>
         </div>
+
+        <button className='bg-gradient-to-l from-[#007CF0] from-[29%] to-[#00DFD8] to-[87%] px-3 py-1 rounded-full mb-10' onClick={receiveMoney}>Fund your 90+ account</button>
 
         <div className="bg-white rounded-lg shadow-md p-6">
           <h2 className="text-xl font-bold mb-4">Post a Tweet</h2>

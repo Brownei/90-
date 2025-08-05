@@ -8,7 +8,7 @@ import { useCreateWallet } from '@privy-io/react-auth';
 import { trpc } from '@/trpc/client';
 
 interface AuthContextType {
-  user: { privy_id: string; email: string | undefined; wallet_addr: string | undefined } | null;
+  user: { privy_id: string; email: string; wallet_addr: string; username: string } | null;
   isAuthenticated: boolean;
   isAuthLoaded: boolean;
   isOnboarded: boolean;
@@ -58,9 +58,10 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
     if (existingUser) {
       setUserData({
-        email: existingUser?.email as string,
+        email: existingUser.email as string,
         privy_id: privyUser.id,
-        wallet_addr: existingUser.wallet as string
+        wallet_addr: existingUser.wallet as string,
+        username: existingUser.name as string
       })
     } else {
       if (privyUser.wallet?.address) {
@@ -75,8 +76,9 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
         const formData = {
           privy_id: privyUser.id,
-          email: privyUser.google?.email,
-          wallet_addr: privyUser.wallet?.address as string,
+          email: privyUser.google!.email as string,
+          wallet_addr: privyUser.wallet!.address as string,
+          username: privyUser.google?.name as string
         };
 
         setUserData(formData);
@@ -96,8 +98,9 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
           const formData = {
             privy_id: privyUser.id,
-            email: privyUser.google?.email,
+            email: privyUser.google?.email as string,
             wallet_addr: wallet.address,
+            username: privyUser.google?.name as string
           };
 
           setUserData(formData);

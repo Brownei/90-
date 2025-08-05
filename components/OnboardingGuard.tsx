@@ -1,20 +1,20 @@
 'use client';
 import { useEffect } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
-import { useSessionStore } from '@/stores/use-session-store';
+import { usePrivy } from "@privy-io/react-auth";
 
 const OnboardingGuard = ({ children }: { children: React.ReactNode }) => {
-  const { session: user } = useSessionStore();
+  const { user: privyUser } = usePrivy();
   const router = useRouter();
   const pathname = usePathname();
 
   useEffect(() => {
     // If user is authenticated but doesn't have a name (not onboarded)
     // and they're not already on the onboarding page, redirect them
-    if (user && !user.name && pathname !== '/onboarding') {
-      router.push('/onboarding');
+    if (privyUser === null && pathname !== '/') {
+      router.push('/');
     }
-  }, [user, pathname, router]);
+  }, [pathname, router]);
 
   return <>{children}</>;
 };
