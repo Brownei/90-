@@ -1,31 +1,102 @@
 'use client';
-import React from 'react'
+import React, { useState } from 'react'
 import MessageIcon from '@/public/icons/MessageIcon';
 import Link from 'next/link';
 import { ArrowRight, } from 'lucide-react';
+import { useSessionStore } from '@/stores/use-session-store';
+import { useRouter } from 'next/navigation';
 
 const Homepage = () => {
-  return (
-    <main className="min-h-screen min-w-screen bg-[#ECF5F5]">
-      {/* Hero Section - simplified to match mobile design */}
-      <div className="pt-20 pb-12 px-4">
+  const { session: user } = useSessionStore()
+  const router = useRouter()
+  const [wagerCondition, setWagerCondition] = useState('')
+  const [amount, setAmount] = useState('')
 
-      </div>
+  const handleBookWager = () => {
+    // Validate required fields
+    if (!wagerCondition.trim() || !amount.trim()) {
+      alert('Please fill in all required fields');
+      return;
+    }
+
+    // Create wager data object
+    const wagerData = {
+      wagerCondition,
+      amount,
+      bookedBy: user?.name || '@user',
+      wagerLink: `${window.location.origin}/wager/${Date.now()}` // Generate unique link
+    }
+
+    // Store in sessionStorage for the BookedWager component to read
+    sessionStorage.setItem('currentWager', JSON.stringify(wagerData));
+
+    // Navigate to booked wager page
+    router.push('/history');
+  }
+
+  return (
+    <main className="pt-20 pb-12 px-4 min-h-screen min-w-screen bg-[#ECF5F5]">
 
       {/* In-Play Wagers Section */}
       <div className="px-1 pb-1">
         <div className="max-w-4xl mx-auto  overflow-hidden">
           <div className="p-2 lg:p-2 text-center">
-            <h2 className="text-2xl lg:text-3xl font-bold text-black mb-4">
-              In-Play Wagers; Bet on Your Banter
+            <h2 className="text-3xl lg:text-3xl font-bold text-black mb-4">
+              Wager on Your Takes
             </h2>
-            <p className="text-gray-600 text-sm lg:text-base mb-8 max-w-2xl mx-auto">
-              Settle arguments fast and easy on-chain
+            <p className="text-gray-600 text-sm lg:text-base mb-8 w-[70%] max-w-2xl mx-auto">
+              Settle peer-to-peer bets on live sports events with in-play wagers
             </p>
 
-            <Link href={'/wagers'} className="inline-block bg-blue-500 hover:bg-blue-600 transition-colors text-white font-medium py-3 px-8 rounded-full text-sm lg:text-base mb-8">
-              BOOK WAGER
-            </Link>
+            <div className="px-4 py-4">
+              <div className="max-w-md mx-auto bg-white rounded-2xl shadow-sm p-6">
+                <h1 className="text-xl font-bold text-center text-black mb-8">
+                  BOOK WAGER
+                </h1>
+
+                <div className="space-y-6">
+
+                  {/* Wager Condition */}
+                  <div className='text-left'>
+                    <label className="block text-sm font-semibold text-black mb-2">
+                      WAGER CONDITION<span className="text-red-500">*</span>
+                    </label>
+                    <textarea
+                      value={wagerCondition}
+                      onChange={(e) => setWagerCondition(e.target.value)}
+                      placeholder=""
+                      rows={3}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm text-gray-700 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
+                      required
+                    />
+                  </div>
+
+                  {/* Amount */}
+                  <div className='text-left'>
+                    <label className="block text-sm font-semibold text-black mb-2">
+                      AMOUNT<span className="text-red-500">*</span>
+                    </label>
+                    <input
+                      type="text"
+                      value={amount}
+                      onChange={(e) => setAmount(e.target.value)}
+                      placeholder=""
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm text-gray-700 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      required
+                    />
+                  </div>
+
+                  {/* Book Button */}
+                  <button
+                    onClick={handleBookWager}
+                    className="w-full bg-blue-500 hover:bg-blue-600 transition-colors text-white font-semibold py-3 px-6 rounded-full text-sm mt-8"
+                  >
+                    BOOK
+                  </button>
+                </div>
+              </div>
+            </div>
+
 
             <div className="mb-8">
               <div className="flex items-center justify-between bg-white border-1 border-[#847F83] rounded-full p-2 max-w-md mx-auto mb-6">
@@ -39,7 +110,6 @@ const Homepage = () => {
                 </button>
               </div>
             </div>
-
             <div className="bg-white justify-around p-4 rounded-xl ">
               <div className="text-left mx-auto">
                 <h3 className="font-semibold text-black mb-4 pb-1">

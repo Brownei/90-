@@ -1,11 +1,15 @@
-import React from 'react'
+import { Metadata } from 'next';
+import dynamic from 'next/dynamic';
 
-const page = () => {
-  return (
-    <div>
-      Wagers
-    </div>
-  )
-}
+export const metadata: Metadata = {
+  title: '',
+  description: '',
+};
 
-export default page
+const Wager = dynamic(() => import('../../components/wagers/CreateWagerPage'));
+
+const BookedWager = () => {
+  return <Wager />;
+};
+
+export default BookedWager;
