@@ -3,6 +3,7 @@ import "./globals.css";
 import { Providers } from "./providers";
 import { Toaster } from "react-hot-toast";
 import { CivicAuthProvider } from "@civic/auth-web3/nextjs";
+import Nav from "@/components/Nav";
 
 export const metadata: Metadata = {
   title: "90+: The Future of Live Football Engagement",
@@ -21,9 +22,12 @@ export default async function RootLayout({
   return (
     <html lang="en">
       <body className="font-inter">
-        <Providers >
+        <Providers>
+          <Nav />
           <Toaster />
-          {children}
+          <main className="">
+            {children}
+          </main>
         </Providers>
       </body>
     </html>

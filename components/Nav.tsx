@@ -49,7 +49,7 @@ const Nav = () => {
     `}
     >
       <div className="flex justify-between items-center">
-        <Link href={'/'}>
+        <Link href={'/user-profile'}>
           <Image
             src={'/logo.png'}
             width={500}
